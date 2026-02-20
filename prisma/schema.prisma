@@ -16,15 +16,16 @@ enum Role {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  name      String    @db.VarChar(255)
-  surname   String    @db.VarChar(255)
-  email     String    @unique @db.VarChar(255)
-  password  String
-  role      Role      @default(USER)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  bookings  Booking[]
+  id            Int            @id @default(autoincrement())
+  name          String         @db.VarChar(255)
+  surname       String         @db.VarChar(255)
+  email         String         @unique @db.VarChar(255)
+  password      String
+  role          Role           @default(USER)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  bookings      Booking[]
+  conversations Conversation[]
 
   @@index([email])
 }
@@ -33,8 +34,8 @@ model Room {
   id          Int       @id @default(autoincrement())
   name        String    @db.VarChar(255)
   description String    @db.Text
-  price       Float
-  imageUrl    String    @db.VarChar(255)
+  price       Decimal   @db.Decimal(10, 2)
+  imageUrl    String?    @db.VarChar(255)
   isAvailable Boolean   @default(true)
   capacity    Int       @default(1)
   createdAt   DateTime  @default(now())
@@ -55,7 +56,7 @@ model Booking {
   status     BookingStatus @default(PENDING)
   startDate  DateTime
   endDate    DateTime
-  totalPrice Float
+  totalPrice Decimal   @db.Decimal(10, 2)
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
 
@@ -65,4 +66,32 @@ model Booking {
   @@index([userId])
   @@index([roomId])
   @@index([startDate, endDate])
+}
+
+model Conversation {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  title     String?   @db.VarChar(255)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  messages  Message[]
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+model Message {
+  id             Int          @id @default(autoincrement())
+  conversationId Int
+  role           MessageRole
+  content        String       @db.Text
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 }

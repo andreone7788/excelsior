@@ -1,0 +1,35 @@
+// Auth Types
+export type { RegisterInput, LoginInput, UpdateProfileInput } from "@/lib/validations/auth";
+
+// Booking Types
+export type { CreateBookingInput, UpdateBookingStatusInput } from "@/lib/validations/booking";
+
+// Room Types
+export type { CreateRoomInput, UpdateRoomInput, RoomFiltersInput } from "@/lib/validations/room";
+
+// Chat Types
+export type { SendMessageInput, DeleteConversationInput } from "@/lib/validations/chat";
+
+// User Types
+export type { CreateUserInput, UpdateUserInput, DeleteUserInput } from "@/lib/validations/user";
+
+// Email Types
+export type EmailTemplate =
+    | 'booking-confirmation'
+    | 'booking-pending'
+    | 'booking-cancelled'
+    | 'admin-new-booking'
+
+export type EmailNotification = {
+    to: string
+    subject: string
+    template: EmailTemplate
+    data: {
+        userName?: string
+        roomName?: string
+        startDate?: string
+        endDate?: string
+        bookingId?: number
+        [key: string]: unknown
+    }
+}
