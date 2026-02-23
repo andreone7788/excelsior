@@ -1,237 +1,318 @@
 'use client'
 
 import { useState } from 'react'
-import { registerAction } from '@/action/auth'
-import { RegisterInput } from '@/types'
 import { useRouter } from 'next/navigation'
+import { registerAction } from '@/action/auth'
+import type { RegisterInput } from '@/types'
 
 export default function RegisterPage() {
     const router = useRouter()
-    const [error, setError] = useState<string | null>(null)
+    const [formData, setFormData] = useState<RegisterInput>({
+        name: '',
+        surname: '',
+        email: '',
+        password: '',
+    })
+    const [error, setError] = useState<string>('')
     const [loading, setLoading] = useState(false)
+    const [success, setSuccess] = useState(false)  // ← NUOVO
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        setError(null)
+        setError('')
         setLoading(true)
 
-        const formData = new FormData(e.currentTarget)
-        const data: RegisterInput = {
-            name: formData.get('name') as string,
-            surname: formData.get('surname') as string,
-            email: formData.get('email') as string,
-            password: formData.get('password') as string,
-        }
+        try {
+            const result = await registerAction(formData)
 
-        const result = await registerAction(data)
+            if (!result.success) {
+                setError(result.error || 'Errore durante la registrazione')
+                setLoading(false)
+                return
+            }
 
-        if (result.success) {
-            router.push('/dashboard')
-        } else {
-            setError(result.message || 'Errore sconosciuto durante la registrazione')
+            // ✅ Registrazione completata con successo!
+            setSuccess(true)
+            setLoading(false)
+
+            // ✅ Mostra messaggio per 2 secondi, poi redirect
+            setTimeout(() => {
+                router.push('/dashboard')
+            }, 2000)
+
+        } catch (error) {
+            console.error('Errore:', error)
+            setError('Errore durante la registrazione')
             setLoading(false)
         }
     }
 
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData(prev => ({
+            ...prev,
+            [e.target.name]: e.target.value
+        }))
+    }
+
+    // ✅ Mostra messaggio di successo
+    if (success) {
+        return (
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: '100vh',
+                padding: '20px',
+                textAlign: 'center'
+            }}>
+                <div style={{
+                    backgroundColor: '#000000',
+                    border: '1px solid #c3e6cb',
+                    borderRadius: '8px',
+                    padding: '30px',
+                    maxWidth: '500px',
+                    width: '100%'
+                }}>
+                    <h1 style={{
+                        color: '#155724',
+                        fontSize: '32px',
+                        marginBottom: '20px'
+                    }}>
+                        🎉 Registrazione completata!
+                    </h1>
+
+                    <p style={{
+                        fontSize: '18px',
+                        color: '#155724',
+                        marginBottom: '10px'
+                    }}>
+                        Benvenuto, <strong>{formData.name}</strong>!
+                    </p>
+
+                    <p style={{ color: '#155724' }}>
+                        Stai per essere reindirizzato alla dashboard...
+                    </p>
+
+                    <div style={{
+                        marginTop: '20px',
+                        animation: 'spin 1s linear infinite'
+                    }}>
+                        ⏳
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div style={{
-            maxWidth: '400px',
-            margin: '100px auto',
-            padding: '20px',
-            border: '1px solid #ddd',
-            borderRadius: '8px',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '100vh',
+            padding: '20px'
         }}>
-            <h1 style={{
-                textAlign: 'center',
-                marginBottom: '10px',
-                color: '#333'
+            <div style={{
+                width: '100%',
+                maxWidth: '400px',
+                padding: '30px',
+                border: '1px solid #ddd',
+                borderRadius: '8px',
+                backgroundColor: '#fff'
             }}>
-                Registrazione
-            </h1>
-
-            <p style={{
-                textAlign: 'center',
-                color: '#666',
-                fontSize: '14px',
-                marginBottom: '30px'
-            }}>
-                Crea il tuo account per prenotare camere
-            </p>
-
-            {error && (
-                <div style={{
-                    padding: '12px',
-                    marginBottom: '20px',
-                    backgroundColor: '#fee',
-                    color: '#c00',
-                    borderRadius: '4px',
-                    border: '1px solid #fcc',
-                    fontSize: '14px'
+                <h1 style={{
+                    textAlign: 'center',
+                    marginBottom: '30px',
+                    fontSize: '28px'
                 }}>
-                    ⚠️ {error}
-                </div>
-            )}
+                    Registrazione
+                </h1>
 
-            <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: '15px' }}>
-                    <label
-                        htmlFor="name"
-                        style={{
+                <form onSubmit={handleSubmit}>
+                    {/* Nome */}
+                    <div style={{ marginBottom: '20px' }}>
+                        <label
+                            htmlFor="name"
+                            style={{
+                                display: 'block',
+                                marginBottom: '8px',
+                                fontWeight: '500'
+                            }}
+                        >
+                            Nome
+                        </label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            required
+                            disabled={loading}
+                            style={{
+                                width: '100%',
+                                padding: '12px',
+                                border: '1px solid #ddd',
+                                borderRadius: '4px',
+                                fontSize: '16px'
+                            }}
+                        />
+                    </div>
+
+                    {/* Cognome */}
+                    <div style={{ marginBottom: '20px' }}>
+                        <label
+                            htmlFor="surname"
+                            style={{
+                                display: 'block',
+                                marginBottom: '8px',
+                                fontWeight: '500'
+                            }}
+                        >
+                            Cognome
+                        </label>
+                        <input
+                            type="text"
+                            id="surname"
+                            name="surname"
+                            value={formData.surname}
+                            onChange={handleChange}
+                            required
+                            disabled={loading}
+                            style={{
+                                width: '100%',
+                                padding: '12px',
+                                border: '1px solid #ddd',
+                                borderRadius: '4px',
+                                fontSize: '16px'
+                            }}
+                        />
+                    </div>
+
+                    {/* Email */}
+                    <div style={{ marginBottom: '20px' }}>
+                        <label
+                            htmlFor="email"
+                            style={{
+                                display: 'block',
+                                marginBottom: '8px',
+                                fontWeight: '500'
+                            }}
+                        >
+                            Email
+                        </label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            required
+                            disabled={loading}
+                            style={{
+                                width: '100%',
+                                padding: '12px',
+                                border: '1px solid #ddd',
+                                borderRadius: '4px',
+                                fontSize: '16px'
+                            }}
+                        />
+                    </div>
+
+                    {/* Password */}
+                    <div style={{ marginBottom: '20px' }}>
+                        <label
+                            htmlFor="password"
+                            style={{
+                                display: 'block',
+                                marginBottom: '8px',
+                                fontWeight: '500'
+                            }}
+                        >
+                            Password
+                        </label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            required
+                            disabled={loading}
+                            minLength={6}
+                            style={{
+                                width: '100%',
+                                padding: '12px',
+                                border: '1px solid #ddd',
+                                borderRadius: '4px',
+                                fontSize: '16px'
+                            }}
+                        />
+                        <small style={{
                             display: 'block',
-                            marginBottom: '5px',
-                            fontWeight: '500',
-                            fontSize: '14px'
-                        }}
-                    >
-                        Nome *
-                    </label>
-                    <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        required
+                            marginTop: '5px',
+                            color: '#666'
+                        }}>
+                            Minimo 6 caratteri
+                        </small>
+                    </div>
+
+                    {/* Errore */}
+                    {error && (
+                        <div style={{
+                            padding: '12px',
+                            backgroundColor: '#f8d7da',
+                            border: '1px solid #f5c6cb',
+                            borderRadius: '4px',
+                            color: '#721c24',
+                            marginBottom: '20px'
+                        }}>
+                            {error}
+                        </div>
+                    )}
+
+                    {/* Pulsante Submit */}
+                    <button
+                        type="submit"
+                        disabled={loading}
                         style={{
                             width: '100%',
-                            padding: '10px',
-                            fontSize: '14px',
-                            border: '1px solid #ddd',
+                            padding: '12px',
+                            backgroundColor: loading ? '#ccc' : '#007bff',
+                            color: 'black',
+                            border: 'none',
                             borderRadius: '4px',
-                            boxSizing: 'border-box'
-                        }}
-                    />
-                </div>
-
-                <div style={{ marginBottom: '15px' }}>
-                    <label
-                        htmlFor="surname"
-                        style={{
-                            display: 'block',
-                            marginBottom: '5px',
-                            fontWeight: '500',
-                            fontSize: '14px'
+                            fontSize: '16px',
+                            fontWeight: 'bold',
+                            cursor: loading ? 'not-allowed' : 'pointer',
+                            transition: 'background-color 0.2s'
                         }}
                     >
-                        Cognome *
-                    </label>
-                    <input
-                        type="text"
-                        id="surname"
-                        name="surname"
-                        required
-                        style={{
-                            width: '100%',
-                            padding: '10px',
-                            fontSize: '14px',
-                            border: '1px solid #ddd',
-                            borderRadius: '4px',
-                            boxSizing: 'border-box'
-                        }}
-                    />
-                </div>
+                        {loading ? 'Registrazione in corso...' : 'Registrati'}
+                    </button>
+                </form>
 
-                <div style={{ marginBottom: '15px' }}>
-                    <label
-                        htmlFor="email"
+                {/* Link a Login */}
+                <p style={{
+                    textAlign: 'center',
+                    marginTop: '20px',
+                    color: '#666'
+                }}>
+                    Hai già un account?{' '}
+                    <a
+                        href="/login"
                         style={{
-                            display: 'block',
-                            marginBottom: '5px',
-                            fontWeight: '500',
-                            fontSize: '14px'
+                            color: '#007bff',
+                            textDecoration: 'none',
+                            fontWeight: '500'
                         }}
                     >
-                        Email *
-                    </label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        required
-                        style={{
-                            width: '100%',
-                            padding: '10px',
-                            fontSize: '14px',
-                            border: '1px solid #ddd',
-                            borderRadius: '4px',
-                            boxSizing: 'border-box'
-                        }}
-                    />
-                </div>
-
-                <div style={{ marginBottom: '20px' }}>
-                    <label
-                        htmlFor="password"
-                        style={{
-                            display: 'block',
-                            marginBottom: '5px',
-                            fontWeight: '500',
-                            fontSize: '14px'
-                        }}
-                    >
-                        Password *
-                    </label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        required
-                        minLength={8}
-                        style={{
-                            width: '100%',
-                            padding: '10px',
-                            fontSize: '14px',
-                            border: '1px solid #ddd',
-                            borderRadius: '4px',
-                            boxSizing: 'border-box'
-                        }}
-                    />
-                    <small style={{
-                        color: '#666',
-                        fontSize: '12px',
-                        display: 'block',
-                        marginTop: '5px'
-                    }}>
-                        Min 8 caratteri, 1 maiuscola, 1 numero, 1 carattere speciale
-                    </small>
-                </div>
-
-                <button
-                    type="submit"
-                    disabled={loading}
-                    style={{
-                        width: '100%',
-                        padding: '12px',
-                        fontSize: '16px',
-                        backgroundColor: loading ? '#ccc' : '#0070f3',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: loading ? 'not-allowed' : 'pointer',
-                        fontWeight: 'bold'
-                    }}
-                >
-                    {loading ? '⏳ Registrazione in corso...' : '✅ Registrati'}
-                </button>
-            </form>
-
-            <p style={{
-                marginTop: '20px',
-                textAlign: 'center',
-                color: '#666',
-                fontSize: '14px'
-            }}>
-                Hai già un account?{' '}
-                <a
-                    href="/login"
-                    style={{
-                        color: '#0070f3',
-                        textDecoration: 'none',
-                        fontWeight: '500'
-                    }}
-                >
-                    Accedi
-                </a>
-            </p>
+                        Accedi
+                    </a>
+                </p>
+            </div>
         </div>
     )
 }
