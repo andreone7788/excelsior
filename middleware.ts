@@ -5,52 +5,27 @@ import { verifyToken } from '@/lib/jwt'
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get('auth_token')?.value
   const pathname = request.nextUrl.pathname
-  
-  console.log('🔍 Middleware check:', pathname, 'Token:', !!token)
 
-  // Percorsi pubblici (accessibili senza autenticazione)
+  // Percorsi pubblici (non serve autenticazione)
   const publicPaths = ['/', '/login', '/register']
-  const isPublicPath = publicPaths.includes(pathname)
-
-  if (isPublicPath) {
-    console.log('✅ Percorso pubblico, accesso consentito')
+  if (publicPaths.includes(pathname)) {
     return NextResponse.next()
   }
 
-  // Verifica validità token
-  let userPayload = null
-  if (token) {
-    userPayload = await verifyToken(token)
-    console.log('👤 User payload:', userPayload ? `userId: ${userPayload.userId}` : 'invalid')
-  }
-
-  // Redirect se autenticato e prova ad accedere a login/register
-  if (userPayload && (pathname === '/login' || pathname === '/register')) {
-    console.log('✅ Utente già autenticato, redirect a /dashboard')
-    return NextResponse.redirect(new URL('/dashboard', request.url))
-  }
-
-  // Percorsi protetti
-  const isProtectedPath = pathname.startsWith('/dashboard') || pathname.startsWith('/admin')
-
-  if (isProtectedPath && !userPayload) {
-    console.log('❌ Accesso negato, redirect a /login')
+  // Verifica solo se è autenticato (non il ruolo!)
+  if (!token) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  console.log('✅ Middleware: accesso consentito')
+  const payload = await verifyToken(token)
+  if (!payload) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  // OK, è autenticato → passa
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
-  ],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 }

@@ -3,17 +3,17 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Navbar from '@/components/navbar'
-import UserDashboard from '@/components/dashboard/userDashboard'
+import AdminDashboard from '@/components/dashboard/adminDashboard'
 import { useUser } from '@/lib/hooks/useUser'
 
-export default function DashboardPage() {
+export default function AdminDashboardPage() {
   const router = useRouter()
   const { user, loading } = useUser()
 
-  // Se è ADMIN → redirect
+  // Se NON è ADMIN → redirect
   useEffect(() => {
-    if (!loading && user?.role === 'ADMIN') {
-      router.replace('/admin/dashboard')
+    if (!loading && user?.role !== 'ADMIN') {
+      router.replace('/dashboard')
     }
   }, [user, loading, router])
 
@@ -31,15 +31,15 @@ export default function DashboardPage() {
     )
   }
 
-  // Non mostrare nulla se è ADMIN (sta per essere rediretto)
-  if (user?.role === 'ADMIN') {
+  // Non mostrare nulla se NON è ADMIN (sta per essere rediretto)
+  if (user?.role !== 'ADMIN') {
     return null
   }
 
   return (
     <>
       <Navbar />
-      <UserDashboard />
+      <AdminDashboard />
     </>
   )
 }
