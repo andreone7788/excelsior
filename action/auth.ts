@@ -1,19 +1,17 @@
 'use server'
 
-import { prisma } from '@/lib/prisma.client'
-import { createToken, verifyToken } from '@/lib/jwt'
+import { z } from 'zod'
 import bcrypt from 'bcrypt'
 import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
-import { loginSchema, registerSchema } from '@/lib/validations/auth'
-import type { LoginInput, RegisterInput } from '@/types'
-import { Role } from '@prisma/client'
+import { prisma } from '@/lib/prisma.client'
+import { registerSchema, loginSchema } from '@/lib/validations/auth'
+import { signToken } from '@/lib/jwt'
+import type { RegisterInput, LoginInput } from '@/types'
 
-//=================================
-// Register Action
-//=================================
 export async function registerAction(data: RegisterInput) {
     try {
+        console.log('📝 Tentativo registrazione:', data.email)
+
         // 1 - Validazione dati con Zod
         const validated = registerSchema.parse(data)
 
@@ -23,174 +21,106 @@ export async function registerAction(data: RegisterInput) {
         })
 
         if (existingUser) {
-            return {
-                success: false,
-                message: 'Email già registrata',
-            }
+            console.log('❌ Email già registrata:', validated.email)
+            return { success: false, error: 'Email già registrata' }
         }
 
         // 3 - Hash password
         const hashedPassword = await bcrypt.hash(validated.password, 10)
 
-        // 4 - Creazione utente
+        // 4 - Crea utente nel database
         const user = await prisma.user.create({
             data: {
                 name: validated.name,
                 surname: validated.surname,
                 email: validated.email,
                 password: hashedPassword,
-                role: Role.USER // Imposta il ruolo di default a USER
+                role: 'USER',
             },
         })
 
-        // 5 - Creazione token JWT
-        const token = await createToken({
-            userId: user.id,
-            email: user.email,
-            role: user.role
-        })
+        console.log('✅ Utente creato con ID:', user.id)
 
-        // 6 - Salvataggio del token nei cookie
+        // 5 - Genera JWT token
+        const token = await signToken({ userId: user.id, email: user.email })
+
+        // 6 - Imposta cookie
         const cookieStore = await cookies()
-        cookieStore.set('token', token, {
-            httpOnly: true, // Non accessibile da JavaScript (sicurezza)
-            secure: process.env.NODE_ENV === 'production', // HTTPS in produzione
+        cookieStore.set('auth_token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
-            maxAge: 60 * 60 * 24 * 7, // 7 giorni in secondi
+            maxAge: 60 * 60 * 24 * 7, // 7 giorni
             path: '/',
         })
 
-        // 7 - Redirect accesso
-        return {
-            success: true,
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                role: user.role
-            },
-            message: 'Registrazione avvenuta con successo',
-        }
+        console.log('✅ Cookie impostato per userId:', user.id)
+
+        return { success: true }
     } catch (error) {
-        console.error('Errore durante la registrazione:', error)
-        return {
-            success: false,
-            message: 'Si è verificato un errore durante la registrazione',
+        if (error instanceof z.ZodError) {
+            console.log('❌ Errore validazione:', error.issues[0].message)
+            return { success: false, error: error.issues[0].message }
         }
+
+        console.error('❌ Errore durante la registrazione:', error)
+        return { success: false, error: 'Errore durante la registrazione' }
     }
 }
 
-//=================================
-// Login Action
-//=================================
 export async function loginAction(data: LoginInput) {
     try {
-        // 1 - Validazione dati con Zod
+        console.log('🔐 Tentativo login:', data.email)
+
+        // 1 - Validazione
         const validated = loginSchema.parse(data)
 
-        // 2 - Cerca l'utente per email
+        // 2 - Trova utente
         const user = await prisma.user.findUnique({
             where: { email: validated.email },
         })
 
         if (!user) {
-            return {
-                success: false,
-                message: 'Email o password errati',
-            }
+            console.log('❌ Utente non trovato:', validated.email)
+            return { success: false, error: 'Credenziali non valide' }
         }
 
         // 3 - Verifica password
-        const isPasswordValid = await bcrypt.compare(validated.password, user.password)
+        const isPasswordValid = await bcrypt.compare(
+            validated.password,
+            user.password
+        )
 
         if (!isPasswordValid) {
-            return {
-                success: false,
-                message: 'Email o password errati',
-            }
+            console.log('❌ Password errata per:', validated.email)
+            return { success: false, error: 'Credenziali non valide' }
         }
 
-        // 4 - Creazione token JWT
-        const token = await createToken({
-            userId: user.id,
-            email: user.email,
-            role: user.role
-        })
+        console.log('✅ Password valida per userId:', user.id)
 
-        // 5 - Salvataggio del token nei cookie
+        // 4 - Genera token
+        const token = await signToken({ userId: user.id, email: user.email })
+
+        // 5 - Imposta cookie
         const cookieStore = await cookies()
-        cookieStore.set('token', token, {
-            httpOnly: true, // Non accessibile da JavaScript (sicurezza)
-            secure: process.env.NODE_ENV === 'production', // HTTPS in produzione
+        cookieStore.set('auth_token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
-            maxAge: 60 * 60 * 24 * 7, // 7 giorni in secondi
+            maxAge: 60 * 60 * 24 * 7,
             path: '/',
         })
 
-        // 6 - Redirect successo
-        return {
-            success: true,
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                role: user.role
-            },
-            message: 'Login avvenuto con successo',
-        }
+        console.log('✅ Cookie impostato per userId:', user.id)
+
+        return { success: true }
     } catch (error) {
-        console.error('Errore durante il login:', error)
-        return {
-            success: false,
-            message: 'Si è verificato un errore durante il login',
-        }
-    }
-}
-
-//=================================
-// Logout Action
-//=================================
-export async function logoutAction() {
-    const cookieStore = await cookies()
-    cookieStore.delete('token') // Rimuove il cookie del token
-    redirect('/login') // Reindirizza alla pagina di login
-}
-
-//=================================
-// Current User Action
-//=================================
-export async function currentUserAction() {
-    try {
-        // 1 - Lettura del cookie
-        const cookieStore = await cookies()
-        const token = cookieStore.get('token')?.value
-
-        if (!token) {
-            return null // Nessun token, utente non autenticato
+        if (error instanceof z.ZodError) {
+            console.log('❌ Errore validazione:', error.issues[0].message)
+            return { success: false, error: error.issues[0].message }
         }
 
-        // 2 - Verifica del token
-        const payload = await verifyToken(token)
-
-        if (!payload) {
-            return null // Token non valido o scaduto
-        }
-
-        // 3 - Recupero dati aggiornati dal database
-        const user = await prisma.user.findUnique({
-            where: { id: payload.userId },
-            select: {
-                id: true,
-                name: true,
-                surname: true,
-                email: true,
-                role: true
-            }
-        })
-
-        return user
-    } catch (error) {
-        console.error('Errore durante il recupero dell\'utente corrente:', error)
-        return null
+        console.error('❌ Errore durante il login:', error)
+        return { success: false, error: 'Errore durante il login' }
     }
 }

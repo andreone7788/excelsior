@@ -3,90 +3,54 @@ import type { NextRequest } from 'next/server'
 import { verifyToken } from '@/lib/jwt'
 
 export async function middleware(request: NextRequest) {
-    const token = request.cookies.get('token')?.value
-    const { pathname } = request.nextUrl
+  const token = request.cookies.get('auth_token')?.value
+  const pathname = request.nextUrl.pathname
+  
+  console.log('🔍 Middleware check:', pathname, 'Token:', !!token)
 
-    console.log('🔍 Middleware check:', pathname, 'Token:', !!token)
+  // Percorsi pubblici (accessibili senza autenticazione)
+  const publicPaths = ['/', '/login', '/register']
+  const isPublicPath = publicPaths.includes(pathname)
 
-    //==========================
-    // Routes pubbliche (accessibili senza autenticazione)
-    //==========================
-    const publicRoutes = ['/login', '/register', '/']
-    const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route))
-
-    //===========================
-    // CASO 1: Nessun token e route protetta
-    //===========================
-    if (!token && !isPublicRoute) {
-        console.log('Accesso negato: nessun token presente')
-        return NextResponse.redirect(new URL('/login', request.url))
-    }
-
-    //===========================
-    // CASO 2: Verifica validità del token
-    //===========================
-    if (token) {
-        let payload = null
-
-        try {
-            payload = await verifyToken(token)
-        } catch (error) {
-            console.error('Errore durante la verifica del token:', error)
-
-            // Token corrotto o malformato - cancelliamolo
-            if (!isPublicRoute) {
-                console.log('🗑️ Token corrotto, lo cancello e redirect')
-                const response = NextResponse.redirect(new URL('/login', request.url))
-                response.cookies.delete('token')
-                return response
-            }
-        }
-
-        // Token non valido o scaduto
-        if (!payload && !isPublicRoute) {
-            console.log('Token non valido o scaduto')
-            const response = NextResponse.redirect(new URL('/login', request.url))
-            response.cookies.delete('token')
-            return response
-        }
-
-        //============================
-        // CASO 3: Loggato ma su pagine login/register
-        //============================
-        if (payload && (pathname === '/login' || pathname === '/register')) {
-            console.log('Utente già autenticato, redirect a dashboard')
-            return NextResponse.redirect(new URL('/dashboard', request.url))
-        }
-
-        //============================
-        // CASO 4: Route riservate solo agli ADMIN
-        //============================
-        if (pathname.startsWith('/dashboard/admin') && payload?.role !== 'ADMIN') {
-            console.log('Solo ADMIN può accedere')
-            return NextResponse.redirect(new URL('/dashboard', request.url))
-        }
-    }
-
-    //===========================
-    // Controlli ok, accesso consentito
-    //===========================
-    console.log('Middleware: accesso consentito')
+  if (isPublicPath) {
+    console.log('✅ Percorso pubblico, accesso consentito')
     return NextResponse.next()
+  }
+
+  // Verifica validità token
+  let userPayload = null
+  if (token) {
+    userPayload = await verifyToken(token)
+    console.log('👤 User payload:', userPayload ? `userId: ${userPayload.userId}` : 'invalid')
+  }
+
+  // Redirect se autenticato e prova ad accedere a login/register
+  if (userPayload && (pathname === '/login' || pathname === '/register')) {
+    console.log('✅ Utente già autenticato, redirect a /dashboard')
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+
+  // Percorsi protetti
+  const isProtectedPath = pathname.startsWith('/dashboard') || pathname.startsWith('/admin')
+
+  if (isProtectedPath && !userPayload) {
+    console.log('❌ Accesso negato, redirect a /login')
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  console.log('✅ Middleware: accesso consentito')
+  return NextResponse.next()
 }
 
-//===========================
-// Configurazione del middleware
-//===========================
 export const config = {
-    matcher: [
-        /*
-         * Match tutte le route ECCETTO:
-         * - /api/* (API routes)
-         * - /_next/static (file statici)
-         * - /_next/image (ottimizzazione immagini)
-         * - /favicon.ico
-         * - File con estensioni (.png, .jpg, .svg, etc.)
-         */
-        '/((?!api|_next/static|_next/image|favicon.ico|.*\\..*$).*)',
-    ],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
 }
