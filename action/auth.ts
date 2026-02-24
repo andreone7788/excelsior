@@ -42,7 +42,7 @@ export async function registerAction(data: RegisterInput) {
         console.log('✅ Utente creato con ID:', user.id)
 
         // 5 - Genera JWT token
-        const token = await signToken({ userId: user.id, email: user.email })
+        const token = await signToken({ userId: user.id, email: user.email, role: user.role })
 
         // 6 - Imposta cookie
         const cookieStore = await cookies()
@@ -99,7 +99,7 @@ export async function loginAction(data: LoginInput) {
         console.log('✅ Password valida per userId:', user.id)
 
         // 4 - Genera token
-        const token = await signToken({ userId: user.id, email: user.email })
+        const token = await signToken({ userId: user.id, email: user.email, role: user.role })
 
         // 5 - Imposta cookie
         const cookieStore = await cookies()
@@ -122,5 +122,17 @@ export async function loginAction(data: LoginInput) {
 
         console.error('❌ Errore durante il login:', error)
         return { success: false, error: 'Errore durante il login' }
+    }
+}
+
+export async function logoutAction() {
+    try {
+        const cookieStore = await cookies()
+        cookieStore.delete('auth_token')
+        console.log('✅ Cookie auth_token eliminato')
+        return { success: true }
+    } catch (error) {
+        console.error('❌ Errore durante il logout:', error)
+        return { success: false, error: 'Errore durante il logout' }
     }
 }

@@ -8,6 +8,7 @@ const JWT_SECRET = new TextEncoder().encode(
 export interface JWTPayload {
     userId: number
     email: string
+    role: 'USER' | 'ADMIN'
 }
 
 /**
@@ -15,7 +16,7 @@ export interface JWTPayload {
  * @param payload - Dati da includere nel token
  * @returns Promise con il token JWT come stringa
  */
-export async function signToken(payload: { userId: number; email: string }): Promise<string> {
+export async function signToken(payload: { userId: number; email: string; role: 'USER' | 'ADMIN' }): Promise<string> {
     const token = await new SignJWT(payload)
         .setProtectedHeader({ alg: 'HS256' })
         .setIssuedAt()
@@ -37,6 +38,7 @@ export async function verifyToken(token: string): Promise<JWTPayload | null> {
         return {
             userId: payload.userId as number,
             email: payload.email as string,
+            role: payload.role as 'USER' | 'ADMIN',
         }
     } catch (error) {
         console.error('❌ JWT verification failed:', error)

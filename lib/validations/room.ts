@@ -5,7 +5,8 @@ export const createRoomSchema = z.object({
     name: z.string().min(2, "Il nome della stanza deve contenere almeno 2 caratteri"),
     description: z.string().min(10, "La descrizione deve contenere almeno 10 caratteri"),
     capacity: z.coerce.number().int().positive("La capacità deve essere un numero intero positivo"),
-    pricePerNight: z.coerce.number().positive("Il prezzo per notte deve essere un numero positivo"),
+    price: z.coerce.number().positive("Il prezzo per notte deve essere un numero positivo"),
+    imageUrl: z.string().url("L'URL dell'immagine deve essere valido").optional(),
 });
 
 // Schema per aggiornamento di una camera (solo per Admin)
@@ -14,7 +15,8 @@ export const updateRoomSchema = z.object({
     name: z.string().min(2, "Il nome della stanza deve contenere almeno 2 caratteri").optional(),
     description: z.string().min(10, "La descrizione deve contenere almeno 10 caratteri").optional(),
     capacity: z.coerce.number().int().positive("La capacità deve essere un numero intero positivo").optional(),
-    pricePerNight: z.coerce.number().positive("Il prezzo per notte deve essere un numero positivo").optional(),
+    price: z.coerce.number().positive("Il prezzo per notte deve essere un numero positivo").optional(),
+    imageUrl: z.string().url("L'URL dell'immagine deve essere valido").optional(),
 });
 
 // Schema per i filtri di ricerca delle camere

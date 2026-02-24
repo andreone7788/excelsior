@@ -26,7 +26,7 @@ export default function LoginPage() {
         if (result.success) {
             router.push('/dashboard')
         } else {
-            setError(result.message || 'Errore sconosciuto durante il login')
+            setError(result.error || 'Errore sconosciuto durante il login')
             setLoading(false)
         }
     }

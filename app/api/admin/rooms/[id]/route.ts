@@ -1,0 +1,104 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma.client'
+import { verifyAdmin, handleAuthError } from '@/constants/utils'
+import { updateRoomSchema } from '@/lib/validations/room'
+import { z } from 'zod'
+
+/**
+ * PUT /api/admin/rooms/[id]
+ */
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+    try {
+        await verifyAdmin(request)
+
+        const roomId = parseInt(params.id)
+
+        if (isNaN(roomId)) {
+            return NextResponse.json({ error: 'ID stanza non valido' }, { status: 400 })
+        }
+
+        const body = await request.json()
+        const validatedData = updateRoomSchema.parse({ ...body, roomId })
+
+        console.log('Admin aggiorna camera:', validatedData)
+
+        const existingRoom = await prisma.room.findUnique({ where: { id: roomId } })
+
+        if (!existingRoom) {
+            return NextResponse.json({ error: 'Camera non trovata' }, { status: 404 })
+        }
+
+        const updatedRoom = await prisma.room.update({
+            where: { id: roomId },
+            data: {
+                name: validatedData.name ?? existingRoom.name,
+                description: validatedData.description ?? existingRoom.description,
+                price: validatedData.price ?? existingRoom.price,
+                capacity: validatedData.capacity ?? existingRoom.capacity,
+                imageUrl: validatedData.imageUrl ?? existingRoom.imageUrl,
+            }
+        })
+
+        console.log('Camera aggiornata:', updatedRoom)
+
+        return NextResponse.json({ room: updatedRoom }, { status: 200 })
+
+    } catch (error) {
+        console.error('Error updating room:', error)
+
+        if (error instanceof z.ZodError) {
+            return NextResponse.json(
+                {
+                    error: 'Dati non validi',
+                    details: error.issues.map(e => ({
+                        field: e.path.join('.'),
+                        message: e.message
+                    }))
+                },
+                { status: 400 }
+            )
+        }
+
+        const { error: message, status } = handleAuthError(error)
+        return NextResponse.json({ error: message }, { status })
+    }
+}
+
+/**
+ * DELETE /api/admin/rooms/[id]
+ */
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+    try {
+        await verifyAdmin(request)
+        const roomId = parseInt(params.id)
+
+        if (isNaN(roomId)) {
+            return NextResponse.json({ error: 'ID stanza non valido' }, { status: 400 })
+        }
+
+        const existingRoom = await prisma.room.findUnique({ 
+            where: { id: roomId },
+            include: { _count: { select: { bookings: true } } }
+        })
+
+        if (!existingRoom) {
+            return NextResponse.json({ error: 'Camera non trovata' }, { status: 404 })
+        }
+
+        if (existingRoom._count.bookings > 0) {
+            return NextResponse.json({ error: 'Impossibile eliminare la camera, ci sono prenotazioni attive', 
+                bookingsCount: existingRoom._count.bookings }, { status: 400 })
+        }
+
+        await prisma.room.delete({ where: { id: roomId } })
+
+        console.log('Camera eliminata:', roomId)
+
+        return NextResponse.json({ message: 'Camera eliminata con successo' }, { status: 200 })
+    } catch (error) {
+        console.error('Error deleting room:', error)
+
+        const { error: message, status } = handleAuthError(error)
+        return NextResponse.json({ error: message }, { status })
+    }
+}
