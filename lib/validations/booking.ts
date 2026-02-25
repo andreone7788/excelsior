@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 // Schema per creazione prenotazione
 export const createBookingSchema = z.object({
-    userId: z.coerce.number().int().positive("ID utente non valido"),
     roomId: z.coerce.number().int().positive("ID stanza non valido"),
     startDate: z.coerce.date().refine((d) => d > new Date(), "La data deve essere futura"),
     endDate: z.coerce.date(),

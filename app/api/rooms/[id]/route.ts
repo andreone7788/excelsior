@@ -5,9 +5,10 @@ import { prisma } from "@/lib/prisma.client";
  * GET /api/rooms/[id]
  * Dettaglio singola camera (PUBBLICO - nessuna autenticazione richiesta)
  */
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const roomId = parseInt(params.id);
+        const { id } = await params
+        const roomId = parseInt(id)
 
         if (isNaN(roomId)) {
             return NextResponse.json({ error: "Invalid room ID" }, { status: 400 });

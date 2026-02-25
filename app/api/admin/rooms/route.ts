@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma.client'
-import { verifyAdmin, handleAuthError } from '@/constants/utils'
+import { verifyAdmin, handleAuthError } from '@/lib/auth-helpers'
 import { createRoomSchema } from '@/lib/validations/room'
 import { z } from 'zod'
 

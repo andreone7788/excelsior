@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma.client'
-import { verifyAdmin, handleAuthError } from '@/constants/utils'
+import { verifyAdmin, handleAuthError } from '@/lib/auth-helpers'
 import { updateRoomSchema } from '@/lib/validations/room'
 import { z } from 'zod'
 
 /**
  * PUT /api/admin/rooms/[id]
  */
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         await verifyAdmin(request)
 
-        const roomId = parseInt(params.id)
+        const { id } = await params
+        const roomId = parseInt(id)
 
         if (isNaN(roomId)) {
             return NextResponse.json({ error: 'ID stanza non valido' }, { status: 400 })
@@ -67,10 +68,12 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 /**
  * DELETE /api/admin/rooms/[id]
  */
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         await verifyAdmin(request)
-        const roomId = parseInt(params.id)
+        
+        const { id } = await params
+        const roomId = parseInt(id)
 
         if (isNaN(roomId)) {
             return NextResponse.json({ error: 'ID stanza non valido' }, { status: 400 })
