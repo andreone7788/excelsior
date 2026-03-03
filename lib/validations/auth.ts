@@ -7,7 +7,7 @@ export const registerSchema = z.object({
     email: z.string().email("Indirizzo email non valido"),
     password: z.string().min(8, "La password deve contenere almeno 8 caratteri")
         .regex(/[A-Z]/, "Almeno una maiuscola")
-        .regex(/[a-z]/, "Almeno una minuscola") // ✅ Aggiunto
+        .regex(/[a-z]/, "Almeno una minuscola")
         .regex(/[0-9]/, "Almeno un numero")
         .regex(/[^A-Za-z0-9]/, "Almeno un carattere speciale"),
 });
@@ -18,18 +18,5 @@ export const loginSchema = z.object({
     password: z.string().min(1, "La password è obbligatoria"),
 });
 
-// Schema di validazione per la modifica del profilo utente
-export const updateProfileSchema = z.object({
-    name: z.string().min(2, "Il nome deve contenere almeno 2 caratteri").optional(),
-    surname: z.string().min(2, "Il cognome deve contenere almeno 2 caratteri").optional(),
-    email: z.string().email("Indirizzo email non valido").optional(),
-    password: z.string().min(8, "La password deve contenere almeno 8 caratteri")
-        .regex(/[A-Z]/, "Almeno una maiuscola")
-        .regex(/[a-z]/, "Almeno una minuscola") // ✅ Aggiunto
-        .regex(/[0-9]/, "Almeno un numero")
-        .regex(/[^A-Za-z0-9]/, "Almeno un carattere speciale").optional(),
-});
-
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
-export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;

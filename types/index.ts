@@ -1,5 +1,5 @@
 // Auth Types
-export type { RegisterInput, LoginInput, UpdateProfileInput } from "@/lib/validations/auth";
+export type { RegisterInput, LoginInput } from "@/lib/validations/auth";
 
 // Booking Types
 export type { CreateBookingInput, UpdateBookingStatusInput } from "@/lib/validations/booking";
@@ -11,7 +11,7 @@ export type { CreateRoomInput, UpdateRoomInput, RoomFiltersInput } from "@/lib/v
 export type { SendMessageInput, DeleteConversationInput } from "@/lib/validations/chat";
 
 // User Types
-export type { CreateUserInput, UpdateUserInput, DeleteUserInput } from "@/lib/validations/user";
+export type { CreateUserInput, UpdateUserInput, DeleteUserInput, UpdateProfileInput, UpdatePasswordInput } from "@/lib/validations/user";
 
 // Email Types
 export type EmailTemplate =
