@@ -5,6 +5,15 @@ import { handleAuthError } from '@/lib/auth-helpers'
 import { createBookingSchema } from '@/lib/validations/booking'
 import { sendBookingRequestToUser, sendBookingRequestToAdmin } from '@/lib/email/send'
 
+/** 
+ * POST: Crea una nuova prenotazione (solo utenti autenticati)
+ * - Verifica autenticazione
+ * - Valida input
+ * - Verifica disponibilità camera
+ * - Calcola prezzo totale
+ * - Crea prenotazione
+ */
+
 export async function POST(request: NextRequest) {
     try {
         // 1 Verifica autenticazione

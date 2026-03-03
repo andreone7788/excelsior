@@ -11,6 +11,7 @@ export const createBookingSchema = z.object({
 export const updateBookingStatusSchema = z.object({
     bookingId: z.coerce.number().int().positive(),
     status: z.enum(["PENDING", "CONFIRMED", "CANCELLED"]),
+    reason: z.string().optional()
 });
 
 export type CreateBookingInput = z.infer<typeof createBookingSchema>;
