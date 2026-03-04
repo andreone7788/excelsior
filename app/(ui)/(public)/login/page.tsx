@@ -24,7 +24,29 @@ export default function LoginPage() {
         const result = await loginAction(data)
 
         if (result.success) {
-            router.push('/dashboard')
+            // Dopo login, verifica il ruolo dell'utente per il redirect
+            try {
+                const profileRes = await fetch('/api/user/profile', {
+                    credentials: 'include'  // Include cookies
+                })
+
+                if (profileRes.ok) {
+                    const { user } = await profileRes.json()
+
+                    // Redirect in base al ruolo
+                    if (user.role === 'ADMIN') {
+                        router.push('/admin/dashboard')
+                    } else {
+                        router.push('/user/dashboard')
+                    }
+                } else {
+                    // Fallback se API fallisce
+                    router.push('/user/dashboard')
+                }
+            } catch (err) {
+                console.error('Errore nel caricamento del profilo:', err)
+                router.push('/user/dashboard')
+            }
         } else {
             setError(result.error || 'Errore sconosciuto durante il login')
             setLoading(false)

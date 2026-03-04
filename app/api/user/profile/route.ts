@@ -8,8 +8,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma.client';
-import { verifyToken } from '@/lib/jwt';
-import { handleAuthError } from '@/lib/auth-helpers';
+import { handleAuthError, verifyAuth } from '@/lib/auth-helpers';
 import { updateProfileSchema } from '@/lib/validations/user';
 
 /**
@@ -18,27 +17,18 @@ import { updateProfileSchema } from '@/lib/validations/user';
 export async function GET(request: NextRequest) {
     try {
         // 1 Verifica autenticazione
-        const token = request.cookies.get('token')?.value;
+        const { userId } = await verifyAuth(request)
 
-        if (!token) {
+        if (!userId) {
             return NextResponse.json(
                 { error: 'Autenticazione richiesta' },
                 { status: 401 }
             );
         }
 
-        const decoded = await verifyToken(token);
-
-        if (!decoded || !decoded.userId) {
-            return NextResponse.json(
-                { error: 'Token non valido' },
-                { status: 401 }
-            );
-        }
-
         // 2 Trova utente
         const user = await prisma.user.findUnique({
-            where: { id: decoded.userId },
+            where: { id: userId },
             select: {
                 id: true,
                 name: true,
@@ -88,20 +78,11 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
     try {
         // 1 Verifica autenticazione
-        const token = request.cookies.get('token')?.value;
+        const { userId } = await verifyAuth(request)
 
-        if (!token) {
+        if (!userId) {
             return NextResponse.json(
                 { error: 'Autenticazione richiesta' },
-                { status: 401 }
-            );
-        }
-
-        const decoded = await verifyToken(token);
-
-        if (!decoded || !decoded.userId) {
-            return NextResponse.json(
-                { error: 'Token non valido' },
                 { status: 401 }
             );
         }
@@ -117,7 +98,7 @@ export async function PUT(request: NextRequest) {
             const existingUser = await prisma.user.findFirst({
                 where: {
                     email,
-                    id: { not: decoded.userId } // Esclude l'utente corrente
+                    id: { not: userId } // Esclude l'utente corrente
                 },
             });
 
@@ -131,7 +112,7 @@ export async function PUT(request: NextRequest) {
 
         // 4 Aggiorna utente
         const updateUser = await prisma.user.update({
-            where: { id: decoded.userId },
+            where: { id: userId },
             data: {
                 ...(name && { name }),
                 ...(surname && { surname }),

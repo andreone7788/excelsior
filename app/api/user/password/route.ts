@@ -7,8 +7,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma.client';
-import { verifyToken } from '@/lib/jwt';
-import { handleAuthError } from '@/lib/auth-helpers';
+import { handleAuthError, verifyAuth } from '@/lib/auth-helpers';
 import { updatePasswordSchema } from '@/lib/validations/user';
 import bcrypt from 'bcrypt';
 
@@ -19,20 +18,11 @@ import bcrypt from 'bcrypt';
 export async function PUT(request: NextRequest) {
     try {
         // 1 Verifica autenticazione
-        const token = request.cookies.get('token')?.value;
+        const { userId } = await verifyAuth(request);
 
-        if (!token) {
+        if (!userId) {
             return NextResponse.json(
                 { error: 'Autenticazione richiesta' },
-                { status: 401 }
-            );
-        }
-
-        const decoded = await verifyToken(token);
-
-        if (!decoded || !decoded.userId) {
-            return NextResponse.json(
-                { error: 'Token non valido' },
                 { status: 401 }
             );
         }
@@ -45,7 +35,7 @@ export async function PUT(request: NextRequest) {
 
         // 3 Verifica password corrente
         const user = await prisma.user.findUnique({
-            where: { id: decoded.userId },
+            where: { id: userId },
             select: { id: true, password: true },
         })
 
@@ -70,7 +60,7 @@ export async function PUT(request: NextRequest) {
 
         // 4 Aggiorna password
         await prisma.user.update({
-            where: { id: decoded.userId },
+            where: { id: userId },
             data: { password: hashedNewPassword },
         });
 

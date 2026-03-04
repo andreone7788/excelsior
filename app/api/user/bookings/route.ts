@@ -8,8 +8,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma.client'
-import { verifyToken } from '@/lib/jwt'
-import { handleAuthError } from '@/lib/auth-helpers'
+import { handleAuthError, verifyAuth } from '@/lib/auth-helpers'
 import type { Prisma } from '@prisma/client'
 
 /**
@@ -19,26 +18,15 @@ import type { Prisma } from '@prisma/client'
 export async function GET(request: NextRequest) {
     try {
         // 1 Verifica autenticazione
-        const token = request.cookies.get('token')?.value
+        const { userId } = await verifyAuth(request)
 
-        if (!token) {
+        if (!userId) {
             return NextResponse.json(
                 { error: 'Autenticazione richiesta' },
                 { status: 401 }
             )
         }
-
-        const decoded = await verifyToken(token)
-
-        if (!decoded || !decoded.userId) {
-            return NextResponse.json(
-                { error: 'Token non valido' },
-                { status: 401 }
-            )
-        }
-
-        const userId = decoded.userId
-
+        
         // 2 Query params per filtro prenotazioni
         const { searchParams } = new URL(request.url)
         const status = searchParams.get('status')
