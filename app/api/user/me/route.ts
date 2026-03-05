@@ -1,25 +1,35 @@
-import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
-import { verifyToken } from '@/lib/jwt'
+/**
+ * ==============================================
+ * 👤 USER ME - UTENTE CORRENTE
+ * ==============================================
+ * GET /api/user/me → Dati utente loggato
+ * ==============================================
+ */
+
+import { NextRequest, NextResponse } from 'next/server'
+import { verifyAuth, handleAuthError } from '@/lib/auth-helpers'
 import { prisma } from '@/lib/prisma.client'
 
-export async function GET() {
+/**
+ * GET - Dati utente corrente
+ * Usato da: useUser hook, navbar, dashboard
+ */
+
+export async function GET(request: NextRequest) {
     try {
-        const cookieStore = await cookies()
-        const token = cookieStore.get('auth_token')?.value
+        // 1 - Verifica autenticazione e ottieni userId
+        const { userId } = await verifyAuth(request)
 
-        if (!token) {
-            return NextResponse.json({ error: 'Non autenticato' }, { status: 401 })
+        if (!userId || userId <= 0) {
+            return NextResponse.json(
+                { error: 'Autenticazione richiesta' }, 
+                { status: 401 }
+            );
         }
 
-        const payload = await verifyToken(token)
-
-        if (!payload) {
-            return NextResponse.json({ error: 'Token non valido' }, { status: 401 })
-        }
-
+        // 2 - Recupera dati utente da DB (escludendo password)
         const user = await prisma.user.findUnique({
-            where: { id: payload.userId },
+            where: { id: userId },
             select: {
                 id: true,
                 name: true,
@@ -33,10 +43,10 @@ export async function GET() {
             return NextResponse.json({ error: 'Utente non trovato' }, { status: 404 })
         }
 
-        // 🔧 RITORNA user direttamente, NON { user: user }
+        // 3 - Restituisci dati utente al client (escludendo password)
         return NextResponse.json(user)
     } catch (error) {
-        console.error('Errore API /user/me:', error)
-        return NextResponse.json({ error: 'Errore server' }, { status: 500 })
+        console.error('Error fetching user data:', error)
+        return handleAuthError(error);
     }
 }

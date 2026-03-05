@@ -10,7 +10,7 @@ import { z } from 'zod'
  */
 export async function GET(request: NextRequest) {
     try {
-        await verifyAdmin(request)
+        const adminUserId = await verifyAdmin(request)
 
         const rooms = await prisma.room.findMany({
             orderBy: { createdAt: 'desc' },
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
             }
         })
 
-        console.log('Rooms fetched:', rooms.length)
+        console.log(`Admin (ID: ${adminUserId}) ha visualizzato la lista delle camere. Camere trovate: ${rooms.length}`)
 
         return NextResponse.json({ rooms }, { status: 200 })
     } catch (error) {
@@ -36,12 +36,12 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
     try {
-        await verifyAdmin(request)
+        const adminUserId = await verifyAdmin(request)
 
         const body = await request.json()
         const validatedData = createRoomSchema.parse(body)
 
-        console.log('Admin crea camera:', validatedData)
+        console.log(`Admin (ID: ${adminUserId}) crea una nuova camera:`, validatedData)
 
         const room = await prisma.room.create({
             data: {
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
             }
         })
 
-        console.log('Camera creata:', room)
+        console.log(`Admin (ID: ${adminUserId}) ha creato una nuova camera:`, room)
 
         return NextResponse.json({ room }, { status: 201 })
 

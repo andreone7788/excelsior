@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
         // 1 Verifica autenticazione
         const { userId } = await verifyAuth(request)
 
-        if (!userId) {
+        if (!userId || userId <= 0) {
             return NextResponse.json(
                 { error: 'Autenticazione richiesta' },
                 { status: 401 }
@@ -67,6 +67,7 @@ export async function GET(request: NextRequest) {
         }, { status: 200 });
 
     } catch (error) {
+        console.error('Errore GET /api/user/profile:', error);
         return handleAuthError(error);
     }
 }

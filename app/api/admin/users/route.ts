@@ -8,7 +8,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma.client';
-import { verifyToken } from '@/lib/jwt';
 import { verifyAdmin, handleAuthError } from '@/lib/auth-helpers';
 import { Prisma } from '@prisma/client';
 
@@ -20,27 +19,8 @@ import { Prisma } from '@prisma/client';
  */
 export async function GET(request: NextRequest) {
     try {
-        // 1 - Verifica autenticazione e autorizzazione
-        const token = request.cookies.get('token')?.value;
-
-        if (!token) {
-            return NextResponse.json(
-                { error: 'Unauthorized' }, 
-                { status: 401 }
-            );
-        }
-
-        const decoded = await verifyToken(token);
-
-        if (!decoded || !decoded.userId) {
-            return NextResponse.json(
-                { error: 'Token non valido' }, 
-                { status: 401 }
-            );
-        }
-
-        // Verifica ruolo admin
-        await verifyAdmin(request);
+        // 1 - Verifica ruolo admin
+        const adminUserId = await verifyAdmin(request);
 
         // 2 - Estrai query params
         const { searchParams } = new URL(request.url);
@@ -100,7 +80,7 @@ export async function GET(request: NextRequest) {
             }
         }));
 
-        console.log('Utenti recuperati:', formattedUsers.length);
+        console.log(`Admin (ID: ${adminUserId}) ha visualizzato la lista degli utenti. Utenti trovati: ${formattedUsers.length}`);
 
         return NextResponse.json(formattedUsers);
     } catch (error) {

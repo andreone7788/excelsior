@@ -8,7 +8,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma.client'
-import { verifyToken } from '@/lib/jwt'
+import { verifyAuth, handleAuthError } from '@/lib/auth-helpers'
 
 /**
  * GET - Dettaglio prenotazione
@@ -17,32 +17,13 @@ import { verifyToken } from '@/lib/jwt'
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
     try {
         // 1 Verifica autenticazione
-        const token = request.cookies.get('token')?.value
-
-        if (!token) {
-            return NextResponse.json(
-                { error: 'Autenticazione richiesta' },
-                { status: 401 }
-            )
-        }
-
-        const decoded = await verifyToken(token)
-
-        if (!decoded || !decoded.userId) {
-            return NextResponse.json(
-                { error: 'Token non valido' },
-                { status: 401 }
-            )
-        }
-
-        const userId = decoded.userId
-        const userRole = decoded.role
+        const { userId, role } = await verifyAuth(request)
 
         // 2 Ottieni ID prenotazione
         const { id } = await params
         const bookingId = parseInt(id)
 
-        if (isNaN(bookingId)) {
+        if (isNaN(bookingId) || bookingId <= 0) {
             return NextResponse.json(
                 { error: 'ID prenotazione non valido' },
                 { status: 400 }
@@ -73,7 +54,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         }
 
         // 4 verifica permessi (solo owner o admin)
-        if (booking.userId !== userId && userRole !== 'ADMIN') {
+        if (booking.userId !== userId && role !== 'ADMIN') {
             return NextResponse.json(
                 { error: 'Permessi insufficienti' },
                 { status: 403 }
@@ -97,9 +78,6 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
     } catch (error) {
         console.error('Errore nel dettaglio prenotazione:', error)
-        return NextResponse.json(
-            { error: 'Errore interno del server' },
-            { status: 500 }
-        )
+        return handleAuthError(error)
     }
 }

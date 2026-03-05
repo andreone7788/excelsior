@@ -20,13 +20,13 @@ import { sendBookingConfirmed, sendBookingRejected } from '@/lib/email/send'
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         // 1 Verifica autenticazione e autorizzazione admin
-        await verifyAdmin(request)
+        const adminUserId = await verifyAdmin(request)
 
         // 2 Ottieni ID prenotazione da params
         const { id } = await params
         const bookingId = parseInt(id)
 
-        if (isNaN(bookingId)) {
+        if (isNaN(bookingId) || bookingId <= 0) {
             return NextResponse.json({ error: 'ID prenotazione non valido' }, { status: 400 })
         }
 
@@ -83,7 +83,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
             }
         })
 
-        console.log(`Prenotazione ${bookingId} aggiornata a ${status}`)
+        console.log(`Admin (ID: ${adminUserId}) ha aggiornato la prenotazione ${bookingId} a ${status}`)
 
         // 6 Formatta date per email
         const formatDate = (date: Date) => {
@@ -153,7 +153,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         // 1 Verifica autenticazione e autorizzazione admin
-        await verifyAdmin(request)
+        const adminUserId = await verifyAdmin(request)
 
         // 2 Ottieni ID prenotazione da params
         const { id } = await params
@@ -183,7 +183,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
             where: { id: bookingId }
         })
 
-        console.log(`Prenotazione ${bookingId} eliminata`)
+        console.log(`Admin (ID: ${adminUserId}) ha eliminato la prenotazione ${bookingId}`)
 
         return NextResponse.json(
             { message: 'Prenotazione eliminata con successo' },

@@ -10,7 +10,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         const { id } = await params
         const roomId = parseInt(id)
 
-        if (isNaN(roomId)) {
+        if (isNaN(roomId) || roomId <= 0) {
             return NextResponse.json({ error: "Invalid room ID" }, { status: 400 });
         }
 

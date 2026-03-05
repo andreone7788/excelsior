@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
         // 1 Verifica autenticazione
         const { userId } = await verifyAuth(request)
 
-        if (!userId) {
+        if (!userId || userId <= 0) {
             return NextResponse.json(
                 { error: 'Autenticazione richiesta' },
                 { status: 401 }

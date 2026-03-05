@@ -9,19 +9,19 @@ import { z } from 'zod'
  */
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        await verifyAdmin(request)
+        const adminUserId = await verifyAdmin(request)
 
         const { id } = await params
         const roomId = parseInt(id)
 
-        if (isNaN(roomId)) {
+        if (isNaN(roomId) || roomId <= 0) {
             return NextResponse.json({ error: 'ID stanza non valido' }, { status: 400 })
         }
 
         const body = await request.json()
         const validatedData = updateRoomSchema.parse({ ...body, roomId })
 
-        console.log('Admin aggiorna camera:', validatedData)
+        console.log(`Admin (ID: ${adminUserId}) aggiorna la camera ${roomId}:`, validatedData)
 
         const existingRoom = await prisma.room.findUnique({ where: { id: roomId } })
 
@@ -40,7 +40,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
             }
         })
 
-        console.log('Camera aggiornata:', updatedRoom)
+        console.log(`Admin (ID: ${adminUserId}) ha aggiornato la camera ${roomId}:`, updatedRoom)
 
         return NextResponse.json({ room: updatedRoom }, { status: 200 })
 
@@ -70,7 +70,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
  */
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
-        await verifyAdmin(request)
+        const adminUserId = await verifyAdmin(request)
         
         const { id } = await params
         const roomId = parseInt(id)
@@ -95,7 +95,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
         await prisma.room.delete({ where: { id: roomId } })
 
-        console.log('Camera eliminata:', roomId)
+        console.log(`Admin (ID: ${adminUserId}) ha eliminato la camera ${roomId}`)
 
         return NextResponse.json({ message: 'Camera eliminata con successo' }, { status: 200 })
     } catch (error) {

@@ -18,7 +18,7 @@ import type { Prisma } from '@prisma/client'
 export async function GET(request: NextRequest) {
     try {
         // 1 Verifica autenticazione e autorizzazione admin
-        await verifyAdmin(request)
+        const adminUserId = await verifyAdmin(request)
 
         // 2 Query params per filtro prenotazioni
         const { searchParams } = new URL(request.url)
@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
             cancelled: bookingWithDetails.filter(b => b.status === 'CANCELLED').length
         }
 
-        console.log(`Prenotazioni trovate: ${bookingWithDetails.length}, Stats:`, stats)
+        console.log(`Admin (ID: ${adminUserId}) ha visualizzato la lista delle prenotazioni. Prenotazioni trovate: ${bookingWithDetails.length}, Stats:`, stats)
 
         return NextResponse.json({ bookings: bookingWithDetails, stats })
     } catch (error) {
