@@ -82,8 +82,10 @@ export async function GET(request: NextRequest) {
 
         console.log(`Admin (ID: ${adminUserId}) ha visualizzato la lista degli utenti. Utenti trovati: ${formattedUsers.length}`);
 
-        return NextResponse.json(formattedUsers);
+        return NextResponse.json({ users: formattedUsers }, { status: 200 });
+        
     } catch (error) {
-        return handleAuthError(error);
+        const { error: errorMessage, status } = handleAuthError(error);
+        return NextResponse.json({ error: errorMessage }, { status });
     }
 }

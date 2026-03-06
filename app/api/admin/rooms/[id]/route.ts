@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma.client'
 import { verifyAdmin, handleAuthError } from '@/lib/auth-helpers'
 import { updateRoomSchema } from '@/lib/validations/room'
-import { z } from 'zod'
 
 /**
  * PUT /api/admin/rooms/[id]
@@ -45,21 +44,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         return NextResponse.json({ room: updatedRoom }, { status: 200 })
 
     } catch (error) {
-        console.error('Error updating room:', error)
-
-        if (error instanceof z.ZodError) {
-            return NextResponse.json(
-                {
-                    error: 'Dati non validi',
-                    details: error.issues.map(e => ({
-                        field: e.path.join('.'),
-                        message: e.message
-                    }))
-                },
-                { status: 400 }
-            )
-        }
-
         const { error: message, status } = handleAuthError(error)
         return NextResponse.json({ error: message }, { status })
     }
@@ -98,9 +82,8 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
         console.log(`Admin (ID: ${adminUserId}) ha eliminato la camera ${roomId}`)
 
         return NextResponse.json({ message: 'Camera eliminata con successo' }, { status: 200 })
+        
     } catch (error) {
-        console.error('Error deleting room:', error)
-
         const { error: message, status } = handleAuthError(error)
         return NextResponse.json({ error: message }, { status })
     }

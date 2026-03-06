@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma.client";
+import { handleAuthError } from "@/lib/auth-helpers";
 
 /**
  * GET /api/rooms/[id]
@@ -41,10 +42,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
         console.log("Room details:", room); // Log dettagli camera
 
-        return NextResponse.json({room}, { status: 200 });
+        return NextResponse.json({ room }, { status: 200 });
 
     } catch (error) {
-        console.error("Error fetching room details:", error);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        const { error: errorMessage, status } = handleAuthError(error);
+        return NextResponse.json({ error: errorMessage }, { status });
     }
 }

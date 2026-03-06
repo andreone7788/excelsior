@@ -67,8 +67,8 @@ export async function GET(request: NextRequest) {
         }, { status: 200 });
 
     } catch (error) {
-        console.error('Errore GET /api/user/profile:', error);
-        return handleAuthError(error);
+        const { error: errorMessage, status } = handleAuthError(error);
+        return NextResponse.json({ error: errorMessage }, { status });
     }
 }
 
@@ -137,6 +137,7 @@ export async function PUT(request: NextRequest) {
         }, { status: 200 });
 
     } catch (error) {
-        return handleAuthError(error);
+        const { error: errorMessage, status } = handleAuthError(error);
+        return NextResponse.json({ error: errorMessage }, { status });
     }
 }

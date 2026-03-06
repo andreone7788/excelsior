@@ -142,8 +142,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         }, { status: 200 })
 
     } catch (error) {
-        console.error('Errore durante l\'aggiornamento della prenotazione:', error)
-        return handleAuthError(error)
+        const { error: errorMessage, status } = handleAuthError(error);
+        return NextResponse.json({ error: errorMessage }, { status });
     }
 }
 
@@ -190,7 +190,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
             { status: 200 }
         )
     } catch (error) {
-        console.error('Errore durante l\'eliminazione della prenotazione:', error)
-        return handleAuthError(error)
+        const { error: errorMessage, status } = handleAuthError(error);
+        return NextResponse.json({ error: errorMessage }, { status });
     }
 }

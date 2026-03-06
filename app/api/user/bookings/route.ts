@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
         }, { status: 200 })
 
     } catch (error) {
-        console.error('Errore nel recupero prenotazioni utente:', error)
-        return handleAuthError(error)
+        const { error: errorMessage, status } = handleAuthError(error);
+        return NextResponse.json({ error: errorMessage }, { status });
     }
 }

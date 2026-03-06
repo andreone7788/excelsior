@@ -77,7 +77,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         }, { status: 200 })
 
     } catch (error) {
-        console.error('Errore nel dettaglio prenotazione:', error)
-        return handleAuthError(error)
+        const { error: errorMessage, status } = handleAuthError(error);
+        return NextResponse.json({ error: errorMessage }, { status });
     }
 }

@@ -70,6 +70,7 @@ export async function PUT(request: NextRequest) {
         );
 
     } catch (error) {
-        return handleAuthError(error);
+        const { error: errorMessage, status } = handleAuthError(error);
+        return NextResponse.json({ error: errorMessage }, { status });
     }
 }

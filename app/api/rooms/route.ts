@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma.client";
 import type { Prisma } from "@prisma/client";
 import { roomFiltersSchema } from "@/lib/validations/room";
+import { handleAuthError } from "@/lib/auth-helpers";
 
 /**
  * GET /api/rooms
@@ -81,8 +82,9 @@ export async function GET(request: NextRequest) {
             rooms,
             count: rooms.length
         }, { status: 200 });
+
     } catch (error) {
-        console.error("Error fetching rooms:", error);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        const { error: errorMessage, status } = handleAuthError(error);
+        return NextResponse.json({ error: errorMessage }, { status });
     }
 }

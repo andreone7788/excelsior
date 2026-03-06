@@ -31,7 +31,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
         if (isNaN(userId) || userId <= 0) {
             return NextResponse.json(
-                { error: 'ID utente non valido' }, 
+                { error: 'ID utente non valido' },
                 { status: 400 }
             );
         }
@@ -86,7 +86,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
         if (!user) {
             return NextResponse.json(
-                { error: 'Utente non trovato' }, 
+                { error: 'Utente non trovato' },
                 { status: 404 }
             );
         }
@@ -97,7 +97,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         return NextResponse.json({ user }, { status: 200 });
 
     } catch (error) {
-        return handleAuthError(error);
+        const { error: errorMessage, status } = handleAuthError(error);
+        return NextResponse.json({ error: errorMessage }, { status });
     }
 }
 
@@ -109,14 +110,14 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     try {
         // 1 - Verifica ruolo admin
         const adminUserId = await verifyAdmin(request);
-        
+
         // 2 - Estrai ID utente da params
         const { id } = await params;
         const userId = parseInt(id);
 
         if (isNaN(userId) || userId <= 0) {
             return NextResponse.json(
-                { error: 'ID utente non valido' }, 
+                { error: 'ID utente non valido' },
                 { status: 400 }
             );
         }
@@ -128,67 +129,68 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         const { name, surname, email, role } = validateData;
 
         // 4 - Verifica esistenza utente
-        const existingUser = await prisma.user.findUnique({ 
-            where: { id: userId } 
+        const existingUser = await prisma.user.findUnique({
+            where: { id: userId }
         });
 
         if (!existingUser) {
             return NextResponse.json(
-                { error: 'Utente non trovato' }, 
+                { error: 'Utente non trovato' },
                 { status: 404 }
             );
         }
 
-            // 5 - Se cambia mail, verifica unicità
-            if (email && email !== existingUser.email) {
-                const emailExists = await prisma.user.findFirst({
-                    where: {
-                        email,
-                        id: { not: userId } // Esclude l'utente corrente
-                    }
-                });
-    
-                if (emailExists) {
-                    return NextResponse.json(
-                        { error: 'Email già in uso' }, 
-                        { status: 409 }
-                    );
-                }
-            }
-
-            // 6 - Update utente (solo campi forniti)
-            const updateData: Prisma.UserUpdateInput = {};
-            if (name !== undefined) updateData.name = name;
-            if (surname !== undefined) updateData.surname = surname;
-            if (email !== undefined) updateData.email = email;
-            if (role !== undefined) updateData.role = role;
-
-            const updatedUser = await prisma.user.update({
-                where: { id: userId },
-                data: updateData,
-                select: {
-                    id: true,
-                    name: true,
-                    surname: true,
-                    email: true,
-                    role: true,
-                    updatedAt: true,
+        // 5 - Se cambia mail, verifica unicità
+        if (email && email !== existingUser.email) {
+            const emailExists = await prisma.user.findFirst({
+                where: {
+                    email,
+                    id: { not: userId } // Esclude l'utente corrente
                 }
             });
 
-            console.log(`Admin (ID: ${adminUserId}) ha modificato l'utente ID: ${userId}`);
-
-            // 7 - Risposta
-            return NextResponse.json({ user: updatedUser }, { status: 200 });
-
-        } catch (error) {
-            return handleAuthError(error);
+            if (emailExists) {
+                return NextResponse.json(
+                    { error: 'Email già in uso' },
+                    { status: 409 }
+                );
+            }
         }
-    }
 
-    /**
- * DELETE - Elimina utente
- */
+        // 6 - Update utente (solo campi forniti)
+        const updateData: Prisma.UserUpdateInput = {};
+        if (name !== undefined) updateData.name = name;
+        if (surname !== undefined) updateData.surname = surname;
+        if (email !== undefined) updateData.email = email;
+        if (role !== undefined) updateData.role = role;
+
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: updateData,
+            select: {
+                id: true,
+                name: true,
+                surname: true,
+                email: true,
+                role: true,
+                updatedAt: true,
+            }
+        });
+
+        console.log(`Admin (ID: ${adminUserId}) ha modificato l'utente ID: ${userId}`);
+
+        // 7 - Risposta
+        return NextResponse.json({ user: updatedUser }, { status: 200 });
+
+    } catch (error) {
+        const { error: errorMessage, status } = handleAuthError(error);
+        return NextResponse.json({ error: errorMessage }, { status });
+    }
+}
+
+/**
+* DELETE - Elimina utente
+*/
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         // 1 - Verifica ruolo admin
@@ -200,7 +202,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
         if (isNaN(userId) || userId <= 0) {
             return NextResponse.json(
-                { error: 'ID utente non valido' }, 
+                { error: 'ID utente non valido' },
                 { status: 400 }
             );
         }
@@ -212,13 +214,13 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
         const { userId: validatedUserId } = validateData;
 
         // 3 - Verifica esistenza utente
-        const existingUser = await prisma.user.findUnique({ 
-            where: { id: validatedUserId } 
+        const existingUser = await prisma.user.findUnique({
+            where: { id: validatedUserId }
         });
 
         if (!existingUser) {
             return NextResponse.json(
-                { error: 'Utente non trovato' }, 
+                { error: 'Utente non trovato' },
                 { status: 404 }
             );
         }
@@ -234,6 +236,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
         return NextResponse.json({ message: 'Utente eliminato con successo' }, { status: 200 });
 
     } catch (error) {
-        return handleAuthError(error);
+        const { error: errorMessage, status } = handleAuthError(error);
+        return NextResponse.json({ error: errorMessage }, { status });
     }
 }

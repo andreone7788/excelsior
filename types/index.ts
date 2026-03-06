@@ -8,7 +8,7 @@ export type { CreateBookingInput, UpdateBookingStatusInput } from "@/lib/validat
 export type { CreateRoomInput, UpdateRoomInput, RoomFiltersInput } from "@/lib/validations/room";
 
 // Chat Types
-export type { SendMessageInput, DeleteConversationInput } from "@/lib/validations/chat";
+export type { SendMessageInput, DeleteConversationInput, AdminReplyInput } from "@/lib/validations/chat";
 
 // User Types
 export type { CreateUserInput, UpdateUserInput, DeleteUserInput, UpdateProfileInput, UpdatePasswordInput } from "@/lib/validations/user";

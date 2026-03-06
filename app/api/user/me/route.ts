@@ -45,8 +45,9 @@ export async function GET(request: NextRequest) {
 
         // 3 - Restituisci dati utente al client (escludendo password)
         return NextResponse.json(user)
+        
     } catch (error) {
-        console.error('Error fetching user data:', error)
-        return handleAuthError(error);
+        const { error: errorMessage, status } = handleAuthError(error);
+        return NextResponse.json({ error: errorMessage }, { status });
     }
 }

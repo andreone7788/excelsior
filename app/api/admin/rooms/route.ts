@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma.client'
 import { verifyAdmin, handleAuthError } from '@/lib/auth-helpers'
 import { createRoomSchema } from '@/lib/validations/room'
-import { z } from 'zod'
 
 /**
  * GET /api/admin/rooms
@@ -24,6 +23,7 @@ export async function GET(request: NextRequest) {
         console.log(`Admin (ID: ${adminUserId}) ha visualizzato la lista delle camere. Camere trovate: ${rooms.length}`)
 
         return NextResponse.json({ rooms }, { status: 200 })
+        
     } catch (error) {
         const { error: message, status } = handleAuthError(error)
         return NextResponse.json({ error: message }, { status })
@@ -58,22 +58,6 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ room }, { status: 201 })
 
     } catch (error) {
-        console.error('Error creating room:', error)
-
-        if (error instanceof z.ZodError) {
-            return NextResponse.json(
-                {
-                    error: 'Dati non validi',
-                    details: error.issues.map(e => ({
-                        field: e.path.join('.'),
-                        message: e.message
-                    }))
-                },
-                { status: 400 }
-            )
-        }
-
-        // Errori autenticazione
         const { error: message, status } = handleAuthError(error)
         return NextResponse.json({ error: message }, { status })
     }
