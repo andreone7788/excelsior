@@ -13,7 +13,7 @@ import { verifyAuth, handleAuthError } from '@/lib/auth-helpers';
 /**
  * GET - Lista conversazioni dell'utente
  */
-export async function GET (request: NextRequest) {
+export async function GET(request: NextRequest) {
     try {
         // Verifica autenticazione
         const { userId } = await verifyAuth(request);
@@ -27,6 +27,7 @@ export async function GET (request: NextRequest) {
                     select: {
                         content: true,
                         createdAt: true,
+                        role: true,
                     },
                 },
                 _count: {
@@ -42,11 +43,15 @@ export async function GET (request: NextRequest) {
             createdAt: conv.createdAt,
             updatedAt: conv.updatedAt,
             messageCount: conv._count.messages,
-            lastMessage: conv.messages[0] ? conv.messages[0] : null
-    }))
+            lastMessage: conv.messages[0] ? {
+                content: conv.messages[0].content,
+                role: conv.messages[0].role,
+                createdAt: conv.messages[0].createdAt
+            } : null
+        }))
 
-        return NextResponse.json({ 
-            conversations: formattedConversations 
+        return NextResponse.json({
+            conversations: formattedConversations
         }, { status: 200 });
 
     } catch (error) {
@@ -59,7 +64,7 @@ export async function GET (request: NextRequest) {
  * POST - Crea nuova conversazione
  * (Opzionale: può essere creata automaticamente al primo messaggio)
  */
-export async function POST (request: NextRequest) {
+export async function POST(request: NextRequest) {
     try {
         // Verifica autenticazione
         const { userId } = await verifyAuth(request);
@@ -70,9 +75,9 @@ export async function POST (request: NextRequest) {
         });
 
         if (existingConversation) {
-            return NextResponse.json({ 
-                conversationId: existingConversation.id, 
-                message: 'Conversazione già esistente' 
+            return NextResponse.json({
+                conversationId: existingConversation.id,
+                message: 'Conversazione già esistente'
             }, { status: 200 });
         }
 
@@ -83,10 +88,11 @@ export async function POST (request: NextRequest) {
 
         console.log(`Nuova conversazione creata per utente ${userId} con ID ${newConversation.id}`);
 
-        return NextResponse.json({ 
-            conversationId: newConversation.id, 
-            message: 'Nuova conversazione creata' 
+        return NextResponse.json({
+            conversationId: newConversation.id,
+            message: 'Nuova conversazione creata'
         }, { status: 201 });
+
     } catch (error) {
         const { error: errorMessage, status } = handleAuthError(error);
         return NextResponse.json({ error: errorMessage }, { status });
