@@ -4,6 +4,53 @@ import { verifyAdmin, handleAuthError } from '@/lib/auth-helpers'
 import { updateRoomSchema } from '@/lib/validations/room'
 
 /**
+ * GET /api/admin/rooms/[id] - Dettagli camera (SOLO ADMIN)
+ */
+
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    try {
+        // 1 Verifica autenticazione e autorizzazione admin
+        const adminUserId = await verifyAdmin(request)
+
+        // 2 Ottieni ID camera da params
+        const { id } = await params
+        const roomId = parseInt(id)
+
+        if (isNaN(roomId) || roomId <= 0) {
+            return NextResponse.json(
+                { error: 'ID stanza non valido' },
+                { status: 400 }
+            )
+        }
+
+        // 3 Trova camera
+        const room = await prisma.room.findUnique({
+            where: { id: roomId },
+            include: {
+                _count: {
+                    select: { bookings: true }
+                }
+            }
+        })
+
+        if (!room) {
+            return NextResponse.json(
+                { error: 'Camera non trovata' },
+                { status: 404 }
+            )
+        }
+
+        console.log(`Admin (ID: ${adminUserId}) ha visualizzato i dettagli della camera ${roomId}:`, room)
+
+        return NextResponse.json({ room }, { status: 200 })
+
+    } catch (error) {
+        const { error: message, status } = handleAuthError(error)
+        return NextResponse.json({ error: message }, { status })
+    }
+}
+
+/**
  * PUT /api/admin/rooms/[id]
  */
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {

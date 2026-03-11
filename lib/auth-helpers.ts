@@ -13,7 +13,7 @@ import { verifyToken } from '@/lib/jwt'
  * @returns userId dell'admin autenticato
  */
 export async function verifyAdmin(request: NextRequest): Promise<number> {
-    const token = request.cookies.get('token')?.value
+    const token = request.cookies.get('auth_token')?.value
 
     if (!token) {
         throw new Error('NON_AUTENTICATO')
@@ -43,7 +43,7 @@ export async function verifyAdmin(request: NextRequest): Promise<number> {
  * @returns userId e role dell'utente autenticato
  */
 export async function verifyAuth(request: NextRequest): Promise<{ userId: number, role: 'USER' | 'ADMIN' }> {
-    const token = request.cookies.get('token')?.value
+    const token = request.cookies.get('auth_token')?.value
 
     if (!token) {
         throw new Error('NON_AUTENTICATO')

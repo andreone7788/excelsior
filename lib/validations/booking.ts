@@ -9,7 +9,7 @@ export const createBookingSchema = z.object({
 
 // Schema per aggiornamento prenotazione (solo per Admin)
 export const updateBookingStatusSchema = z.object({
-    bookingId: z.coerce.number().int().positive(),
+    bookingId: z.coerce.number().int().positive().optional(),
     status: z.enum(["PENDING", "CONFIRMED", "CANCELLED"]),
     reason: z.string().optional()
 });
