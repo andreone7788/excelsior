@@ -3,13 +3,13 @@
  * ADMIN - GESTIONE CONVERSAZIONE SINGOLA
  * ==============================================
  * GET  /api/admin/conversations/:id → Dettaglio + messaggi
- * POST /api/admin/conversations/:id → Admin risponde
+ * PUT  /api/admin/conversations/:id → Admin risponde
  * ==============================================
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma.client';
 import { verifyAdmin, handleAuthError } from '@/lib/auth-helpers';
-import { adminReplySchema } from '@/lib/validations/chat';
+import { updateConversationStatusSchema } from '@/lib/validations/conversation';
 
 /**
  * GET - Dettaglio conversazione (admin)
@@ -42,12 +42,19 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
                 },
                 messages: {
                     orderBy: { createdAt: 'asc' },
-                    select: {
-                        id: true,
-                        content: true,
-                        role: true,
-                        createdAt: true,
-                    }
+                    include: {
+                        sender: {
+                            select: {
+                                id: true,
+                                name: true,
+                                surname: true,
+                                role: true,
+                            }
+                        },
+                    },
+                },
+                _count: {
+                    select: { messages: true }
                 },
             },
         });
@@ -59,7 +66,17 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             );
         }
 
-        console.log(`💬 Admin (ID: ${adminUserId}) ha visualizzato conversazione ID: ${conversationId}`)
+        // Segna tutti i messaggi come letti
+        await prisma.message.updateMany({
+            where: {
+                conversationId,
+                senderId: { not: conversation.userId }, // Solo messaggi non inviati dall'utente
+                isRead: false,
+            },
+            data: { isRead: true },
+        });
+
+        console.log(`💬 Admin (ID: ${adminUserId}) ha visualizzato conversazione ID: ${conversationId}`);
 
         return NextResponse.json({
             conversation
@@ -72,9 +89,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 }
 
 /**
- * POST - Admin risponde nella conversazione
+ * PUT - Admin risponde nella conversazione
  */
-export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         // Verifica autenticazione e ruolo admin
         const adminUserId = await verifyAdmin(request);
@@ -88,14 +105,38 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             );
         }
 
+        const existing = await prisma.conversation.findUnique({
+            where: { id: conversationId },
+        });
+
+        if (!existing) {
+            return NextResponse.json(
+                { error: 'Conversazione non trovata' },
+                { status: 404 }
+            );
+        }
+
         // Validazione input
         const body = await request.json();
-        const { content } = adminReplySchema.parse(body);
+        const { status } = updateConversationStatusSchema.parse(body);
 
         // Verifica se la conversazione esiste
-        const conversation = await prisma.conversation.findUnique({
+        const conversation = await prisma.conversation.update({
             where: { id: conversationId },
-            select: { id: true, userId: true }
+            data: { status },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        surname: true,
+                        email: true,
+                    }
+                },
+                _count: {
+                    select: { messages: true }
+                },
+            },
         });
 
         if (!conversation) {
@@ -105,35 +146,52 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             );
         }
 
-        // Crea nuovo messaggio con ruolo ADMIN
-        const newMessage = await prisma.message.create({
-            data: {
-                conversationId,
-                content,
-                role: 'SYSTEM', // Usa 'SYSTEM' o 'ADMIN' a seconda di come hai definito i ruoli
-            },
-            select: {
-                id: true,
-                content: true,
-                role: true,
-                createdAt: true,
-            }
-        });
-
-        // Aggiorna updatedAt della conversazione
-        await prisma.conversation.update({
-            where: { id: conversationId },
-            data: {
-                updatedAt: new Date(),
-            }
-        });
-
-        console.log(`Admin ${adminUserId} ha risposto alla conversazione ${conversationId} con il messaggio:`, newMessage);
+        console.log(`💬 Admin (ID: ${adminUserId}) ha aggiornato lo stato della conversazione ID: ${conversationId} a ${status}`);
 
         return NextResponse.json({
-            message: 'Risposta inviata con successo',
-            newMessage
+            conversation
         }, { status: 200 });
+
+    } catch (error) {
+        const { error: errorMessage, status } = handleAuthError(error);
+        return NextResponse.json({ error: errorMessage }, { status });
+    }
+}
+
+/**
+ * DELETE - Admin elimina una conversazione
+ */
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    try {
+        // Verifica autenticazione e ruolo admin
+        const adminUserId = await verifyAdmin(request);
+        const { id } = await params;
+        const conversationId = parseInt(id);
+
+        if (isNaN(conversationId) || conversationId <= 0) {
+            return NextResponse.json(
+                { error: 'ID conversazione non valido' },
+                { status: 400 }
+            );
+        }
+
+        // Elimina conversazione (cascata elimina anche i messaggi)
+        const deleted = await prisma.conversation.delete({
+            where: { id: conversationId },
+        });
+
+        if (!deleted) {
+            return NextResponse.json(
+                { error: 'Conversazione non trovata' },
+                { status: 404 }
+            );
+        }
+
+        console.log(`🗑️ Admin (ID: ${adminUserId}) ha eliminato la conversazione ID: ${conversationId}`);
+        return NextResponse.json(
+            { message: 'Conversazione eliminata con successo' },
+            { status: 200 }
+        );
 
     } catch (error) {
         const { error: errorMessage, status } = handleAuthError(error);

@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
         // Verifica autenticazione e ruolo admin
         const adminUserId = await verifyAdmin(request);
         const { searchParams } = new URL(request.url);
+        const status = searchParams.get('status');
         const userId = searchParams.get('userId');
         const page = parseInt(searchParams.get('page') || '1');
         const limit = parseInt(searchParams.get('limit') || '50');
@@ -31,9 +32,12 @@ export async function GET(request: NextRequest) {
             }
         }
 
+        if (status && (status === 'OPEN' || status === 'CLOSED')) {
+            where.status = status;
+        }
+
         // Query parallele
-        const [totalConversations, conversations] = await Promise.all([
-            prisma.conversation.count({ where }),
+        const [conversations, totalConversations] = await Promise.all([
             prisma.conversation.findMany({
                 where,
                 include: {
@@ -47,37 +51,41 @@ export async function GET(request: NextRequest) {
                     },
                     messages: {
                         orderBy: { createdAt: 'desc' },
-                        take: 1,
-                        select: {
-                            content: true,
-                            createdAt: true,
-                            role: true,
-                        },
+                        take: 1, // Prendi solo l'ultimo messaggio
+                        include: {
+                            sender: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    surname: true,
+                                    role: true,
+                                }
+                            }
+                        }
                     },
                     _count: {
-                        select: { messages: true },
-                    },
+                        select: { messages: true }
+                    }
                 },
                 orderBy: { updatedAt: 'desc' },
                 skip: (page - 1) * limit,
                 take: limit,
-            })
+            }),
+            prisma.conversation.count({ where }),
         ]);
 
-        // Formatta la risposta
-        const formattedConversations = conversations.map(conv => ({
-            id: conv.id,
-            user: conv.user,
-            createdAt: conv.createdAt,
-            updatedAt: conv.updatedAt,
-            messageCount: conv._count.messages,
-            lastMessage: conv.messages[0] ? conv.messages[0] : null
-        }));
+        // Stats
+        const stats = {
+            total: totalConversations,
+            open: await prisma.conversation.count({ where: { ...where, status: 'OPEN' } }),
+            closed: await prisma.conversation.count({ where: { ...where, status: 'CLOSED' } }),
+        }
 
         console.log(`Admin ${adminUserId} ha richiesto la lista delle conversazioni. Totale: ${totalConversations}`);
 
         return NextResponse.json({
-            conversation: formattedConversations,
+            conversations,
+            stats,
             pagination: {
                 page,
                 limit,

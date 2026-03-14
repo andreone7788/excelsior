@@ -13,6 +13,10 @@ export type { SendMessageInput, DeleteConversationInput, AdminReplyInput } from 
 // User Types
 export type { CreateUserInput, UpdateUserInput, DeleteUserInput, UpdateProfileInput, UpdatePasswordInput } from "@/lib/validations/user";
 
+// Conversation Types
+export type { CreateConversationInput, UpdateConversationStatusInput } from "@/lib/validations/conversation";
+
+
 // Email Types
 export type EmailTemplate =
     | 'booking-confirmation'

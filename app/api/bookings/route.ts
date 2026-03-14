@@ -16,12 +16,19 @@ import { sendBookingRequestToUser, sendBookingRequestToAdmin } from '@/lib/email
 export async function POST(request: NextRequest) {
     try {
         // 1 Verifica autenticazione
-        const { userId } = await verifyAuth(request)
+        const { userId, role } = await verifyAuth(request)
 
         if (!userId) {
             return NextResponse.json(
                 { error: 'Autenticazione richiesta' },
                 { status: 401 }
+            )
+        }
+
+        if (role === 'ADMIN') {
+            return NextResponse.json(
+                { error: 'Solo gli utenti possono creare prenotazioni' },
+                { status: 403 }
             )
         }
 
