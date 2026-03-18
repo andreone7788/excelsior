@@ -8,13 +8,13 @@ export type { CreateBookingInput, UpdateBookingStatusInput } from "@/lib/validat
 export type { CreateRoomInput, UpdateRoomInput, RoomFiltersInput } from "@/lib/validations/room";
 
 // Chat Types
-export type { SendMessageInput, DeleteConversationInput, AdminReplyInput } from "@/lib/validations/chat";
+export type { SendMessageInput, AdminReplyInput, AIChatInput, AISuggestInput, AISuggestReplyInput } from "@/lib/validations/chat";
 
 // User Types
 export type { CreateUserInput, UpdateUserInput, DeleteUserInput, UpdateProfileInput, UpdatePasswordInput } from "@/lib/validations/user";
 
 // Conversation Types
-export type { CreateConversationInput, UpdateConversationStatusInput } from "@/lib/validations/conversation";
+export type { CreateConversationInput, UpdateConversationStatusInput, DeleteConversationInput } from "@/lib/validations/conversation";
 
 
 // Email Types

@@ -11,5 +11,11 @@ export const updateConversationStatusSchema = z.object({
     status: z.enum(["OPEN", "CLOSED"]),
 });
 
+// Schema per cancellare una conversazione (gestione storico)
+export const deleteConversationSchema = z.object({
+  conversationId: z.coerce.number().int().positive("ID conversazione non valido"),
+});
+
 export type CreateConversationInput = z.infer<typeof createConversationSchema>;
 export type UpdateConversationStatusInput = z.infer<typeof updateConversationStatusSchema>;
+export type DeleteConversationInput = z.infer<typeof deleteConversationSchema>;

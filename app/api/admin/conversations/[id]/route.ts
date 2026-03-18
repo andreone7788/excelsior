@@ -4,12 +4,14 @@
  * ==============================================
  * GET  /api/admin/conversations/:id → Dettaglio + messaggi
  * PUT  /api/admin/conversations/:id → Admin risponde
+ * DELETE /api/admin/conversations/:id → Elimina conversazione
  * ==============================================
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma.client';
 import { verifyAdmin, handleAuthError } from '@/lib/auth-helpers';
 import { updateConversationStatusSchema } from '@/lib/validations/conversation';
+import { deleteConversationSchema } from '@/lib/validations/conversation';
 
 /**
  * GET - Dettaglio conversazione (admin)
@@ -171,6 +173,17 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
         if (isNaN(conversationId) || conversationId <= 0) {
             return NextResponse.json(
                 { error: 'ID conversazione non valido' },
+                { status: 400 }
+            );
+        }
+
+        // Validazione input
+        const body = await request.json();
+        const { conversationId: validatedConversationId } = deleteConversationSchema.parse(body);
+
+        if (validatedConversationId !== conversationId) {
+            return NextResponse.json(
+                { error: 'ID conversazione nel body non corrisponde a quello nei parametri' },
                 { status: 400 }
             );
         }
