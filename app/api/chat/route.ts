@@ -27,7 +27,9 @@ export async function GET(request: NextRequest) {
                     select: {
                         content: true,
                         createdAt: true,
-                        role: true,
+                        sender: {
+                            select: { role: true }
+                        },
                     },
                 },
                 _count: {
@@ -45,7 +47,7 @@ export async function GET(request: NextRequest) {
             messageCount: conv._count.messages,
             lastMessage: conv.messages[0] ? {
                 content: conv.messages[0].content,
-                role: conv.messages[0].role,
+                role: conv.messages[0].sender.role,
                 createdAt: conv.messages[0].createdAt
             } : null
         }))

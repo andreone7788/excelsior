@@ -11,7 +11,13 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
 
 export async function generateAIResponse(userMessage: string, context?: string): Promise<string> {
     try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
+        const model = genAI.getGenerativeModel({ 
+            model: 'gemini-2.5-flash',
+            generationConfig: {
+                temperature: 0.7,
+                maxOutputTokens: 500,
+            }
+        })
 
         const systemPrompt = `
 Sei l'assistente virtuale dell'Hotel Excelsior, un hotel di lusso in Italia.
@@ -76,7 +82,13 @@ export async function suggestRooms(userPreferences: string,
     }>
 ): Promise<{ suggestion: string; roomIds: number[] }> {
     try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
+        const model = genAI.getGenerativeModel({ 
+            model: 'gemini-2.5-flash',
+            generationConfig: {
+                temperature: 0.3,
+                maxOutputTokens: 300,
+            }
+        })
 
         const roomsFormatted = availableRooms
             .map(r =>
@@ -162,7 +174,13 @@ export async function suggestAdminReply(
     userQuestion: string
 ): Promise<string> {
     try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
+        const model = genAI.getGenerativeModel({ 
+            model: 'gemini-2.5-flash',
+            generationConfig: {
+                temperature: 0.3,
+                maxOutputTokens: 300,
+            }
+        })
 
         const historyFormatted = conversationHistory
             .map(msg => `${msg.role}: ${msg.content}`)

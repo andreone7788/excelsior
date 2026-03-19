@@ -29,7 +29,7 @@ export const aiChatSchema = z.object({
     .trim(),
   conversationHistory: z.array(
     z.object({
-      role: z.enum(['USER', 'ADMIN']),
+      role: z.enum(['USER', 'ASSISTANT']),
       content: z.string().min(1).max(2000).trim(),
     })
   ).optional(),
