@@ -1,6 +1,6 @@
 'use client'
 
-import { useUser } from '@/lib/hooks/useUser'
+import { useUser } from '@/lib/hooks/AuthContext'
 
 export default function AdminDashboard() {
     const { user, loading } = useUser()

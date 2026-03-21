@@ -4,11 +4,11 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Navbar from '@/components/NavBar'
 import UserDashboard from '@/components/dashboard/userDashboard'
-import { useUser } from '@/lib/hooks/useUser'
+import { useAuth } from '@/lib/context/AuthContext'
 
 export default function DashboardPage() {
   const router = useRouter()
-  const { user, loading } = useUser()
+  const { user, loading } = useAuth()
 
   // Se è ADMIN → redirect
   useEffect(() => {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useUser } from '@/lib/hooks/useUser'
+import { useUser } from '@/lib/hooks/AuthContext'
 
 export default function Navbar() {
     const router = useRouter()
