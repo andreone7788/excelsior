@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Navbar from '@/components/navbar'
+import Navbar from '@/components/NavBar'
 import UserDashboard from '@/components/dashboard/userDashboard'
 import { useUser } from '@/lib/hooks/useUser'
 
