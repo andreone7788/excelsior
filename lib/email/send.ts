@@ -4,6 +4,10 @@ import {
     BookingRequestAdminTemplate,
     BookingConfirmedTemplate,
     BookingRejectedTemplate,
+    BookingModificationRequestTemplate,
+    BookingModificationRequestAdminTemplate,
+    BookingModificationApprovedTemplate,
+    BookingModificationRejectedTemplate,
 } from './templates'
 
 /**
@@ -197,6 +201,198 @@ export async function sendBookingRejected({
         return { success: true, data }
     } catch (error) {
         console.error('❌ Eccezione invio rifiuto:', error)
+        return { success: false, error }
+    }
+}
+
+/**
+ * ========================================
+ * INVIA EMAIL - Richiesta modifica prenotazione
+ * ========================================
+ */
+export async function sendModificationRequestToUser({
+    to,
+    userName,
+    roomName,
+    originalDates,
+    newDates,
+    bookingId,
+    priceDifference,
+    reason,
+}: {
+    to: string
+    userName: string
+    roomName: string
+    originalDates: string
+    newDates: string
+    bookingId: number
+    priceDifference: number
+    reason?: string
+}) {
+    try {
+        const { data, error } = await resend.emails.send({
+            from: EMAIL_FROM,
+            to,
+            subject: `Richiesta Modifica Prenotazione #${bookingId}`,
+            react: BookingModificationRequestTemplate({
+                userName,
+                roomName,
+                originalDates,
+                newDates,
+                bookingId,
+                priceDifference,
+                reason,
+            }),
+        })
+
+        if (error) {
+            console.error('❌ Errore invio richiesta modifica utente:', error)
+            return { success: false, error }
+        }
+
+        console.log('✅ Email richiesta modifica inviata a utente:', data?.id)
+        return { success: true, data }
+    } catch (error) {
+        console.error('❌ Eccezione invio richiesta modifica utente:', error)
+        return { success: false, error }
+    }
+}
+
+/**
+ * ========================================
+ * INVIA EMAIL - Richiesta modifica prenotazione all'admin
+ * ========================================
+ */
+export async function sendModificationRequestToAdmin({
+    userName,
+    userEmail,
+    roomName,
+    checkIn,
+    checkOut,
+    bookingId
+}: {
+    userName: string
+    userEmail: string
+    roomName: string
+    checkIn: string
+    checkOut: string
+    bookingId: number
+}) {
+    try {
+        const { data, error } = await resend.emails.send({
+            from: EMAIL_FROM,
+            to: EMAIL_ADMIN,
+            subject: `🔔 Richiesta Modifica Prenotazione #${bookingId}`,
+            react: BookingModificationRequestAdminTemplate({
+                userName,
+                userEmail,
+                roomName,
+                checkIn,
+                checkOut,
+                bookingId,
+            }),
+        })
+
+        if (error) {
+            console.error('❌ Errore invio richiesta modifica admin:', error)
+            return { success: false, error }
+        }
+
+        console.log('✅ Email richiesta modifica inviata a admin:', data?.id)
+        return { success: true, data }
+    } catch (error) {
+        console.error('❌ Eccezione invio richiesta modifica admin:', error)
+        return { success: false, error }
+    }
+}
+
+/**
+ * ========================================
+ * INVIA EMAIL - Richiesta modifica appprovata
+ * ========================================
+ */
+export async function sendModificationApproved({
+    to,
+    userName,
+    roomName,
+    newDates,
+    bookingId,
+    priceDifference,
+}: {
+    to: string
+    userName: string
+    roomName: string
+    newDates: string
+    bookingId: number
+    priceDifference: number
+}) {
+    try {
+        const { data, error } = await resend.emails.send({
+            from: EMAIL_FROM,
+            to,
+            subject: `Modifica Prenotazione Approvata - Hotel Excelsior #${bookingId}`,
+            react: BookingModificationApprovedTemplate({
+                userName,
+                roomName,
+                newDates,
+                bookingId,
+                priceDifference,
+            }),
+        })
+
+        if (error) {
+            console.error('❌ Errore invio modifica approvata:', error)
+            return { success: false, error }
+        }
+
+        console.log('✅ Email modifica approvata inviata:', data?.id)
+        return { success: true, data }
+    } catch (error) {
+        console.error('❌ Eccezione invio modifica approvata:', error)
+        return { success: false, error }
+    }
+}
+
+/**
+ * ========================================
+ * INVIA EMAIL - Richiesta modifica rifiutata
+ * ========================================
+ */
+export async function sendModificationRejected({
+    to,
+    userName,
+    roomName,
+    bookingId,
+    reason,
+}: {
+    to: string
+    userName: string
+    roomName: string
+    bookingId: number
+    reason: string
+}) {
+    try {
+        const { data, error } = await resend.emails.send({
+            from: EMAIL_FROM,
+            to,
+            subject: `Modifica Prenotazione Rifiutata - Hotel Excelsior #${bookingId}`,
+            react: BookingModificationRejectedTemplate({
+                userName,
+                roomName,
+                bookingId,
+                reason,
+            }),
+        })
+
+        if (error) {
+            console.error('❌ Errore invio modifica rifiutata:', error)
+            return { success: false, error }
+        }
+
+        console.log('✅ Email modifica rifiutata inviata:', data?.id)
+        return { success: true, data }
+    } catch (error) {
+        console.error('❌ Eccezione invio modifica rifiutata:', error)
         return { success: false, error }
     }
 }

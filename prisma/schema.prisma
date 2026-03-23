@@ -18,7 +18,7 @@ model User {
   updatedAt     DateTime       @updatedAt
   bookings      Booking[]
   conversations Conversation[]
-  messageSent   Message[] @relation("MessageSender")
+  messageSent   Message[]      @relation("MessageSender")
 
   @@index([email])
 }
@@ -37,31 +37,39 @@ model Room {
 }
 
 model Booking {
-  id         Int           @id @default(autoincrement())
-  userId     Int
-  roomId     Int
-  status     BookingStatus @default(PENDING)
-  startDate  DateTime
-  endDate    DateTime
-  totalPrice Decimal       @db.Decimal(10, 2)
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
-  room       Room          @relation(fields: [roomId], references: [id])
-  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                 Int           @id @default(autoincrement())
+  userId             Int
+  roomId             Int
+  status             BookingStatus @default(PENDING)
+  startDate          DateTime
+  endDate            DateTime
+  totalPrice         Decimal       @db.Decimal(10, 2)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  isModification     Boolean       @default(false)
+  originalBookingId  Int?
+  modificationReason String?       @db.VarChar(255)
+  originalStartDate  DateTime?
+  originalEndDate    DateTime?
+  originalRoomId     Int?
+  priceDifference    Decimal?      @db.Decimal(10, 2)
+  room               Room          @relation(fields: [roomId], references: [id])
+  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([roomId])
   @@index([startDate, endDate])
+  @@map("booking")
 }
 
 model Conversation {
-  id        Int       @id @default(autoincrement())
+  id        Int                @id @default(autoincrement())
   userId    Int
   subject   String?
   status    ConversationStatus @default(OPEN)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages  Message[]
 
   @@index([userId])
@@ -72,11 +80,12 @@ model Message {
   id             Int          @id @default(autoincrement())
   conversationId Int
   senderId       Int
-  content        String        @db.Text
-  isRead        Boolean       @default(false)
+  content        String       @db.Text
+  isRead         Boolean      @default(false)
   createdAt      DateTime     @default(now())
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender         User         @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+
   @@index([conversationId])
   @@index([senderId])
 }
@@ -90,7 +99,8 @@ enum BookingStatus {
   PENDING
   CONFIRMED
   CANCELLED
-  COMPLETED
+  PENDING_MODIFICATION
+  REPLACED
 }
 
 enum ConversationStatus {

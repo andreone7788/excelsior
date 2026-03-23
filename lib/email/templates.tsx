@@ -11,9 +11,7 @@ import {
 } from '@react-email/components'
 
 /**
- * ========================================
  * TEMPLATE - Email utente: richiesta ricevuta
- * ========================================
  */
 interface BookingRequestUserTemplateProps {
   userName: string
@@ -66,9 +64,7 @@ export const BookingRequestUserTemplate = ({
 )
 
 /**
- * ========================================
  * TEMPLATE - Email admin: nuova richiesta
- * ========================================
  */
 interface BookingRequestAdminTemplateProps {
   userName: string
@@ -130,9 +126,7 @@ export const BookingRequestAdminTemplate = ({
 )
 
 /**
- * ========================================
  * TEMPLATE - Email utente: prenotazione confermata
- * ========================================
  */
 interface BookingConfirmedTemplateProps {
   userName: string
@@ -196,9 +190,7 @@ export const BookingConfirmedTemplate = ({
 )
 
 /**
- * ========================================
  * TEMPLATE - Email utente: prenotazione rifiutata
- * ========================================
  */
 interface BookingRejectedTemplateProps {
   userName: string
@@ -258,6 +250,232 @@ export const BookingRejectedTemplate = ({
           </Button>
         </Section>
 
+        <Text style={footer}>
+          Siamo a disposizione,<br />
+          <strong>Team Hotel Excelsior</strong>
+        </Text>
+      </Container>
+    </Body>
+  </Html>
+)
+
+/**
+ * TEMPLATE - Email utente: Richiesta modifica prenotazione
+ */
+interface BookingModificationRequestTemplateProps {
+  userName: string
+  roomName: string
+  originalDates: string
+  newDates: string
+  bookingId: number
+  priceDifference: number
+  reason?: string
+}
+
+export const BookingModificationRequestTemplate = ({
+  userName,
+  roomName,
+  originalDates,
+  newDates,
+  bookingId,
+  priceDifference,
+  reason,
+}: BookingModificationRequestTemplateProps) => (
+  <Html>
+    <Head />
+    <Preview>Richiesta Modifica Prenotazione - Hotel Excelsior</Preview>
+    <Body style={main}>
+      <Container style={container}>
+        <Heading style={h1}>Richiesta Modifica Prenotazione</Heading>
+
+        <Text style={text}>Gentile {userName},</Text>
+
+        <Text style={text}>
+          Abbiamo ricevuto una richiesta di modifica per la tua prenotazione.
+        </Text>
+
+        <Section style={infoBox}>
+          <Text style={infoTitle}>Dettagli Prenotazione:</Text>
+          <Text style={infoItem}><strong>Camera:</strong> {roomName}</Text>
+          <Text style={infoItem}><strong>Date Originali:</strong> {originalDates}</Text>
+          <Text style={infoItem}><strong>Nuove Date:</strong> {newDates}</Text>
+          <Text style={infoItem}><strong>ID Prenotazione:</strong> #{bookingId}</Text>
+          <Text style={infoItem}><strong>Differenza di Prezzo:</strong> €{priceDifference.toFixed(2)}</Text>
+        </Section>
+
+        {reason && (
+          <Section style={infoBox}>
+            <Text style={infoTitle}>Motivo:</Text>
+            <Text style={infoItem}>{reason}</Text>
+          </Section>
+        )}
+
+        <Text style={text}>
+          Ti invitiamo a contattarci per confermare o modificare ulteriormente la tua prenotazione.
+        </Text>
+
+        <Section style={{ textAlign: 'center', marginTop: '30px' }}>
+          <Button
+            style={button}
+            href={`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/dashboard/bookings/${bookingId}`}
+          >
+            Visualizza Prenotazione
+          </Button>
+        </Section>
+
+        <Text style={footer}>
+          Siamo a disposizione,<br />
+          <strong>Team Hotel Excelsior</strong>
+        </Text>
+      </Container>
+    </Body>
+  </Html>
+)
+
+/**
+ * TEMPLATE - Email Admin: Richiesta modifica prenotazione
+ */
+interface BookingModificationRequestAdminTemplateProps {
+  userName: string
+  userEmail: string
+  roomName: string
+  checkIn: string
+  checkOut: string
+  bookingId: number
+}
+
+export const BookingModificationRequestAdminTemplate = ({
+   userName,
+  userEmail,
+  roomName,
+  checkIn,
+  checkOut,
+  bookingId,
+}: BookingModificationRequestAdminTemplateProps) => (
+  <Html>
+    <Head />
+    <Preview>Richiesta Modifica Prenotazione - #{bookingId.toString()}</Preview>
+    <Body style={main}>
+      <Container style={container}>
+        <Heading style={h1}>🔔 Richiesta Modifica Prenotazione</Heading>
+        <Text style={text}>Gentile {userName},</Text>
+        <Text style={text}>
+          Abbiamo ricevuto una richiesta di modifica per la prenotazione #{bookingId}.
+        </Text>
+        <Section style={infoBox}>
+          <Text style={infoTitle}>Dettagli Prenotazione:</Text>
+          <Text style={infoItem}><strong>Camera:</strong> {roomName}</Text>
+          <Text style={infoItem}><strong>Email Utente:</strong> {userEmail}</Text>
+          <Text style={infoItem}><strong>Date Originali:</strong> {checkIn} - {checkOut}</Text>
+          <Text style={infoItem}><strong>ID Prenotazione:</strong> #{bookingId}</Text>
+        </Section>
+      </Container>
+    </Body>
+  </Html>
+)
+
+/**
+ * TEMPLATE - Email utente: Modifica prenotazione approvata
+ */
+interface BookingModificationApprovedTemplateProps {
+  userName: string
+  roomName: string
+  newDates: string
+  bookingId: number
+  priceDifference: number
+}
+
+export const BookingModificationApprovedTemplate = ({
+  userName,
+  roomName,
+  newDates,
+  bookingId,
+  priceDifference,
+}: BookingModificationApprovedTemplateProps) => (
+  <Html>
+    <Head />
+    <Preview>Modifica Prenotazione Approvata - Hotel Excelsior</Preview>
+    <Body style={main}>
+      <Container style={container}>
+        <Heading style={h1}>Modifica Prenotazione Approvata</Heading>
+        <Text style={text}>Gentile {userName},</Text>
+        <Text style={text}>
+          La tua richiesta di modifica per la prenotazione #{bookingId} è stata approvata.
+        </Text>
+        <Section style={infoBox}>
+          <Text style={infoTitle}>Nuovi Dettagli Prenotazione:</Text>
+          <Text style={infoItem}><strong>Camera:</strong> {roomName}</Text>
+          <Text style={infoItem}><strong>Nuove Date:</strong> {newDates}</Text>
+          <Text style={infoItem}><strong>Differenza di Prezzo:</strong> €{priceDifference.toFixed(2)}</Text>
+        </Section>
+        <Text style={text}>
+          Ti aspettiamo nelle nuove date. Per qualsiasi informazione, non esitare a contattarci.
+        </Text>
+        <Section style={{ textAlign: 'center', marginTop: '30px' }}>
+          <Button
+            style={button}
+            href={`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/dashboard/bookings/${bookingId}`}
+          >
+            Visualizza Prenotazione
+          </Button>
+        </Section>
+        <Text style={footer}>
+          A presto,<br />
+          <strong>Team Hotel Excelsior</strong>
+        </Text>
+      </Container>
+    </Body>
+  </Html>
+)
+
+/**
+ * TEMPLATE - Email utente: Modifica prenotazione rifiutata
+ */
+interface BookingModificationRejectedTemplateProps {
+  userName: string
+  roomName: string
+  bookingId: number
+  reason?: string
+}
+
+export const BookingModificationRejectedTemplate = ({
+  userName,
+  roomName,
+  bookingId,
+  reason,
+}: BookingModificationRejectedTemplateProps) => (
+  <Html>
+    <Head />
+    <Preview>Modifica Prenotazione Non Approvata - Hotel Excelsior</Preview>
+    <Body style={main}>
+      <Container style={container}>
+        <Heading style={h1}>Modifica Prenotazione Non Approvata</Heading>
+        <Text style={text}>Gentile {userName},</Text>
+        <Text style={text}>
+          Ci dispiace informarti che la tua richiesta di modifica per la prenotazione #{bookingId} non può essere accettata.
+        </Text>
+        <Section style={infoBox}>
+          <Text style={infoTitle}>Dettagli Prenotazione:</Text>
+          <Text style={infoItem}><strong>Camera:</strong> {roomName}</Text>
+          <Text style={infoItem}><strong>ID Prenotazione:</strong> #{bookingId}</Text>
+        </Section>
+        {reason && (
+          <Section style={infoBox}>
+            <Text style={infoTitle}>Motivo:</Text>
+            <Text style={infoItem}>{reason}</Text>
+          </Section>
+        )}
+        <Text style={text}>
+          Ti invitiamo a contattarci per discutere ulteriori opzioni o modificare la tua prenotazione.
+        </Text>
+        <Section style={{ textAlign: 'center', marginTop: '30px' }}>
+          <Button
+            style={button}
+            href={`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/dashboard/bookings/${bookingId}`}
+          >
+            Visualizza Prenotazione
+          </Button>
+        </Section>
         <Text style={footer}>
           Siamo a disposizione,<br />
           <strong>Team Hotel Excelsior</strong>

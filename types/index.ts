@@ -2,7 +2,7 @@
 export type { RegisterInput, LoginInput } from "@/lib/validations/auth";
 
 // Booking Types
-export type { CreateBookingInput, UpdateBookingStatusInput } from "@/lib/validations/booking";
+export type { CreateBookingInput, UpdateBookingStatusInput, RequestBookingModificationInput } from "@/lib/validations/booking";
 
 // Room Types
 export type { CreateRoomInput, UpdateRoomInput, RoomFiltersInput } from "@/lib/validations/room";
@@ -71,7 +71,12 @@ export interface Room {
 /**
  * Booking status enum
  */
-export type BookingStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED'
+export type BookingStatus = 
+| 'PENDING' 
+| 'CONFIRMED' 
+| 'CANCELLED' 
+| 'PENDING_MODIFICATION' 
+| 'REPLACED'
 
 /**
  * Booking entity (da database)
@@ -90,6 +95,15 @@ export interface Booking {
     // Relations (quando inclusa con Prisma)
     user?: User
     room?: Room
+}
+/**
+ * Booking modification entity (da database)
+ */
+export interface RequestModificationInput {
+  newStartDate?: string
+  newEndDate?: string
+  newRoomId?: number
+  reason?: string
 }
 
 /**
@@ -202,7 +216,8 @@ export interface AdminDashboardStats {
         PENDING: number
         CONFIRMED: number
         CANCELLED: number
-        COMPLETED: number
+        PENDING_MODIFICATION: number
+        REPLACED: number
     }
 }
 
