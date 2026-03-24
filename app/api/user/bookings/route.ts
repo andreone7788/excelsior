@@ -35,6 +35,11 @@ export async function GET(request: NextRequest) {
         // 3 Costruisci filtri dinamici
         const where: Prisma.BookingWhereInput = { userId }
 
+        // FIltro per status
+        if (status && ['PENDING', 'CONFIRMED', 'CANCELLED', 'PENDING_MODIFICATION', 'REPLACED'].includes(status.toUpperCase())) {
+            where.status = status.toUpperCase() as 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'PENDING_MODIFICATION' | 'REPLACED'
+        }
+
         // Filtro per status
         if (status && ['PENDING', 'CONFIRMED', 'CANCELLED'].includes(status.toUpperCase())) {
             where.status = status.toUpperCase() as 'PENDING' | 'CONFIRMED' | 'CANCELLED'
@@ -70,7 +75,18 @@ export async function GET(request: NextRequest) {
             return {
                 ...booking,
                 nights,
-                totalPrice: booking.room.price.toNumber() * nights
+                totalPrice: booking.room.price.toNumber() * nights,
+                // Info su modifiche pendenti o sostituzioni
+                ...(booking.isModification && { 
+                    modificationStatus: {
+                        originalDates: {
+                            start: booking.originalStartDate,
+                            end: booking.originalEndDate
+                        },
+                        priceDifference: booking.priceDifference ? booking.priceDifference.toNumber() : null,
+                        reason: booking.modificationReason || null
+                    }
+                }),
             }
         })
 

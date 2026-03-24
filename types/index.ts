@@ -54,6 +54,17 @@ export interface User {
 }
 
 /**
+ * User statistics (per useUserStats)
+ */
+export interface UserStats {
+    totalBookings: number
+    upcomingBookings: number
+    completedBookings: number
+    cancelledBookings: number
+    totalSpent: number
+}
+
+/**
  * Room entity (da database)
  */
 export interface Room {
@@ -71,12 +82,12 @@ export interface Room {
 /**
  * Booking status enum
  */
-export type BookingStatus = 
-| 'PENDING' 
-| 'CONFIRMED' 
-| 'CANCELLED' 
-| 'PENDING_MODIFICATION' 
-| 'REPLACED'
+export type BookingStatus =
+    | 'PENDING'
+    | 'CONFIRMED'
+    | 'CANCELLED'
+    | 'PENDING_MODIFICATION'
+    | 'REPLACED'
 
 /**
  * Booking entity (da database)
@@ -100,10 +111,10 @@ export interface Booking {
  * Booking modification entity (da database)
  */
 export interface RequestModificationInput {
-  newStartDate?: string
-  newEndDate?: string
-  newRoomId?: number
-  reason?: string
+    newStartDate?: string
+    newEndDate?: string
+    newRoomId?: number
+    reason?: string
 }
 
 /**
@@ -144,6 +155,23 @@ export interface Conversation {
     _count?: {
         messages: number
     }
+}
+
+/**
+ * Conversation with messages (per useConversation)
+ */
+export interface ConversationWithMessages extends Conversation {
+    messages: Message[]
+}
+
+/**
+ * AI suggest rooms preferences (per useAISuggestRooms)
+ */
+export interface AISuggestPreferences {
+    budget?: number
+    roomType?: string
+    amenities?: string[]
+    guests?: number
 }
 
 // ==================== API RESPONSE TYPES ====================

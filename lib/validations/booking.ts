@@ -19,6 +19,7 @@ export const requestBookingModificationSchema = z.object({
     newStartDate: z.coerce.date().refine((d) => d > new Date(), "La data deve essere futura").optional(),
     newEndDate: z.coerce.date().optional(),
     newRoomId: z.coerce.number().int().positive("ID stanza non valido").optional(),
+    reason: z.string().min(10, "La motivazione deve essere almeno di 10 caratteri").optional()
 }).refine((data) => {
     // Se modifichi entrambe le date, controlla coerenza
     if (data.newStartDate && data.newEndDate) {

@@ -11,7 +11,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma.client'
 import { verifyAdmin, handleAuthError } from '@/lib/auth-helpers'
 import { updateBookingStatusSchema } from '@/lib/validations/booking'
-import { sendBookingConfirmed, sendBookingRejected } from '@/lib/email/send'
+import { sendBookingConfirmed, sendBookingRejected, sendModificationApproved, sendModificationRejected } from '@/lib/email/send'
 
 /**
  * PUT - Aggiorna stato prenotazione (CONFERMA/RIFIUTA)
@@ -66,10 +66,22 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
         const { status, reason } = validateData.data
 
+        // Verifica se è una modifica
+        const isModification = existingBooking.status === 'PENDING_MODIFICATION'
+
         // 5 Aggiorna stato prenotazione
         const updatedBooking = await prisma.booking.update({
             where: { id: bookingId },
-            data: { status },
+            data: {
+                status,
+                // Se approvata modifica, resetta flag
+                ...(status === 'CONFIRMED' && isModification ? {
+                    isModification: false,
+                    originalStartDate: null,
+                    originalEndDate: null,
+                    originalRoomId: null,
+                } : {})
+            },
             include: {
                 room: true,
                 user: {
@@ -105,40 +117,84 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
         // 8️ Invia email in base allo stato
         if (status === 'CONFIRMED') {
-            // Prenotazione confermata
-            await sendBookingConfirmed({
-                to: updatedBooking.user.email,
-                userName: `${updatedBooking.user.name} ${updatedBooking.user.surname}`,
-                roomName: updatedBooking.room.name,
-                checkIn: checkInFormatted,
-                checkOut: checkOutFormatted,
-                bookingId: updatedBooking.id,
-                totalPrice: updatedBooking.totalPrice.toNumber()
-            })
+            if (isModification) {
+                // Template modifica approvata
+                await sendModificationApproved({
+                    to: updatedBooking.user.email,
+                    userName: `${updatedBooking.user.name} ${updatedBooking.user.surname}`,
+                    roomName: updatedBooking.room.name,
+                    newDates: `${checkInFormatted} - ${checkOutFormatted}`,
+                    bookingId: updatedBooking.id,
+                    priceDifference: existingBooking.priceDifference?.toNumber() || 0,
+                })
 
-            console.log(`Email di conferma inviata a ${updatedBooking.user.email} per prenotazione ${bookingId}`)
+                console.log(`Email modifica approvata inviata a ${updatedBooking.user.email} per prenotazione ${bookingId}`)
+            } else {
+                // Template prenotazione normale confermata
+                await sendBookingConfirmed({
+                    to: updatedBooking.user.email,
+                    userName: `${updatedBooking.user.name} ${updatedBooking.user.surname}`,
+                    roomName: updatedBooking.room.name,
+                    checkIn: checkInFormatted,
+                    checkOut: checkOutFormatted,
+                    bookingId: updatedBooking.id,
+                    totalPrice: updatedBooking.totalPrice.toNumber()
+                })
 
+                console.log(`Email di conferma inviata a ${updatedBooking.user.email} per prenotazione ${bookingId}`)
+            }
         } else if (status === 'CANCELLED') {
-            // Prenotazione rifiutata
-            await sendBookingRejected({
-                to: updatedBooking.user.email,
-                userName: `${updatedBooking.user.name} ${updatedBooking.user.surname}`,
-                roomName: updatedBooking.room.name,
-                checkIn: checkInFormatted,
-                checkOut: checkOutFormatted,
-                bookingId: updatedBooking.id,
-                reason: reason || 'Nessuna motivazione specificata'
-            })
+            if (isModification) {
+                // Template modifica rifiutata (ripristina originale)
+                await prisma.booking.update({
+                    where: { id: bookingId },
+                    data: {
+                        startDate: existingBooking.originalStartDate!,
+                        endDate: existingBooking.originalEndDate!,
+                        roomId: existingBooking.originalRoomId!,
+                        totalPrice: updatedBooking.totalPrice.toNumber() - (existingBooking.priceDifference?.toNumber() || 0),
+                        status: 'CONFIRMED', // Ripristina a confermata
+                        isModification: false,
+                        originalStartDate: null,
+                        originalEndDate: null,
+                        originalRoomId: null,
+                        priceDifference: null,
+                    }
+                })
 
-            console.log(`Email di rifiuto inviata a ${updatedBooking.user.email} per prenotazione ${bookingId}`)
+                await sendModificationRejected({
+                    to: updatedBooking.user.email,
+                    userName: `${updatedBooking.user.name} ${updatedBooking.user.surname}`,
+                    roomName: updatedBooking.room.name,
+                    bookingId: updatedBooking.id,
+                    reason: reason || 'Non specificato'
+                })
+
+                console.log(`Email modifica rifiutata inviata a ${updatedBooking.user.email} per prenotazione ${bookingId}`)
+                console.log(`Prenotazione ripristinata allo stato originale`)
+            } else {
+                // Template prenotazione normale rifiutata
+                await sendBookingRejected({
+                    to: updatedBooking.user.email,
+                    userName: `${updatedBooking.user.name} ${updatedBooking.user.surname}`,
+                    roomName: updatedBooking.room.name,
+                    checkIn: checkInFormatted,
+                    checkOut: checkOutFormatted,
+                    bookingId: updatedBooking.id,
+                    reason: reason || 'Nessuna motivazione specificata'
+                })
+
+                console.log(`Email di rifiuto inviata a ${updatedBooking.user.email} per prenotazione ${bookingId}`)
+            }
         }
+
         return NextResponse.json({
             booking: {
                 ...updatedBooking,
                 nights,
-                totalPrice: updatedBooking.room.price.toNumber() * nights
+                totalPrice: updatedBooking.totalPrice.toNumber()
             },
-            message: `Prenotazione ${status === 'CONFIRMED' ? 'confermata' : 'rifiutata'} con successo`
+            message: `${isModification ? 'Modifica' : 'Prenotazione'} ${status === 'CONFIRMED' ? 'confermata' : 'rifiutata'} con successo`
         }, { status: 200 })
 
     } catch (error) {

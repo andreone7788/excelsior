@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import apiClient, { ApiError } from '@/lib/api-client'
-import type { Booking, BookingSearchFilters, CreateBookingInput, UpdateBookingStatusInput, BookingWithRelations } from '@/types'
+import type { Booking, BookingSearchFilters, CreateBookingInput, UpdateBookingStatusInput, BookingWithRelations, RequestModificationInput } from '@/types'
 
 // Tipo per il return di useBookings (lista prenotazioni)
 interface UseBookingsReturn {
@@ -13,14 +13,7 @@ interface UseBookingsReturn {
   createBooking: (data: CreateBookingInput) => Promise<Booking>
   updateBookingStatus: (id: number, data: UpdateBookingStatusInput) => Promise<Booking>
   cancelBooking: (id: number) => Promise<void>
-}
-
-// Tipo per il return di useBooking (singola prenotazione)
-interface UseBookingReturn {
-  booking: BookingWithRelations | null
-  loading: boolean
-  error: string | null
-  refetch: () => Promise<void>
+  requestBookingModification: (id: number, data: RequestModificationInput) => Promise<Booking>
 }
 
 /**
@@ -153,6 +146,33 @@ export function useBookings(
     }
   }
 
+  /**
+   * Richiede modifica prenotazione (utente)
+   */
+  const requestBookingModification = async (id: number, data: RequestModificationInput): Promise<Booking> => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      const updated = await apiClient.put<Booking>(
+        `/bookings/${id}/modification`, JSON.stringify(data)
+      )
+
+      // Aggiorna lista locale
+      setBookings(prev => prev.map(booking => 
+        booking.id === id ? updated : booking
+      ))
+
+      return updated
+    } catch (err) {
+      const errorMessage = err instanceof ApiError ? err.message : 'Errore durante la richiesta di modifica della prenotazione'
+      setError(errorMessage)
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // Auto-fetch al mount o quando cambiano i filtri
   useEffect(() => {
     if (autoFetch) {
@@ -168,12 +188,22 @@ export function useBookings(
     createBooking,
     updateBookingStatus,
     cancelBooking,
+    requestBookingModification
   }
 }
 
 /**
  * Hook per ottenere una singola prenotazione
  */
+
+// Tipo per il return di useBooking (singola prenotazione)
+interface UseBookingReturn {
+  booking: BookingWithRelations | null
+  loading: boolean
+  error: string | null
+  refetch: () => Promise<void>
+}
+
 export function useBooking(id: number): UseBookingReturn {
   const [booking, setBooking] = useState<BookingWithRelations | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
