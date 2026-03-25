@@ -285,6 +285,23 @@ export interface AISuggestAdminReplyResponse {
     suggestion: string
 }
 
+/**
+ * AI Room Suggestion Response
+ */
+export interface AIRoomSuggestion {
+  room: Room
+  matchScore: number
+  reasoning: string
+}
+
+/**
+ * AI Suggest Rooms Response
+ */
+export interface AISuggestRoomsResponse {
+  suggestions: AIRoomSuggestion[]
+  totalMatches: number
+}
+
 // ==================== UI/FORM STATE TYPES ====================
 
 /**
