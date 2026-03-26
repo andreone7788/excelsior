@@ -1,24 +1,24 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react"
+import { createContext, useState, useEffect, ReactNode } from "react"
 import { useRouter } from "next/navigation"
-import apiClient from "../api-client"
-import type { User, LoginInput, RegisterInput, AuthResponse } from "@/types"
+import type { User } from "@/types"
 
 interface AuthContextType {
   user: User | null
   loading: boolean
-  login: (credentials: LoginInput) => Promise<void>
-  register: (data: RegisterInput) => Promise<void>
+  login: (user: User) => Promise<void>
+  register: (user: User) => Promise<void>
   logout: () => void
   refreshUser: () => Promise<void>
   isAuthenticated: boolean
   isAdmin: boolean
+  isUser: boolean
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-export const AuthProvider = ({ children } : { children: ReactNode }) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
@@ -46,60 +46,29 @@ export const AuthProvider = ({ children } : { children: ReactNode }) => {
     }
   }
 
-  async function login(credentials: LoginInput) {
-    try {
-      setLoading(true)
+  async function login(userData: User) {
+    setUser(userData)
 
-      const response = await apiClient.post<AuthResponse>('/api/auth/login', JSON.stringify(credentials))
-
-      setUser(response.user)
-
-      if (response.user.role === 'ADMIN') {
-        router.push('/admin/dashboard')
-      } else {
-        router.push('/dashboard')
-      }
-
-      router.refresh()
-
-    } catch (error) {
-      console.error('Errore durante il login:', error)
-      throw error
-    } finally {
-      setLoading(false)
+    // Routing basato su ruolo
+    if (userData.role === 'ADMIN') {
+      router.push('/admin/dashboard')
+    } else {
+      router.push('/user/dashboard')
     }
-}
 
-  async function register(data: RegisterInput) {
-    try {
-      setLoading(true)
+    router.refresh()
+  }
 
-      const response = await apiClient.post<AuthResponse>('/api/auth/register', JSON.stringify(data))
-
-      setUser(response.user)
-      router.refresh()
-    } catch (error) {
-      console.error('Errore durante la registrazione:', error)
-      throw error
-    } finally {
-      setLoading(false)
-    }
+  async function register(userData: User) {
+    setUser(userData)
+    router.push('/user/dashboard')
+    router.refresh()
   }
 
   async function logout() {
-    try {
-      setLoading(true)
-
-      await apiClient.post('/api/auth/logout')
-      router.push('/login')
-    } catch (error) {
-      console.error('Errore durante il logout:', error)
-    } finally {
-      setUser(null)
-      setLoading(false)
-      router.push('/login')
-      router.refresh()
-    }
+    setUser(null)
+    router.push('/login')
+    router.refresh()
   }
 
   async function refreshUser() {
@@ -115,6 +84,7 @@ export const AuthProvider = ({ children } : { children: ReactNode }) => {
     refreshUser,
     isAuthenticated: !!user,
     isAdmin: user?.role === 'ADMIN',
+    isUser: user?.role === 'USER',
   }
 
   return (
@@ -123,14 +93,3 @@ export const AuthProvider = ({ children } : { children: ReactNode }) => {
     </AuthContext.Provider>
   )
 }
-
-export function useAuth() {
-  const context = useContext(AuthContext)
-
-  if (context === undefined) {
-    throw new Error('useAuth deve essere usato all\'interno di un AuthProvider')
-  }
-
-  return context
-}
-  

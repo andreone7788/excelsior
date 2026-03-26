@@ -103,6 +103,7 @@ export interface Booking {
     notes?: string
     createdAt: string
     updatedAt: string
+    totalPrice: number
     // Relations (quando inclusa con Prisma)
     user?: User
     room?: Room

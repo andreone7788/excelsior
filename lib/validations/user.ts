@@ -40,6 +40,7 @@ export const updateProfileSchema = z.object({
 // Schema per aggiornamento password utente (User)
 export const updatePasswordSchema = z.object({
     currentPassword: z.string().min(1, "Password corrente richiesta"),
+    confirmPassword: z.string().min(1, "Conferma password richiesta"),
     newPassword: z.string().min(8, "La nuova password deve contenere almeno 8 caratteri")
         .regex(/[A-Z]/, "Almeno una maiuscola")
         .regex(/[a-z]/, "Almeno una minuscola")
