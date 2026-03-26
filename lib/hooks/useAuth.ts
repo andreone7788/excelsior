@@ -1,6 +1,6 @@
 'use client'
 
-import { useContext, useCallback } from 'react'
+import { useContext } from 'react'
 import { useRouter } from 'next/navigation'
 import { AuthContext } from '@/lib/context/AuthContext'
 import apiClient, { ApiError } from '@/lib/api-client'
@@ -86,7 +86,7 @@ export function useAuth(): UseAuthReturn {
     /**
      * Login con email/password
      */
-    const login = useCallback(async (data: LoginInput): Promise<User> => {
+    const login = async (data: LoginInput): Promise<User> => {
         try {
             const response = await apiClient.post<{ user: User; token: string }>(
                 '/auth/login', JSON.stringify(data)
@@ -104,12 +104,12 @@ export function useAuth(): UseAuthReturn {
             const errorMessage = err instanceof ApiError ? err.message : 'Errore sconosciuto'
             throw new Error(errorMessage)
         }
-    }, [contextLogin])
+    }
 
     /**
      * Registrazione nuovo utente
      */
-    const register = useCallback(async (data: RegisterInput): Promise<User> => {
+    const register = async (data: RegisterInput): Promise<User> => {
         try {
             const response = await apiClient.post<{ user: User; token: string }>(
                 '/auth/register', JSON.stringify(data)
@@ -127,12 +127,12 @@ export function useAuth(): UseAuthReturn {
             const errorMessage = err instanceof ApiError ? err.message : 'Errore sconosciuto'
             throw new Error(errorMessage)
         }
-    }, [contextLogin])
+    }
 
     /**
      * Logout utente
      */
-    const logout = useCallback(async (): Promise<void> => {
+    const logout = async (): Promise<void> => {
         try {
             // Chiama API logout (invalida token server-side se implementato)
             await apiClient.post('/auth/logout')
@@ -146,19 +146,19 @@ export function useAuth(): UseAuthReturn {
             // Aggiorna context
             await contextLogout()
         }
-    }, [contextLogout])
+    }
 
     /**
      * Refresh dati utente corrente
      */
-    const refreshUser = useCallback(async (): Promise<void> => {
+    const refreshUser = async (): Promise<void> => {
         try {
             const response = await apiClient.get<{ user: User }>('/user/me')
             await contextLogin(response.user) // Riutilizza login per aggiornare user nel context
         } catch (err) {
             console.error('Errore durante refresh user:', err)
         }
-    }, [contextLogin])
+    }
 
     // ═══════════════════════════════════════════════════════════
     // UTILITY
@@ -167,29 +167,29 @@ export function useAuth(): UseAuthReturn {
     /**
      * Check se utente è autenticato
      */
-    const checkAuth = useCallback((): boolean => {
+    const checkAuth = (): boolean => {
         return isAuthenticated
-    }, [isAuthenticated])
+    }
 
     /**
      * Richiede autenticazione (throw se non loggato)
      * Utile per imperative checks
      */
-    const requireAuth = useCallback((): void => {
+    const requireAuth = (): void => {
         if (!isAuthenticated) {
             throw new Error('Autenticazione richiesta')
         }
-    }, [isAuthenticated])
+    }
 
     /**
      * Richiede ruolo admin (throw se non admin)
      */
-    const requireAdmin = useCallback((): void => {
+    const requireAdmin = (): void => {
         requireAuth() // Prima verifica autenticazione
         if (!isAdmin) {
             throw new Error('Accesso admin richiesto')
         }
-    }, [requireAuth, isAdmin])
+    }
 
     return {
         // State

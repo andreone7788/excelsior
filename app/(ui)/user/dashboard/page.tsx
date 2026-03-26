@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Navbar from '@/components/NavBar'
 import UserDashboard from '@/components/dashboard/userDashboard'
-import { useAuth } from '@/lib/context/AuthContext'
+import { useAuth } from '@/lib/hooks/useAuth'
 
 export default function DashboardPage() {
   const router = useRouter()
