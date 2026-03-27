@@ -2,52 +2,153 @@
 
 import { createTheme } from '@mui/material/styles'
 
+/**
+ * ═══════════════════════════════════════════════════════════
+ * 🎨 EXCELSIOR HOTEL - THEME CONFIGURATION
+ * ═══════════════════════════════════════════════════════════
+ */
+
 export const theme = createTheme({
     palette: {
         mode: 'light',
         primary: {
-            main: 'rgba(0, 123, 255, 1)', // Colore principale in formato RGBA
-            light: 'rgba(115, 179, 248, 0.7)', // Colore chiaro in formato RGBA
-            dark: 'rgba(0, 123, 255, 0.7)', // Colore scuro in formato RGBA
-            contrastText: '#fff', // Colore del testo in contrasto
+            main: '#1976d2',      // Blu elegante hotel
+            light: '#42a5f5',
+            dark: '#1565c0',
+            contrastText: '#fff',
         },
         secondary: {
-            main: 'rgba(255, 193, 7, 1)', // Colore secondario in formato RGBA
-            light: 'rgba(255, 224, 130, 0.7)', // Colore secondario chiaro in formato RGBA
-            dark: 'rgba(255, 193, 7, 0.7)', // Colore secondario scuro in formato RGBA
-            contrastText: '#000', // Colore del testo in contrasto
+            main: '#dc004e',      // Accent per CTA
+            light: '#ff5983',
+            dark: '#9a0036',
+            contrastText: '#fff',
+        },
+        success: {
+            main: '#2e7d32',      // Conferme booking
+        },
+        warning: {
+            main: '#ed6c02',      // Pending status
+        },
+        error: {
+            main: '#d32f2f',      // Cancellazioni
         },
         background: {
-            default: 'rgba(255, 255, 255, 1)', // Colore di sfondo in formato RGBA
-            paper: 'rgba(255, 255, 255, 0.9)', // Colore di sfondo per i componenti in formato RGBA
-        }
+            default: '#f5f5f5',
+            paper: '#ffffff',
+        },
+        text: {
+            primary: 'rgba(0, 0, 0, 0.87)',
+            secondary: 'rgba(0, 0, 0, 0.6)',
+        },
     },
     typography: {
-        fontFamily: 'Roboto, Arial, sans-serif', // Font principale
+        fontFamily: [
+            'Inter',
+            '-apple-system',
+            'BlinkMacSystemFont',
+            '"Segoe UI"',
+            'Roboto',
+            '"Helvetica Neue"',
+            'Arial',
+            'sans-serif',
+        ].join(','),
+        h1: {
+            fontWeight: 700,
+            fontSize: '3rem',
+        },
+        h2: {
+            fontWeight: 700,
+            fontSize: '2.5rem',
+        },
+        h3: {
+            fontWeight: 600,
+            fontSize: '2rem',
+        },
+        h4: {
+            fontWeight: 600,
+            fontSize: '1.75rem',
+        },
+        h5: {
+            fontWeight: 600,
+            fontSize: '1.5rem',
+        },
+        h6: {
+            fontWeight: 600,
+            fontSize: '1.25rem',
+        },
         button: {
-            textTransform: 'none', // Disabilita la trasformazione del testo per i pulsanti
-            fontWeight: 600, // Imposta il peso del font per i pulsanti
+            textTransform: 'none',  // Niente uppercase forzato
+            fontWeight: 600,
         },
     },
     shape: {
-        borderRadius: 8, // Raggio di curvatura per i bordi dei componenti
+        borderRadius: 8,
     },
     components: {
         MuiButton: {
             styleOverrides: {
                 root: {
-                    borderRadius: 8, // Raggio di curvatura per i pulsanti
-                    padding: '10px 24px', // Padding per i pulsanti
+                    borderRadius: 8,
+                    padding: '8px 24px',
+                },
+                sizeLarge: {
+                    padding: '12px 32px',
+                    fontSize: '1rem',
                 },
             },
         },
         MuiCard: {
             styleOverrides: {
                 root: {
-                    borderRadius: 12, // Raggio di curvatura per le card
-                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Ombra per le card
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                    transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+                    '&:hover': {
+                        transform: 'translateY(-4px)',
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+                    },
                 },
             },
         },
+        MuiPaper: {
+            styleOverrides: {
+                root: {
+                    backgroundImage: 'none',
+                },
+                elevation1: {
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+                },
+                elevation2: {
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+                },
+                elevation3: {
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                },
+            },
+        },
+        MuiTextField: {
+            defaultProps: {
+                variant: 'outlined',
+            },
+        },
     },
+})
+
+// Dark theme (opzionale - per futuro toggle)
+export const darkTheme = createTheme({
+    palette: {
+        mode: 'dark',
+        primary: {
+            main: '#90caf9',
+        },
+        secondary: {
+            main: '#f48fb1',
+        },
+        background: {
+            default: '#0a0a0a',
+            paper: '#1e1e1e',
+        },
+    },
+    typography: theme.typography,
+    shape: theme.shape,
+    components: theme.components,
 })
