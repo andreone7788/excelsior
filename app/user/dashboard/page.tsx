@@ -2,8 +2,7 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Navbar from '@/components/NavBar'
-import UserDashboard from '@/components/dashboard/userDashboard'
+import { DashboardUser } from '@/components/layout/DashboardUser'
 import { useAuth } from '@/lib/hooks/useAuth'
 
 export default function DashboardPage() {
@@ -38,8 +37,12 @@ export default function DashboardPage() {
 
   return (
     <>
-      <Navbar />
-      <UserDashboard />
+      <DashboardUser >
+        <div style={{ padding: '20px' }}>
+          <h1>Benvenuto nella tua dashboard, {user?.name}!</h1>
+          <p>Qui puoi gestire le tue prenotazioni, visualizzare i dettagli del tuo profilo e molto altro.</p>
+        </div>
+      </DashboardUser>
     </>
   )
 }

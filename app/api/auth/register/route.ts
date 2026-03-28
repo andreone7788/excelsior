@@ -13,6 +13,7 @@ import { z } from 'zod'
  * {
  *   name: string
  *   surname: string
+ *   phone: string
  *   email: string
  *   password: string
  * }
@@ -20,7 +21,7 @@ import { z } from 'zod'
  * Response (201):
  * {
  *   message: "Registrazione completata con successo",
- *   user: { id, name, surname, email, role }
+ *   user: { id, name, surname, phone, email, role }
  * }
  * + Cookie: auth_token (HttpOnly) - Login automatico
  */
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
         const body = await request.json()
         const validated = registerSchema.parse(body)
 
-        console.log('📝 API Registrazione:', validated.email)
+        console.log('API Registrazione:', validated.email)
 
         // 1. Verifica email non già registrata
         const existingUser = await prisma.user.findUnique({
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest) {
         })
 
         if (existingUser) {
-            console.log('❌ Email già registrata:', validated.email)
+            console.log('Email già registrata:', validated.email)
             return NextResponse.json(
                 { error: 'Email già registrata' },
                 { status: 409 }
@@ -53,6 +54,7 @@ export async function POST(request: NextRequest) {
                 name: validated.name,
                 surname: validated.surname,
                 email: validated.email,
+                phone: validated.phone,
                 password: hashedPassword,
                 role: 'USER',
             },
@@ -61,6 +63,7 @@ export async function POST(request: NextRequest) {
                 name: true,
                 surname: true,
                 email: true,
+                phone: true,
                 role: true,
                 createdAt: true,
             }
@@ -90,12 +93,12 @@ export async function POST(request: NextRequest) {
             path: '/',
         })
 
-        console.log(`✅ Registrazione API: ${user.email} (ID: ${user.id})`)
+        console.log(`Registrazione API: ${user.email} (ID: ${user.id})`)
 
         return response
 
     } catch (error) {
-        console.error('❌ Errore API registrazione:', error)
+        console.error('Errore API registrazione:', error)
 
         if (error instanceof z.ZodError) {
             return NextResponse.json(

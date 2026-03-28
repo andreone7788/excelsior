@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
                 id: true,
                 name: true,
                 surname: true,
+                phone: true,
                 email: true,
                 role: true,
                 createdAt: true,
@@ -74,7 +75,7 @@ export async function GET(request: NextRequest) {
 
 /**
  * PUT - Aggiorna profilo utente
- * Body: { name?, surname?, email? }
+ * Body: { name?, surname?, email?, phone? }
  */
 export async function PUT(request: NextRequest) {
     try {
@@ -92,7 +93,7 @@ export async function PUT(request: NextRequest) {
         const body = await request.json();
         const validatedData = updateProfileSchema.parse(body);
 
-        const { name, surname, email } = validatedData;
+        const { name, surname, email, phone } = validatedData;
 
         // 3 Se cambia email, verifica che non sia già in uso
         if (email) {
@@ -118,12 +119,14 @@ export async function PUT(request: NextRequest) {
                 ...(name && { name }),
                 ...(surname && { surname }),
                 ...(email && { email }),
+                ...(phone && { phone }),
             },
             select: {
                 id: true,
                 name: true,
                 surname: true,
                 email: true,
+                phone: true,
                 role: true,
                 updatedAt: true,
             },

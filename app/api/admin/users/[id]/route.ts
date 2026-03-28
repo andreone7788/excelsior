@@ -44,6 +44,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
                 name: true,
                 surname: true,
                 email: true,
+                phone: true,
                 role: true,
                 createdAt: true,
                 updatedAt: true,
@@ -104,7 +105,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
 /**
  * PUT - Modifica utente
- * Body: { name?, surname?, email?, role? }
+ * Body: { name?, surname?, email?, phone?, role? }
  */
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -126,7 +127,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         const body = await request.json();
         const validateData = updateUserSchema.parse(body);
 
-        const { name, surname, email, role } = validateData;
+        const { name, surname, email, phone, role } = validateData;
 
         // 4 - Verifica esistenza utente
         const existingUser = await prisma.user.findUnique({
@@ -162,6 +163,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         if (name !== undefined) updateData.name = name;
         if (surname !== undefined) updateData.surname = surname;
         if (email !== undefined) updateData.email = email;
+        if (phone !== undefined) updateData.phone = phone;
         if (role !== undefined) updateData.role = role;
 
         const updatedUser = await prisma.user.update({
@@ -171,6 +173,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
                 id: true,
                 name: true,
                 surname: true,
+                phone: true,
                 email: true,
                 role: true,
                 updatedAt: true,

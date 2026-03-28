@@ -19,6 +19,7 @@ export const updateUserSchema = z.object({
     name: z.string().min(2, "Il nome deve contenere almeno 2 caratteri").optional(),
     surname: z.string().min(2, "Il cognome deve contenere almeno 2 caratteri").optional(),
     email: z.string().email("Indirizzo email non valido").optional(),
+    phone: z.string().min(15, "Il numero di telefono deve contenere almeno 15 cifre").optional(),
     password: z.string().min(8, "La password deve contenere almeno 8 caratteri")
         .regex(/[A-Z]/, "Almeno una maiuscola")
         .regex(/[a-z]/, "Almeno una minuscola")
@@ -32,8 +33,9 @@ export const updateProfileSchema = z.object({
     name: z.string().min(2, "Il nome deve contenere almeno 2 caratteri").optional(),
     surname: z.string().min(2, "Il cognome deve contenere almeno 2 caratteri").optional(),
     email: z.string().email("Indirizzo email non valido").optional(),
+    phone: z.string().min(15, "Il numero di telefono deve contenere almeno 15 cifre").optional(),
 }).refine(
-    (data) => data.name || data.surname || data.email,
+    (data) => data.name || data.surname || data.email || data.phone,
     { message: "Almeno un campo deve essere fornito" }
 )
 

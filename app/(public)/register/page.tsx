@@ -1,318 +1,219 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, FormEvent } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { registerAction } from '@/action/auth'
-import type { RegisterInput } from '@/types'
+import { Container, Paper, TextField, Button, Typography, Box, Alert, CircularProgress, Divider } from '@mui/material'
+import { PersonAddOutlined } from '@mui/icons-material'
 
 export default function RegisterPage() {
-    const router = useRouter()
-    const [formData, setFormData] = useState<RegisterInput>({
-        name: '',
-        surname: '',
-        email: '',
-        password: '',
-    })
-    const [error, setError] = useState<string>('')
-    const [loading, setLoading] = useState(false)
-    const [success, setSuccess] = useState(false)  // ← NUOVO
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [formData, setFormData] = useState({
+    name: '',
+    surname: '',
+    phone: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  })
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setError('')
-        setLoading(true)
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
 
-        try {
-            const result = await registerAction(formData)
-
-            if (!result.success) {
-                setError(result.error || 'Errore durante la registrazione')
-                setLoading(false)
-                return
-            }
-
-            // ✅ Registrazione completata con successo!
-            setSuccess(true)
-            setLoading(false)
-
-            // ✅ Mostra messaggio per 2 secondi, poi redirect
-            setTimeout(() => {
-                router.push('/dashboard')
-            }, 2000)
-
-        } catch (error) {
-            console.error('Errore:', error)
-            setError('Errore durante la registrazione')
-            setLoading(false)
-        }
+    // Validazione password
+    if (formData.password !== formData.confirmPassword) {
+      setError('Le password non coincidono')
+      setLoading(false)
+      return
     }
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData(prev => ({
-            ...prev,
-            [e.target.name]: e.target.value
-        }))
+    if (formData.password.length < 8) {
+      setError('La password deve contenere almeno 8 caratteri')
+      setLoading(false)
+      return
     }
 
-    // ✅ Mostra messaggio di successo
-    if (success) {
-        return (
-            <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minHeight: '100vh',
-                padding: '20px',
-                textAlign: 'center'
-            }}>
-                <div style={{
-                    backgroundColor: '#000000',
-                    border: '1px solid #c3e6cb',
-                    borderRadius: '8px',
-                    padding: '30px',
-                    maxWidth: '500px',
-                    width: '100%'
-                }}>
-                    <h1 style={{
-                        color: '#155724',
-                        fontSize: '32px',
-                        marginBottom: '20px'
-                    }}>
-                        🎉 Registrazione completata!
-                    </h1>
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          surname: formData.surname,
+          phone: formData.phone,
+          email: formData.email,
+          password: formData.password,
+        }),
+      })
 
-                    <p style={{
-                        fontSize: '18px',
-                        color: '#155724',
-                        marginBottom: '10px'
-                    }}>
-                        Benvenuto, <strong>{formData.name}</strong>!
-                    </p>
+      const data = await res.json()
 
-                    <p style={{ color: '#155724' }}>
-                        Stai per essere reindirizzato alla dashboard...
-                    </p>
+      if (!res.ok) {
+        throw new Error(data.error || 'Errore durante la registrazione')
+      }
 
-                    <div style={{
-                        marginTop: '20px',
-                        animation: 'spin 1s linear infinite'
-                    }}>
-                        ⏳
-                    </div>
-                </div>
-            </div>
-        )
+      // Redirect to dashboard
+      router.push('/user/dashboard')
+      router.refresh()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Errore durante la registrazione')
+    } finally {
+      setLoading(false)
     }
+  }
 
-    return (
-        <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '100vh',
-            padding: '20px'
-        }}>
-            <div style={{
-                width: '100%',
-                maxWidth: '400px',
-                padding: '30px',
-                border: '1px solid #ddd',
-                borderRadius: '8px',
-                backgroundColor: '#fff'
-            }}>
-                <h1 style={{
-                    textAlign: 'center',
-                    marginBottom: '30px',
-                    fontSize: '28px'
-                }}>
-                    Registrazione
-                </h1>
+  return (
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        bgcolor: 'background.default',
+        py: 4,
+      }}
+    >
+      <Container maxWidth="sm">
+        <Paper
+          elevation={3}
+          sx={{
+            p: 4,
+            borderRadius: 2,
+          }}
+        >
+          {/* Header */}
+          <Box sx={{ textAlign: 'center', mb: 3 }}>
+            <PersonAddOutlined
+              sx={{
+                fontSize: 48,
+                color: 'primary.main',
+                mb: 1,
+              }}
+            />
+            <Typography variant="h4" component="h1" fontWeight={700} gutterBottom>
+              Crea Account
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Unisciti a Excelsior Hotel
+            </Typography>
+          </Box>
 
-                <form onSubmit={handleSubmit}>
-                    {/* Nome */}
-                    <div style={{ marginBottom: '20px' }}>
-                        <label
-                            htmlFor="name"
-                            style={{
-                                display: 'block',
-                                marginBottom: '8px',
-                                fontWeight: '500'
-                            }}
-                        >
-                            Nome
-                        </label>
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                            disabled={loading}
-                            style={{
-                                width: '100%',
-                                padding: '12px',
-                                border: '1px solid #ddd',
-                                borderRadius: '4px',
-                                fontSize: '16px'
-                            }}
-                        />
-                    </div>
+          {/* Error Alert */}
+          {error && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {error}
+            </Alert>
+          )}
 
-                    {/* Cognome */}
-                    <div style={{ marginBottom: '20px' }}>
-                        <label
-                            htmlFor="surname"
-                            style={{
-                                display: 'block',
-                                marginBottom: '8px',
-                                fontWeight: '500'
-                            }}
-                        >
-                            Cognome
-                        </label>
-                        <input
-                            type="text"
-                            id="surname"
-                            name="surname"
-                            value={formData.surname}
-                            onChange={handleChange}
-                            required
-                            disabled={loading}
-                            style={{
-                                width: '100%',
-                                padding: '12px',
-                                border: '1px solid #ddd',
-                                borderRadius: '4px',
-                                fontSize: '16px'
-                            }}
-                        />
-                    </div>
+          {/* Form */}
+          <form onSubmit={handleSubmit}>
+            <TextField
+              fullWidth
+              label="Nome"
+              margin="normal"
+              required
+              autoComplete="name"
+              autoFocus
+              value={formData.name}
+              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+              disabled={loading}
+            />
+            <TextField
+              fullWidth
+              label="Cognome"
+              margin="normal"
+              required
+              autoComplete="family-name"
+              value={formData.surname}
+              onChange={(e) => setFormData(prev => ({ ...prev, surname: e.target.value }))}
+              disabled={loading}
+            />
+            <TextField
+              fullWidth
+              label="Telefono"
+              margin="normal"
+              required
+              autoComplete="tel"
+              value={formData.phone}
+              onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+              disabled={loading}
+            />
+            <TextField
+              fullWidth
+              label="Email"
+              type="email"
+              margin="normal"
+              required
+              autoComplete="email"
+              value={formData.email}
+              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+              disabled={loading}
+            />
+            <TextField
+              fullWidth
+              label="Password"
+              type="password"
+              margin="normal"
+              required
+              autoComplete="new-password"
+              helperText="Minimo 8 caratteri"
+              value={formData.password}
+              onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+              disabled={loading}
+            />
+            <TextField
+              fullWidth
+              label="Conferma Password"
+              type="password"
+              margin="normal"
+              required
+              autoComplete="new-password"
+              value={formData.confirmPassword}
+              onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+              disabled={loading}
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              size="large"
+              disabled={loading}
+              sx={{
+                mt: 3,
+                mb: 2,
+                py: 1.5,
+              }}
+            >
+              {loading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                'Registrati'
+              )}
+            </Button>
+          </form>
 
-                    {/* Email */}
-                    <div style={{ marginBottom: '20px' }}>
-                        <label
-                            htmlFor="email"
-                            style={{
-                                display: 'block',
-                                marginBottom: '8px',
-                                fontWeight: '500'
-                            }}
-                        >
-                            Email
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                            disabled={loading}
-                            style={{
-                                width: '100%',
-                                padding: '12px',
-                                border: '1px solid #ddd',
-                                borderRadius: '4px',
-                                fontSize: '16px'
-                            }}
-                        />
-                    </div>
+          {/* Divider */}
+          <Divider sx={{ my: 3 }} />
 
-                    {/* Password */}
-                    <div style={{ marginBottom: '20px' }}>
-                        <label
-                            htmlFor="password"
-                            style={{
-                                display: 'block',
-                                marginBottom: '8px',
-                                fontWeight: '500'
-                            }}
-                        >
-                            Password
-                        </label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                            disabled={loading}
-                            minLength={6}
-                            style={{
-                                width: '100%',
-                                padding: '12px',
-                                border: '1px solid #ddd',
-                                borderRadius: '4px',
-                                fontSize: '16px'
-                            }}
-                        />
-                        <small style={{
-                            display: 'block',
-                            marginTop: '5px',
-                            color: '#666'
-                        }}>
-                            Minimo 6 caratteri
-                        </small>
-                    </div>
-
-                    {/* Errore */}
-                    {error && (
-                        <div style={{
-                            padding: '12px',
-                            backgroundColor: '#f8d7da',
-                            border: '1px solid #f5c6cb',
-                            borderRadius: '4px',
-                            color: '#721c24',
-                            marginBottom: '20px'
-                        }}>
-                            {error}
-                        </div>
-                    )}
-
-                    {/* Pulsante Submit */}
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        style={{
-                            width: '100%',
-                            padding: '12px',
-                            backgroundColor: loading ? '#ccc' : '#007bff',
-                            color: 'black',
-                            border: 'none',
-                            borderRadius: '4px',
-                            fontSize: '16px',
-                            fontWeight: 'bold',
-                            cursor: loading ? 'not-allowed' : 'pointer',
-                            transition: 'background-color 0.2s'
-                        }}
-                    >
-                        {loading ? 'Registrazione in corso...' : 'Registrati'}
-                    </button>
-                </form>
-
-                {/* Link a Login */}
-                <p style={{
-                    textAlign: 'center',
-                    marginTop: '20px',
-                    color: '#666'
-                }}>
-                    Hai già un account?{' '}
-                    <a
-                        href="/login"
-                        style={{
-                            color: '#007bff',
-                            textDecoration: 'none',
-                            fontWeight: '500'
-                        }}
-                    >
-                        Accedi
-                    </a>
-                </p>
-            </div>
-        </div>
-    )
+          {/* Login Link */}
+          <Typography variant="body2" align="center" color="text.secondary">
+            Hai già un account?{' '}
+            <Link
+              href="/login"
+              style={{
+                color: '#1976d2',
+                textDecoration: 'none',
+                fontWeight: 600,
+              }}
+            >
+              Accedi
+            </Link>
+          </Typography>
+        </Paper>
+      </Container>
+    </Box>
+  )
 }

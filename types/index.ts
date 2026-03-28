@@ -48,6 +48,7 @@ export interface User {
     name: string
     surname: string
     email: string
+    phone?: string | null 
     role: 'USER' | 'ADMIN'
     createdAt: string
     updatedAt: string

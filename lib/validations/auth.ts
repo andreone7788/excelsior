@@ -4,6 +4,10 @@ import { z } from "zod"
 export const registerSchema = z.object({
     name: z.string().min(2, "Il nome deve contenere almeno 2 caratteri"),
     surname: z.string().min(2, "Il cognome deve contenere almeno 2 caratteri"),
+    // phone: deve essere un numero e non deve superare i 15 caratteri (es. +123456789012345)
+    phone: z.string().refine(val => val.toString().length <= 15, {
+        message: "Il numero di telefono deve contenere al massimo 15 cifre"
+    }),
     email: z.string().email("Indirizzo email non valido"),
     password: z.string().min(8, "La password deve contenere almeno 8 caratteri")
         .regex(/[A-Z]/, "Almeno una maiuscola")
