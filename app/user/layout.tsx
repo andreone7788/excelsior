@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { DashboardUser } from '@/components/layout/DashboardUser'
+import { DashboardLayout } from '@/components/layout/DashboardLayout'
 
 export const metadata = {
     title: 'Dashboard - Excelsior Hotel',
@@ -8,8 +8,8 @@ export const metadata = {
 
 export default function UserLayout({ children }: { children: ReactNode }) {
     return (
-        <DashboardUser>
+        <DashboardLayout>
             {children}
-        </DashboardUser>
+        </DashboardLayout>
     )
 }

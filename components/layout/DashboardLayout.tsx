@@ -14,7 +14,7 @@ interface DashboardUserProps {
     children: ReactNode
 }
 
-export function DashboardUser({ children }: DashboardUserProps) {
+export function DashboardLayout({ children }: DashboardUserProps) {
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down('md'))
     const pathname = usePathname()
