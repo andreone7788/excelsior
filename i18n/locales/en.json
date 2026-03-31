@@ -1,0 +1,193 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "confirm": "Confirm",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "viewMore": "View More"
+  },
+  "nav": {
+    "home": "Home",
+    "rooms": "Rooms",
+    "about": "About Us",
+    "contact": "Contact",
+    "login": "Login",
+    "register": "Sign Up",
+    "dashboard": "Dashboard",
+    "bookings": "Bookings",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "footer": {
+    "copyright": "© {year} Excelsior Hotel. All rights reserved.",
+    "address": "Via Roma 123, 00100 Rome, Italy",
+    "phone": "Phone: +39 06 1234567",
+    "email": "Email: info@excelsior.com",
+    "followUs": "Follow Us",
+    "quickLinks": "Quick Links",
+    "legal": "Legal",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions"
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "subtitle": "Welcome back! Please login to your account",
+      "email": "Email",
+      "emailPlaceholder": "your@email.com",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "submit": "Login",
+      "noAccount": "Don't have an account?",
+      "registerLink": "Sign up now",
+      "or": "or",
+      "socialLogin": "Login with",
+      "errors": {
+        "invalidEmail": "Invalid email",
+        "requiredEmail": "Email is required",
+        "requiredPassword": "Password is required",
+        "wrongCredentials": "Wrong email or password",
+        "generic": "Login error"
+      },
+      "success": "Login successful!"
+    },
+    "register": {
+      "title": "Sign Up",
+      "subtitle": "Create your account",
+      "name": "First Name",
+      "namePlaceholder": "John",
+      "surname": "Last Name",
+      "surnamePlaceholder": "Doe",
+      "email": "Email",
+      "emailPlaceholder": "your@email.com",
+      "phone": "Phone",
+      "phonePlaceholder": "+39 123 456 7890",
+      "phoneOptional": "(optional)",
+      "password": "Password",
+      "passwordPlaceholder": "Minimum 8 characters",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Re-enter password",
+      "acceptTerms": "I accept the",
+      "termsLink": "terms and conditions",
+      "and": "and",
+      "privacyLink": "privacy policy",
+      "submit": "Sign Up",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Login",
+      "errors": {
+        "nameMin": "Name must be at least 2 characters",
+        "surnameMin": "Surname must be at least 2 characters",
+        "invalidEmail": "Invalid email",
+        "passwordMin": "Password must be at least 8 characters",
+        "passwordMismatch": "Passwords don't match",
+        "phoneInvalid": "Invalid phone number",
+        "phoneMin": "Phone must be at least 10 digits",
+        "emailExists": "Email already registered",
+        "generic": "Registration error"
+      },
+      "success": "Registration successful!"
+    }
+  },
+  "dashboard": {
+    "user": {
+      "welcome": "Welcome, {name}!",
+      "subtitle": "Here's an overview of your activities",
+      "stats": {
+        "activeBookings": "Active Bookings",
+        "aiMessages": "AI Messages",
+        "loyaltyPoints": "Loyalty Points",
+        "favoriteRooms": "Favorite Rooms"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "bookRoom": {
+          "title": "Book a room",
+          "description": "Explore our available rooms"
+        },
+        "chatAI": {
+          "title": "Chat with AI",
+          "description": "Ask our assistant for advice"
+        },
+        "viewBookings": {
+          "title": "My bookings",
+          "description": "Manage your bookings"
+        }
+      },
+      "recentActivity": {
+        "title": "Recent Activity",
+        "noActivity": "No recent activity",
+        "noActivitySubtitle": "Start exploring our rooms or chat with the AI assistant!"
+      }
+    }
+  },
+  "bookings": {
+    "title": "My Bookings",
+    "subtitle": "Manage your bookings",
+    "noBookings": "You don't have any bookings yet",
+    "createFirst": "Book your first room",
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled",
+      "completed": "Completed"
+    },
+    "actions": {
+      "view": "View",
+      "edit": "Edit",
+      "cancel": "Cancel"
+    },
+    "details": {
+      "room": "Room",
+      "checkIn": "Check-in",
+      "checkOut": "Check-out",
+      "nights": "Nights",
+      "guests": "Guests",
+      "totalPrice": "Total"
+    }
+  },
+  "profile": {
+    "title": "My Profile",
+    "subtitle": "Update your personal information",
+    "personalInfo": "Personal Information",
+    "name": "First Name",
+    "surname": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm New Password",
+    "saveChanges": "Save Changes",
+    "success": "Profile updated successfully!",
+    "error": "Error updating profile"
+  },
+  "chat": {
+    "title": "AI Assistant",
+    "subtitle": "Ask me anything!",
+    "placeholder": "Type a message...",
+    "send": "Send",
+    "typing": "Typing...",
+    "suggestions": {
+      "title": "Try asking:",
+      "roomAvailability": "Which rooms are available?",
+      "bestRoom": "What's the best room for me?",
+      "localAttractions": "What's there to see nearby?"
+    },
+    "welcome": "Hello! I'm your virtual assistant. How can I help you today?",
+    "error": "Error communicating with AI"
+  }
+}

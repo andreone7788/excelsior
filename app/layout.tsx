@@ -1,34 +1,35 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+'use client'
+
+import { ReactNode, useEffect } from 'react'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter'
 import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
-import { AuthProvider } from '@/lib/context/AuthContext'
 import { theme } from '@/lib/theme'
+import { AuthProvider } from '@/lib/context/AuthContext'
+import { I18nextProvider } from 'react-i18next'
+import i18n from '@/i18n/config'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+export default function RootLayout({ children }: { children: ReactNode }) {
+    useEffect(() => {
+        // Carica lingua salvata (se esiste)
+        const savedLang = localStorage.getItem('language')
+        if (savedLang && (savedLang === 'it' || savedLang === 'en')) {
+            i18n.changeLanguage(savedLang)
+        }
+    }, [])
 
-export const metadata: Metadata = {
-    title: 'Excelsior Hotel - Luxury Booking Experience',
-    description: 'Prenota la tua camera ideale con il nostro AI assistant',
-}
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="it">
-            <body className={inter.className}>
-                <AppRouterCacheProvider options={{ enableCssLayer: true }}>
-                    <ThemeProvider theme={theme}>
-                        {/* Reset CSS + Material baseline */}
-                        <CssBaseline />
-
-                        {/* Auth context provider */}
-                        <AuthProvider>
-                            {children}
-                        </AuthProvider>
-                    </ThemeProvider>
-                </AppRouterCacheProvider>
+        <html lang={i18n.language || 'it'}>
+            <body>
+                <I18nextProvider i18n={i18n}>
+                    <AppRouterCacheProvider>
+                        <ThemeProvider theme={theme}>
+                            <CssBaseline />
+                            <AuthProvider>{children}</AuthProvider>
+                        </ThemeProvider>
+                    </AppRouterCacheProvider>
+                </I18nextProvider>
             </body>
         </html>
     )

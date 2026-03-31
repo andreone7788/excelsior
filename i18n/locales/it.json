@@ -1,0 +1,193 @@
+{
+  "common": {
+    "welcome": "Benvenuto",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "close": "Chiudi",
+    "confirm": "Conferma",
+    "loading": "Caricamento...",
+    "error": "Errore",
+    "success": "Successo",
+    "search": "Cerca",
+    "filter": "Filtra",
+    "sort": "Ordina",
+    "back": "Indietro",
+    "next": "Avanti",
+    "previous": "Precedente",
+    "viewMore": "Vedi altro"
+  },
+  "nav": {
+    "home": "Home",
+    "rooms": "Camere",
+    "about": "Chi Siamo",
+    "contact": "Contatti",
+    "login": "Accedi",
+    "register": "Registrati",
+    "dashboard": "Dashboard",
+    "bookings": "Prenotazioni",
+    "profile": "Profilo",
+    "logout": "Esci"
+  },
+  "footer": {
+    "copyright": "© {year} Excelsior Hotel. Tutti i diritti riservati.",
+    "address": "Via Roma 123, 00100 Roma, Italia",
+    "phone": "Tel: +39 06 1234567",
+    "email": "Email: info@excelsior.com",
+    "followUs": "Seguici su",
+    "quickLinks": "Link Rapidi",
+    "legal": "Note Legali",
+    "privacy": "Privacy Policy",
+    "terms": "Termini e Condizioni"
+  },
+  "auth": {
+    "login": {
+      "title": "Accedi",
+      "subtitle": "Benvenuto! Accedi al tuo account",
+      "email": "Email",
+      "emailPlaceholder": "tuo@email.com",
+      "password": "Password",
+      "passwordPlaceholder": "Inserisci la password",
+      "rememberMe": "Ricordami",
+      "forgotPassword": "Password dimenticata?",
+      "submit": "Accedi",
+      "noAccount": "Non hai un account?",
+      "registerLink": "Registrati ora",
+      "or": "oppure",
+      "socialLogin": "Accedi con",
+      "errors": {
+        "invalidEmail": "Email non valida",
+        "requiredEmail": "Email obbligatoria",
+        "requiredPassword": "Password obbligatoria",
+        "wrongCredentials": "Email o password errati",
+        "generic": "Errore durante il login"
+      },
+      "success": "Login effettuato con successo!"
+    },
+    "register": {
+      "title": "Registrati",
+      "subtitle": "Crea il tuo account",
+      "name": "Nome",
+      "namePlaceholder": "Mario",
+      "surname": "Cognome",
+      "surnamePlaceholder": "Rossi",
+      "email": "Email",
+      "emailPlaceholder": "tuo@email.com",
+      "phone": "Telefono",
+      "phonePlaceholder": "+39 123 456 7890",
+      "phoneOptional": "(opzionale)",
+      "password": "Password",
+      "passwordPlaceholder": "Minimo 8 caratteri",
+      "confirmPassword": "Conferma Password",
+      "confirmPasswordPlaceholder": "Reinserisci la password",
+      "acceptTerms": "Accetto i",
+      "termsLink": "termini e condizioni",
+      "and": "e la",
+      "privacyLink": "privacy policy",
+      "submit": "Registrati",
+      "hasAccount": "Hai già un account?",
+      "loginLink": "Accedi",
+      "errors": {
+        "nameMin": "Il nome deve contenere almeno 2 caratteri",
+        "surnameMin": "Il cognome deve contenere almeno 2 caratteri",
+        "invalidEmail": "Email non valida",
+        "passwordMin": "La password deve contenere almeno 8 caratteri",
+        "passwordMismatch": "Le password non coincidono",
+        "phoneInvalid": "Numero di telefono non valido",
+        "phoneMin": "Il telefono deve contenere almeno 10 cifre",
+        "emailExists": "Email già registrata",
+        "generic": "Errore durante la registrazione"
+      },
+      "success": "Registrazione completata!"
+    }
+  },
+  "dashboard": {
+    "user": {
+      "welcome": "Benvenuto, {name}!",
+      "subtitle": "Ecco un riepilogo delle tue attività",
+      "stats": {
+        "activeBookings": "Prenotazioni Attive",
+        "aiMessages": "Messaggi AI",
+        "loyaltyPoints": "Punti Fedeltà",
+        "favoriteRooms": "Camere Preferite"
+      },
+      "quickActions": {
+        "title": "Azioni Rapide",
+        "bookRoom": {
+          "title": "Prenota una camera",
+          "description": "Esplora le nostre camere disponibili"
+        },
+        "chatAI": {
+          "title": "Chatta con AI",
+          "description": "Chiedi consigli al nostro assistente"
+        },
+        "viewBookings": {
+          "title": "Le mie prenotazioni",
+          "description": "Gestisci le tue prenotazioni"
+        }
+      },
+      "recentActivity": {
+        "title": "Attività Recenti",
+        "noActivity": "Nessuna attività recente",
+        "noActivitySubtitle": "Inizia esplorando le nostre camere o chatta con l'AI assistant!"
+      }
+    }
+  },
+  "bookings": {
+    "title": "Le Mie Prenotazioni",
+    "subtitle": "Gestisci le tue prenotazioni",
+    "noBookings": "Non hai ancora prenotazioni",
+    "createFirst": "Prenota la tua prima camera",
+    "status": {
+      "pending": "In Attesa",
+      "confirmed": "Confermata",
+      "cancelled": "Cancellata",
+      "completed": "Completata"
+    },
+    "actions": {
+      "view": "Visualizza",
+      "edit": "Modifica",
+      "cancel": "Cancella"
+    },
+    "details": {
+      "room": "Camera",
+      "checkIn": "Check-in",
+      "checkOut": "Check-out",
+      "nights": "Notti",
+      "guests": "Ospiti",
+      "totalPrice": "Totale"
+    }
+  },
+  "profile": {
+    "title": "Il Mio Profilo",
+    "subtitle": "Aggiorna le tue informazioni personali",
+    "personalInfo": "Informazioni Personali",
+    "name": "Nome",
+    "surname": "Cognome",
+    "email": "Email",
+    "phone": "Telefono",
+    "changePassword": "Cambia Password",
+    "currentPassword": "Password Attuale",
+    "newPassword": "Nuova Password",
+    "confirmNewPassword": "Conferma Nuova Password",
+    "saveChanges": "Salva Modifiche",
+    "success": "Profilo aggiornato con successo!",
+    "error": "Errore durante l'aggiornamento del profilo"
+  },
+  "chat": {
+    "title": "AI Assistant",
+    "subtitle": "Chiedimi qualsiasi cosa!",
+    "placeholder": "Scrivi un messaggio...",
+    "send": "Invia",
+    "typing": "Sta scrivendo...",
+    "suggestions": {
+      "title": "Prova a chiedere:",
+      "roomAvailability": "Quali camere sono disponibili?",
+      "bestRoom": "Qual è la camera migliore per me?",
+      "localAttractions": "Cosa c'è da vedere in zona?"
+    },
+    "welcome": "Ciao! Sono il tuo assistente virtuale. Come posso aiutarti oggi?",
+    "error": "Errore nella comunicazione con l'AI"
+  }
+}

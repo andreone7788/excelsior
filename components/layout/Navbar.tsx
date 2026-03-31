@@ -1,201 +1,161 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useAuth } from '@/lib/hooks/useAuth'
-import { AppBar, Toolbar, Typography, Button, IconButton, Avatar, Menu, MenuItem, Container, Box, Divider } from '@mui/material'
-import { AccountCircle, Dashboard, Logout, CalendarMonth, ChatBubble, AdminPanelSettings } from '@mui/icons-material'
-import { useState, MouseEvent } from 'react'
+import { useTranslation } from 'react-i18next'
+import { AppBar, Toolbar, Typography, Button, IconButton, Drawer, List, ListItem, ListItemButton, ListItemText, Box, Container, useTheme, useMediaQuery } from '@mui/material'
+import { Menu as MenuIcon, Close } from '@mui/icons-material'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 
-export function Navbar() {
-    const { user, isAuthenticated, isAdmin, logout } = useAuth()
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+export default function Navbar() {
+    const { t } = useTranslation()
+    const { user } = useAuth()
+    const pathname = usePathname()
+    const theme = useTheme()
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+    const [mobileOpen, setMobileOpen] = useState(false)
 
-    const handleMenu = (event: MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget)
+    const handleDrawerToggle = () => {
+        setMobileOpen(!mobileOpen)
     }
 
-    const handleClose = () => {
-        setAnchorEl(null)
-    }
+    const navLinks = [
+        { label: t('nav.home'), href: '/' },
+        { label: t('nav.rooms'), href: '/rooms' },
+        { label: t('nav.about'), href: '/about' },
+        { label: t('nav.contact'), href: '/contact' },
+    ]
 
-    const handleLogout = async () => {
-        handleClose()
-        try {
-            await logout()
-        } catch (error) {
-            console.error('Logout failed:', error)
-        }
-    }
+    const drawer = (
+        <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2 }}>
+                <Typography variant="h6" fontWeight={700} color="primary">
+                    EXCELSIOR
+                </Typography>
+                <IconButton onClick={handleDrawerToggle}>
+                    <Close />
+                </IconButton>
+            </Box>
+            <List>
+                {navLinks.map((item) => (
+                    <ListItem key={item.href} disablePadding>
+                        <ListItemButton
+                            component={Link}
+                            href={item.href}
+                            selected={pathname === item.href}
+                            sx={{ textAlign: 'center' }}
+                        >
+                            <ListItemText primary={item.label} />
+                        </ListItemButton>
+                    </ListItem>
+                ))}
+                {!user ? (
+                    <>
+                        <ListItem disablePadding>
+                            <ListItemButton component={Link} href="/login" sx={{ textAlign: 'center' }}>
+                                <ListItemText primary={t('nav.login')} />
+                            </ListItemButton>
+                        </ListItem>
+                        <ListItem disablePadding>
+                            <ListItemButton component={Link} href="/register" sx={{ textAlign: 'center' }}>
+                                <ListItemText primary={t('nav.register')} />
+                            </ListItemButton>
+                        </ListItem>
+                    </>
+                ) : (
+                    <ListItem disablePadding>
+                        <ListItemButton component={Link} href="/user/dashboard" sx={{ textAlign: 'center' }}>
+                            <ListItemText primary={t('nav.dashboard')} />
+                        </ListItemButton>
+                    </ListItem>
+                )}
+            </List>
+        </Box>
+    )
 
     return (
-        <AppBar
-            position="sticky"
-            color="default"
-            elevation={1}
-            sx={{ bgcolor: 'background.page' }}
-        >
-            <Container maxWidth="xl">
-                <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
-                    {/* LOGO */}
-                    <Typography
-                        variant="h6"
-                        component={Link}
-                        href="/"
-                        sx={{
-                            fontWeight: 700,
-                            fontSize: '1.5rem',
-                            color: 'primary.main',
-                            textDecoration: 'none',
-                            letterSpacing: '-0.5px',
-                            '&:hover': {
-                                opacity: 0.8,
-                            },
-                        }}
-                    >
-                        EXCELSIOR
-                    </Typography>
-
-                    {/* NAV LINKS */}
-                    <Box
-                        sx={{
-                            flexGrow: 1,
-                            display: { xs: 'none', md: 'flex' },
-                            ml: 6,
-                            gap: 1
-                        }}
-                    >
-                        <Button
+        <>
+            <AppBar position="sticky" elevation={0} sx={{ bgcolor: 'background.paper', color: 'text.primary', borderBottom: 1, borderColor: 'divider' }}>
+                <Container maxWidth="xl">
+                    <Toolbar disableGutters>
+                        {/* Logo */}
+                        <Typography
+                            variant="h5"
                             component={Link}
-                            href="/rooms"
-                            color="inherit"
-                            sx={{ fontWeight: 500 }}
+                            href="/"
+                            sx={{
+                                mr: 4,
+                                fontWeight: 700,
+                                color: 'primary.main',
+                                textDecoration: 'none',
+                                letterSpacing: '0.5px',
+                            }}
                         >
-                            Camere
-                        </Button>
-                        {isAuthenticated && (
-                            <Button
-                                component={Link}
-                                href="/user/chat"
-                                color="inherit"
-                                startIcon={<ChatBubble />}
-                                sx={{ fontWeight: 500 }}
-                            >
-                                AI Assistant
-                            </Button>
-                        )}
-                    </Box>
+                            EXCELSIOR
+                        </Typography>
 
-                    {/* USER MENU */}
-                    {isAuthenticated ? (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Typography
-                                variant="body2"
-                                sx={{
-                                    display: { xs: 'none', sm: 'block' },
-                                    color: 'text.secondary',
-                                    mr: 1
-                                }}
-                            >
-                                {user?.name}
-                            </Typography>
-                            <IconButton
-                                size="large"
-                                onClick={handleMenu}
-                                color="inherit"
-                            >
-                                <Avatar
-                                    sx={{
-                                        width: 36,
-                                        height: 36,
-                                        bgcolor: 'primary.main',
-                                        fontSize: '1rem',
-                                        fontWeight: 600,
-                                    }}
-                                >
-                                    {user?.name?.charAt(0).toUpperCase()}
-                                </Avatar>
-                            </IconButton>
-                            <Menu
-                                anchorEl={anchorEl}
-                                open={Boolean(anchorEl)}
-                                onClose={handleClose}
-                                anchorOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                PaperProps={{
-                                    elevation: 3,
-                                    sx: {
-                                        mt: 1.5,
-                                        minWidth: 220,
-                                    }
-                                }}
-                            >
-                                <Box sx={{ px: 2, py: 1 }}>
-                                    <Typography variant="subtitle1" fontWeight={600}>
-                                        {user?.name}
-                                    </Typography>
-                                    <Typography variant="subtitle2" fontWeight={600}>
-                                        {user?.email}
-                                    </Typography>
-                                </Box>
-                                <Divider />
-                                <MenuItem
-                                    component={Link}
-                                    href={isAdmin ? '/admin/dashboard' : '/user/dashboard'}
-                                    onClick={handleClose}
-                                >
-                                    {isAdmin ? (
-                                        <AdminPanelSettings sx={{ mr: 1.5 }} fontSize="small" />
+                        {/* Desktop Menu */}
+                        {!isMobile && (
+                            <Box sx={{ flexGrow: 1, display: 'flex', gap: 1 }}>
+                                {navLinks.map((item) => (
+                                    <Button
+                                        key={item.href}
+                                        component={Link}
+                                        href={item.href}
+                                        sx={{
+                                            color: pathname === item.href ? 'primary.main' : 'text.primary',
+                                            fontWeight: pathname === item.href ? 600 : 400,
+                                            '&:hover': { bgcolor: 'action.hover' },
+                                        }}
+                                    >
+                                        {item.label}
+                                    </Button>
+                                ))}
+                            </Box>
+                        )}
+
+                        {/* Right Side */}
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 'auto' }}>
+                            {/* Language Switcher */}
+                            <LanguageSwitcher />
+
+                            {/* Auth Buttons */}
+                            {!isMobile && (
+                                <>
+                                    {!user ? (
+                                        <>
+                                            <Button component={Link} href="/login" variant="outlined">
+                                                {t('nav.login')}
+                                            </Button>
+                                            <Button component={Link} href="/register" variant="contained">
+                                                {t('nav.register')}
+                                            </Button>
+                                        </>
                                     ) : (
-                                        <Dashboard sx={{ mr: 1.5 }} fontSize="small" />
+                                        <Button component={Link} href="/user/dashboard" variant="contained">
+                                            {t('nav.dashboard')}
+                                        </Button>
                                     )}
-                                    Dashboard
-                                </MenuItem>
-                                <MenuItem
-                                    component={Link}
-                                    href="/user/profile"
-                                    onClick={handleClose}
-                                >
-                                    <AccountCircle sx={{ mr: 1.5 }} fontSize="small" />
-                                    Profilo
-                                </MenuItem>
-                                <MenuItem
-                                    component={Link}
-                                    href="/user/bookings"
-                                    onClick={handleClose}
-                                >
-                                    <CalendarMonth sx={{ mr: 1.5 }} fontSize="small" />
-                                    Prenotazioni
-                                </MenuItem>
-                                <Divider />
-                                <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
-                                    <Logout sx={{ mr: 1.5 }} fontSize="small" />
-                                    Logout
-                                </MenuItem>
-                            </Menu>
+                                </>
+                            )}
+
+                            {/* Mobile Menu Icon */}
+                            {isMobile && (
+                                <IconButton color="inherit" onClick={handleDrawerToggle}>
+                                    <MenuIcon />
+                                </IconButton>
+                            )}
                         </Box>
-                    ) : (
-                        <Box sx={{ display: 'flex', gap: 1 }}>
-                            <Button
-                                component={Link}
-                                href="/login"
-                                color="inherit"
-                                variant="outlined"
-                            >
-                                Login
-                            </Button>
-                            <Button
-                                component={Link}
-                                href="/register"
-                                variant="contained"
-                            >
-                                Registrati
-                            </Button>
-                        </Box>
-                    )}
-                </Toolbar>
-            </Container>
-        </AppBar>
+                    </Toolbar>
+                </Container>
+            </AppBar>
+
+            {/* Mobile Drawer */}
+            <Drawer anchor="right" open={mobileOpen} onClose={handleDrawerToggle}>
+                {drawer}
+            </Drawer>
+        </>
     )
 }
