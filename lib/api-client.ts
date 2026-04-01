@@ -49,8 +49,9 @@ class ApiClient {
             cache,
         }
 
+        // Se c'è un body e il metodo non è GET, aggiungilo alla richiesta
         if (body && method !== 'GET') {
-            config.body = JSON.stringify(body)
+            config.body = typeof body === 'string' ? body : JSON.stringify(body)
         }
 
         const url = `${this.baseURL}${endpoint}`

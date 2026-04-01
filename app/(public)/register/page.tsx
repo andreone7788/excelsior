@@ -1,41 +1,62 @@
 'use client'
 
-import { useState, FormEvent } from 'react'
-import Link from 'next/link'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Container, Paper, TextField, Button, Typography, Box, Alert, CircularProgress, Divider } from '@mui/material'
-import { PersonAddOutlined } from '@mui/icons-material'
+import Link from 'next/link'
+import { useTranslation } from 'react-i18next'
+import { Box, Container, Paper, TextField, Button, Typography, Alert, Divider, Checkbox, FormControlLabel, CircularProgress, Grid } from '@mui/material'
+import { PersonAdd } from '@mui/icons-material'
 
 export default function RegisterPage() {
+  const { t } = useTranslation()
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+
   const [formData, setFormData] = useState({
     name: '',
     surname: '',
-    phone: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
+    acceptTerms: false,
   })
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [apiError, setApiError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
 
-    // Validazione password
-    if (formData.password !== formData.confirmPassword) {
-      setError('Le password non coincidono')
-      setLoading(false)
-      return
+    if (formData.name.length < 2) {
+      newErrors.name = t('auth.register.errors.nameMin')
     }
-
+    if (formData.surname.length < 2) {
+      newErrors.surname = t('auth.register.errors.surnameMin')
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = t('auth.register.errors.invalidEmail')
+    }
     if (formData.password.length < 8) {
-      setError('La password deve contenere almeno 8 caratteri')
-      setLoading(false)
-      return
+      newErrors.password = t('auth.register.errors.passwordMin')
     }
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = t('auth.register.errors.passwordMismatch')
+    }
+    if (formData.phone && formData.phone.length < 10) {
+      newErrors.phone = t('auth.register.errors.phoneMin')
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setApiError('')
+
+    if (!validateForm()) return
+
+    setLoading(true)
 
     try {
       const res = await fetch('/api/auth/register', {
@@ -44,8 +65,8 @@ export default function RegisterPage() {
         body: JSON.stringify({
           name: formData.name,
           surname: formData.surname,
-          phone: formData.phone,
           email: formData.email,
+          phone: formData.phone || undefined,
           password: formData.password,
         }),
       })
@@ -53,167 +74,199 @@ export default function RegisterPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        throw new Error(data.error || 'Errore durante la registrazione')
+        throw new Error(data.error || t('auth.register.errors.generic'))
       }
 
-      // Redirect to dashboard
-      router.push('/user/dashboard')
-      router.refresh()
+      // Registrazione ok → redirect a login
+      router.push('/login?registered=true')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Errore durante la registrazione')
+      setApiError(err instanceof Error ? err.message : t('auth.register.errors.generic'))
     } finally {
       setLoading(false)
     }
   }
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }))
+    // Clear error for this field
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: '' }))
+    }
+  }
+
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        bgcolor: 'background.default',
-        py: 4,
-      }}
-    >
-      <Container maxWidth="sm">
-        <Paper
-          elevation={3}
-          sx={{
-            p: 4,
-            borderRadius: 2,
-          }}
-        >
-          {/* Header */}
-          <Box sx={{ textAlign: 'center', mb: 3 }}>
-            <PersonAddOutlined
-              sx={{
-                fontSize: 48,
-                color: 'primary.main',
-                mb: 1,
-              }}
-            />
-            <Typography variant="h4" component="h1" fontWeight={700} gutterBottom>
-              Crea Account
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Unisciti a Excelsior Hotel
-            </Typography>
-          </Box>
+    <Container maxWidth="md" sx={{ mt: 8, mb: 8 }}>
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+        {/* Header */}
+        <Box sx={{ textAlign: 'center', mb: 4 }}>
+          <PersonAdd sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
+          <Typography variant="h4" fontWeight={700} gutterBottom>
+            {t('auth.register.title')}
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            {t('auth.register.subtitle')}
+          </Typography>
+        </Box>
 
-          {/* Error Alert */}
-          {error && (
-            <Alert severity="error" sx={{ mb: 3 }}>
-              {error}
-            </Alert>
-          )}
+        {/* Error Alert */}
+        {apiError && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {apiError}
+          </Alert>
+        )}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit}>
-            <TextField
-              fullWidth
-              label="Nome"
-              margin="normal"
-              required
-              autoComplete="name"
-              autoFocus
-              value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              disabled={loading}
-            />
-            <TextField
-              fullWidth
-              label="Cognome"
-              margin="normal"
-              required
-              autoComplete="family-name"
-              value={formData.surname}
-              onChange={(e) => setFormData(prev => ({ ...prev, surname: e.target.value }))}
-              disabled={loading}
-            />
-            <TextField
-              fullWidth
-              label="Telefono"
-              margin="normal"
-              required
-              autoComplete="tel"
-              value={formData.phone}
-              onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-              disabled={loading}
-            />
-            <TextField
-              fullWidth
-              label="Email"
-              type="email"
-              margin="normal"
-              required
-              autoComplete="email"
-              value={formData.email}
-              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-              disabled={loading}
-            />
-            <TextField
-              fullWidth
-              label="Password"
-              type="password"
-              margin="normal"
-              required
-              autoComplete="new-password"
-              helperText="Minimo 8 caratteri"
-              value={formData.password}
-              onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-              disabled={loading}
-            />
-            <TextField
-              fullWidth
-              label="Conferma Password"
-              type="password"
-              margin="normal"
-              required
-              autoComplete="new-password"
-              value={formData.confirmPassword}
-              onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-              disabled={loading}
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              size="large"
-              disabled={loading}
-              sx={{
-                mt: 3,
-                mb: 2,
-                py: 1.5,
-              }}
-            >
-              {loading ? (
-                <CircularProgress size={24} color="inherit" />
-              ) : (
-                'Registrati'
-              )}
-            </Button>
-          </form>
+        {/* Form */}
+        <Box component="form" onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
+            {/* Name */}
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                label={t('auth.register.name')}
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder={t('auth.register.namePlaceholder')}
+                required
+                error={!!errors.name}
+                helperText={errors.name}
+              />
+            </Grid>
 
-          {/* Divider */}
+            {/* Surname */}
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                label={t('auth.register.surname')}
+                name="surname"
+                value={formData.surname}
+                onChange={handleChange}
+                placeholder={t('auth.register.surnamePlaceholder')}
+                required
+                error={!!errors.surname}
+                helperText={errors.surname}
+              />
+            </Grid>
+
+            {/* Email */}
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                fullWidth
+                label={t('auth.register.email')}
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder={t('auth.register.emailPlaceholder')}
+                required
+                error={!!errors.email}
+                helperText={errors.email}
+              />
+            </Grid>
+
+            {/* Phone */}
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                fullWidth
+                label={`${t('auth.register.phone')} ${t('auth.register.phoneOptional')}`}
+                name="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder={t('auth.register.phonePlaceholder')}
+                error={!!errors.phone}
+                helperText={errors.phone}
+              />
+            </Grid>
+
+            {/* Password */}
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                label={t('auth.register.password')}
+                name="password"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder={t('auth.register.passwordPlaceholder')}
+                required
+                error={!!errors.password}
+                helperText={errors.password}
+              />
+            </Grid>
+
+            {/* Confirm Password */}
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                label={t('auth.register.confirmPassword')}
+                name="confirmPassword"
+                type="password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder={t('auth.register.confirmPasswordPlaceholder')}
+                required
+                error={!!errors.confirmPassword}
+                helperText={errors.confirmPassword}
+              />
+            </Grid>
+          </Grid>
+
+          {/* Terms */}
+          <FormControlLabel
+            control={
+              <Checkbox
+                name="acceptTerms"
+                checked={formData.acceptTerms}
+                onChange={handleChange}
+                color="primary"
+                required
+              />
+            }
+            label={
+              <Typography variant="body2">
+                {t('auth.register.acceptTerms')}{' '}
+                <Link href="/terms" style={{ color: 'inherit', fontWeight: 600 }}>
+                  {t('auth.register.termsLink')}
+                </Link>{' '}
+                {t('auth.register.and')}{' '}
+                <Link href="/privacy" style={{ color: 'inherit', fontWeight: 600 }}>
+                  {t('auth.register.privacyLink')}
+                </Link>
+              </Typography>
+            }
+            sx={{ mt: 2, mb: 3 }}
+          />
+
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            size="large"
+            disabled={loading || !formData.acceptTerms}
+            sx={{ mb: 2, py: 1.5 }}
+          >
+            {loading ? <CircularProgress size={24} color="inherit" /> : t('auth.register.submit')}
+          </Button>
+
           <Divider sx={{ my: 3 }} />
 
-          {/* Login Link */}
-          <Typography variant="body2" align="center" color="text.secondary">
-            Hai già un account?{' '}
-            <Link
-              href="/login"
-              style={{
-                color: '#1976d2',
-                textDecoration: 'none',
-                fontWeight: 600,
-              }}
-            >
-              Accedi
-            </Link>
-          </Typography>
-        </Paper>
-      </Container>
-    </Box>
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              {t('auth.register.hasAccount')}{' '}
+              <Link href="/login" style={{ textDecoration: 'none' }}>
+                <Typography component="span" variant="body2" color="primary" fontWeight={600} sx={{ '&:hover': { textDecoration: 'underline' } }}>
+                  {t('auth.register.loginLink')}
+                </Typography>
+              </Link>
+            </Typography>
+          </Box>
+        </Box>
+      </Paper>
+    </Container>
   )
 }

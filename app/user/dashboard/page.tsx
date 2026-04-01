@@ -1,67 +1,74 @@
 'use client'
 
 import { useAuth } from '@/lib/hooks/useAuth'
+import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/navigation'
-import { Card, CardContent, Typography, Box, Paper, List, ListItem, ListItemText, Chip, IconButton } from '@mui/material'
+import { Box, Typography, Card, CardContent, Button, Paper, Divider, LinearProgress } from '@mui/material'
 import Grid from '@mui/material/Grid'
-import { CalendarMonth, ChatBubble, Hotel, TrendingUp, ArrowForward, NotificationsActive } from '@mui/icons-material'
+import { CalendarMonth, ChatBubble, Stars, Favorite, ArrowForward, HotelOutlined } from '@mui/icons-material'
 
-export default function DashboardPage() {
-  const { user } = useAuth()
+export default function UserDashboardPage() {
+  const { t } = useTranslation()
+  const { user, loading } = useAuth()
   const router = useRouter()
+
+  // Mostra caricamento
+  if (loading) {
+    return (
+      <Box sx={{ width: '100%', mt: 4 }}>
+        <LinearProgress />
+      </Box>
+    )
+  }
 
   const stats = [
     {
-      title: 'Prenotazioni Attive',
-      value: '0',
-      icon: <CalendarMonth />,
-      color: 'primary',
-      change: '+0%',
+      icon: <CalendarMonth sx={{ fontSize: 40, color: 'primary.main' }} />,
+      label: t('dashboard.user.stats.activeBookings'),
+      value: '2',
+      color: 'primary.main',
     },
     {
-      title: 'Messaggi AI',
-      value: '0',
-      icon: <ChatBubble />,
-      color: 'secondary',
-      change: '+0%',
+      icon: <ChatBubble sx={{ fontSize: 40, color: 'success.main' }} />,
+      label: t('dashboard.user.stats.aiMessages'),
+      value: '15',
+      color: 'success.main',
     },
     {
-      title: 'Punti Fedeltà',
-      value: '0',
-      icon: <TrendingUp />,
-      color: 'success',
-      change: '+0',
+      icon: <Stars sx={{ fontSize: 40, color: 'warning.main' }} />,
+      label: t('dashboard.user.stats.loyaltyPoints'),
+      value: '350',
+      color: 'warning.main',
     },
     {
-      title: 'Camere Preferite',
-      value: '0',
-      icon: <Hotel />,
-      color: 'warning',
-      change: '+0',
+      icon: <Favorite sx={{ fontSize: 40, color: 'error.main' }} />,
+      label: t('dashboard.user.stats.favoriteRooms'),
+      value: '3',
+      color: 'error.main',
     },
   ]
 
   const quickActions = [
     {
-      title: 'Prenota una camera',
-      description: 'Esplora le nostre camere disponibili',
-      icon: <Hotel />,
-      color: 'primary',
+      title: t('dashboard.user.quickActions.bookRoom.title'),
+      description: t('dashboard.user.quickActions.bookRoom.description'),
+      icon: <HotelOutlined sx={{ fontSize: 32 }} />,
       action: () => router.push('/rooms'),
+      color: 'primary.main',
     },
     {
-      title: 'Chatta con AI',
-      description: 'Chiedi consigli al nostro assistente',
-      icon: <ChatBubble />,
-      color: 'secondary',
+      title: t('dashboard.user.quickActions.chatAI.title'),
+      description: t('dashboard.user.quickActions.chatAI.description'),
+      icon: <ChatBubble sx={{ fontSize: 32 }} />,
       action: () => router.push('/user/chat'),
+      color: 'success.main',
     },
     {
-      title: 'Le mie prenotazioni',
-      description: 'Gestisci le tue prenotazioni',
-      icon: <CalendarMonth />,
-      color: 'success',
+      title: t('dashboard.user.quickActions.viewBookings.title'),
+      description: t('dashboard.user.quickActions.viewBookings.description'),
+      icon: <CalendarMonth sx={{ fontSize: 32 }} />,
       action: () => router.push('/user/bookings'),
+      color: 'info.main',
     },
   ]
 
@@ -70,151 +77,82 @@ export default function DashboardPage() {
       {/* Welcome Header */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" fontWeight={700} gutterBottom>
-          Benvenuto, {user?.name}! 👋
+          {t('dashboard.user.welcome', { name: user?.name || 'Utente' })}
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Ecco un riepilogo delle tue attività
+          {t('dashboard.user.subtitle')}
         </Typography>
       </Box>
 
-      {/* Stats Grid */}
+      {/* Stats Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        {stats.map((stat) => (
-          <Grid key={stat.title} size={{ xs: 12, sm: 6, lg: 3 }}>
-            <Card
-              sx={{
-                height: '100%',
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: 4,
-                },
-              }}
-            >
+        {stats.map((stat, index) => (
+          <Grid key={index} size={{ xs: 12, sm: 6, lg: 3 }}>
+            <Card elevation={2} sx={{ height: '100%' }}>
               <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
-                  <Box
-                    sx={{
-                      p: 1.5,
-                      borderRadius: 2,
-                      bgcolor: `${stat.color}.main`,
-                      color: 'white',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    {stat.icon}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  {stat.icon}
+                  <Box>
+                    <Typography variant="h4" fontWeight={700} color={stat.color}>
+                      {stat.value}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {stat.label}
+                    </Typography>
                   </Box>
-                  <Chip
-                    label={stat.change}
-                    size="small"
-                    color={stat.change.startsWith('+') ? 'success' : 'default'}
-                    sx={{ fontWeight: 600 }}
-                  />
                 </Box>
-                <Typography variant="h3" fontWeight={700} gutterBottom>
-                  {stat.value}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {stat.title}
-                </Typography>
               </CardContent>
             </Card>
           </Grid>
         ))}
       </Grid>
 
-      {/* Quick Actions & Recent Activity */}
-      <Grid container spacing={3}>
-        {/* Quick Actions */}
-        <Grid size={{ xs: 12, lg: 8 }}>
-          <Paper sx={{ p: 3, height: '100%' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-              <Typography variant="h6" fontWeight={600}>
-                Azioni Rapide
-              </Typography>
-            </Box>
-            <Grid container spacing={2}>
-              {quickActions.map((action) => (
-                <Grid key={action.title} size={{ xs: 12, sm: 4 }}>
-                  <Card
-                    sx={{
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      '&:hover': {
-                        transform: 'translateY(-4px)',
-                        boxShadow: 4,
-                      },
-                    }}
-                    onClick={action.action}
-                  >
-                    <CardContent>
-                      <Box
-                        sx={{
-                          width: 48,
-                          height: 48,
-                          borderRadius: 2,
-                          bgcolor: `${action.color}.main`,
-                          color: 'white',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          mb: 2,
-                        }}
-                      >
-                        {action.icon}
-                      </Box>
-                      <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+      {/* Quick Actions */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h5" fontWeight={600} gutterBottom>
+          {t('dashboard.user.quickActions.title')}
+        </Typography>
+        <Grid container spacing={3} sx={{ mt: 1 }}>
+          {quickActions.map((action, index) => (
+            <Grid key={index} size={{ xs: 12, md: 4 }}>
+              <Card elevation={2} sx={{ height: '100%', cursor: 'pointer', transition: 'all 0.3s', '&:hover': { transform: 'translateY(-4px)', boxShadow: 4 } }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                    <Box sx={{ color: action.color }}>{action.icon}</Box>
+                    <Box sx={{ flexGrow: 1 }}>
+                      <Typography variant="h6" fontWeight={600} gutterBottom>
                         {action.title}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="body2" color="text.secondary" paragraph>
                         {action.description}
                       </Typography>
-                      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                        <IconButton size="small" sx={{ color: `${action.color}.main` }}>
-                          <ArrowForward />
-                        </IconButton>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
+                      <Button variant="outlined" endIcon={<ArrowForward />} onClick={action.action}>
+                        {t('common.viewMore')}
+                      </Button>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
             </Grid>
-          </Paper>
+          ))}
         </Grid>
+      </Box>
 
-        {/* Recent Activity */}
-        <Grid size={{ xs: 12, lg: 4 }}>
-          <Paper sx={{ p: 3, height: '100%' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-              <Typography variant="h6" fontWeight={600}>
-                Attività Recenti
-              </Typography>
-              <NotificationsActive color="action" />
-            </Box>
-            <List>
-              <ListItem
-                sx={{
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  py: 2,
-                  px: 2,
-                  borderRadius: 2,
-                  bgcolor: 'background.default',
-                }}
-              >
-                <ListItemText
-                  primary="Nessuna attività recente"
-                  secondary="Inizia esplorando le nostre camere o chatta con l'AI assistant!"
-                  primaryTypographyProps={{ fontWeight: 600, fontSize: '0.95rem' }}
-                  secondaryTypographyProps={{ fontSize: '0.85rem' }}
-                />
-              </ListItem>
-            </List>
-          </Paper>
-        </Grid>
-      </Grid>
+      {/* Recent Activity */}
+      <Paper elevation={2} sx={{ p: 3 }}>
+        <Typography variant="h5" fontWeight={600} gutterBottom>
+          {t('dashboard.user.recentActivity.title')}
+        </Typography>
+        <Divider sx={{ my: 2 }} />
+        <Box sx={{ textAlign: 'center', py: 6 }}>
+          <Typography variant="h6" color="text.secondary" gutterBottom>
+            {t('dashboard.user.recentActivity.noActivity')}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {t('dashboard.user.recentActivity.noActivitySubtitle')}
+          </Typography>
+        </Box>
+      </Paper>
     </Box>
   )
 }

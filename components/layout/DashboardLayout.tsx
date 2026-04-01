@@ -3,18 +3,18 @@
 import { ReactNode, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Box, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Container, Avatar, Menu, MenuItem, useTheme, useMediaQuery } from '@mui/material'
-import { Menu as MenuIcon, Dashboard, CalendarMonth, ChatBubble, AccountCircle, Logout, ChevronLeft, Home } from '@mui/icons-material'
+import { Box, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Avatar, Menu, MenuItem, useTheme, useMediaQuery, Badge } from '@mui/material'
+import { Menu as MenuIcon, Dashboard, CalendarMonth, ChatBubble, AccountCircle, Logout, Home, Notifications } from '@mui/icons-material'
 import { useAuth } from '@/lib/hooks/useAuth'
+import { useTranslation } from 'react-i18next'
+import LanguageSwitcher from '../LanguageSwitcher'
 
-// Definizione della larghezza del drawer
-const DRAWER_WIDTH = 200
-
-interface DashboardUserProps {
+interface DashboardLayoutProps {
     children: ReactNode
 }
 
-export function DashboardLayout({ children }: DashboardUserProps) {
+export function DashboardLayout({ children }: DashboardLayoutProps) {
+    const { t } = useTranslation()
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down('md'))
     const pathname = usePathname()
@@ -27,7 +27,7 @@ export function DashboardLayout({ children }: DashboardUserProps) {
         setMobileOpen(!mobileOpen)
     }
 
-    const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget)
     }
 
@@ -43,154 +43,94 @@ export function DashboardLayout({ children }: DashboardUserProps) {
 
     // Definizione dei menu di navigazione
     const menuItems = [
-        { text: 'Home', icon: <Home />, path: '/' },
-        { text: 'Dashboard', icon: <Dashboard />, path: '/user/dashboard' },
-        { text: 'Prenotazioni', icon: <CalendarMonth />, path: '/user/bookings' },
+        { text: t('nav.home'), icon: <Home />, path: '/' },
+        { text: t('nav.dashboard'), icon: <Dashboard />, path: '/user/dashboard' },
+        { text: t('nav.bookings'), icon: <CalendarMonth />, path: '/user/bookings' },
         { text: 'AI Assistant', icon: <ChatBubble />, path: '/user/chat' },
-        { text: 'Profilo', icon: <AccountCircle />, path: '/user/profile' },
+        { text: t('nav.profile'), icon: <AccountCircle />, path: '/user/profile' },
     ]
 
     // Contenuto del drawer (sidebar)
     const drawer = (
         <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            {/* Sidebar Header */}
-            <Box
-                sx={{
-                    p: 3,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    borderBottom: 1,
-                    borderColor: 'divider',
-                }}
-            >
-                <Typography
-                    variant="h5"
-                    fontWeight={700}
-                    color="primary"
-                    sx={{ letterSpacing: '0.5px' }}
-                >
+            {/* Logo */}
+            <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+                <Typography variant="h5" fontWeight={700} color="primary">
                     EXCELSIOR
                 </Typography>
-                {isMobile && (
-                    <IconButton onClick={handleDrawerToggle}>
-                        <ChevronLeft />
-                    </IconButton>
-                )}
             </Box>
 
             {/* User Info */}
-            <Box
-                sx={{
-                    p: 3,
-                    borderBottom: 1,
-                    borderColor: 'divider',
-                    bgcolor: 'primary.main',
-                    color: 'white',
-                }}
-            >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Avatar
-                        sx={{
-                            bgcolor: 'white',
-                            color: 'primary.main',
-                            width: 50,
-                            height: 50,
-                            fontSize: '1.5rem',
-                            fontWeight: 700,
-                        }}
-                    >
-                        {user?.name?.charAt(0).toUpperCase()}
-                    </Avatar>
-                    <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Typography variant="subtitle1" fontWeight={600} noWrap>
-                            {user?.name} {user?.surname}
-                        </Typography>
-                        <Typography variant="caption" sx={{ opacity: 0.9 }} noWrap>
-                            {user?.email}
-                        </Typography>
+            {user && (
+                <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Avatar sx={{ bgcolor: 'primary.main', width: 48, height: 48 }}>
+                            {user.name?.[0]?.toUpperCase()}
+                        </Avatar>
+                        <Box>
+                            <Typography variant="subtitle2" fontWeight={600}>
+                                {user.name} {user.surname}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                                {user.email}
+                            </Typography>
+                        </Box>
                     </Box>
                 </Box>
-            </Box>
+            )}
 
-            {/* Navigation Menu */}
-            <List sx={{ flex: 1, px: 2, py: 2 }}>
-                {menuItems.map((item) => {
-                    const isActive = pathname === item.path
-                    return (
-                        <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
-                            <ListItemButton
-                                component={Link}
-                                href={item.path}
-                                onClick={() => isMobile && setMobileOpen(false)}
-                                selected={isActive}
-                                sx={{
-                                    borderRadius: 2,
-                                    py: 1.5,
-                                    '&.Mui-selected': {
-                                        bgcolor: 'primary.main',
-                                        color: 'white',
-                                        '&:hover': {
-                                            bgcolor: 'primary.dark',
-                                        },
-                                        '& .MuiListItemIcon-root': {
-                                            color: 'white',
-                                        },
-                                    },
+            {/* Menu Items */}
+            <List sx={{ flexGrow: 1, pt: 2 }}>
+                {menuItems.map((item) => (
+                    <ListItem key={item.path} disablePadding sx={{ px: 2, mb: 0.5 }}>
+                        <ListItemButton
+                            component={Link}
+                            href={item.path}
+                            selected={pathname === item.path}
+                            onClick={() => isMobile && handleDrawerToggle()}
+                            sx={{
+                                borderRadius: 2,
+                                '&.Mui-selected': {
+                                    bgcolor: 'primary.main',
+                                    color: 'white',
                                     '&:hover': {
-                                        bgcolor: 'action.hover',
+                                        bgcolor: 'primary.dark',
                                     },
-                                }}
-                            >
-                                <ListItemIcon
-                                    sx={{
-                                        minWidth: 40,
-                                        color: isActive ? 'inherit' : 'text.secondary',
-                                    }}
-                                >
-                                    {item.icon}
-                                </ListItemIcon>
-                                <ListItemText
-                                    primary={item.text}
-                                    primaryTypographyProps={{
-                                        fontWeight: isActive ? 600 : 400,
-                                    }}
-                                />
-                            </ListItemButton>
-                        </ListItem>
-                    )
-                })}
+                                    '& .MuiListItemIcon-root': {
+                                        color: 'white',
+                                    },
+                                },
+                            }}
+                        >
+                            <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
+                            <ListItemText primary={item.text} />
+                        </ListItemButton>
+                    </ListItem>
+                ))}
             </List>
 
             {/* Footer */}
-            <Box
-                sx={{
-                    p: 2,
-                    borderTop: 1,
-                    borderColor: 'divider',
-                    bgcolor: 'background.default',
-                }}
-            >
-                <Typography variant="caption" color="text.secondary" align="center" display="block">
-                    © 2026 Excelsior Hotel
+            <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
+                <Typography variant="caption" color="text.secondary">
+                    {t('footer.copyright', { year: new Date().getFullYear() })}
                 </Typography>
             </Box>
         </Box>
     )
 
     return (
-        <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
+        <Box sx={{ display: 'flex', minHeight: '100vh' }}>
             {/* AppBar */}
             <AppBar
                 position="fixed"
-                elevation={0}
                 sx={{
-                    width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
-                    ml: { md: `${DRAWER_WIDTH}px` },
+                    width: { md: `calc(100% - 280px)` },
+                    ml: { md: '280px' },
                     bgcolor: 'background.paper',
                     color: 'text.primary',
                     borderBottom: 1,
                     borderColor: 'divider',
+                    boxShadow: 0,
                 }}
             >
                 <Toolbar>
@@ -203,124 +143,100 @@ export function DashboardLayout({ children }: DashboardUserProps) {
                         <MenuIcon />
                     </IconButton>
 
-                    <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, fontWeight: 600 }}>
+                    <Typography variant="h6" fontWeight={600} sx={{ flexGrow: 1 }}>
                         {menuItems.find((item) => item.path === pathname)?.text || 'Dashboard'}
                     </Typography>
 
-                    {/* User Menu */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-                            <Typography variant="body2" fontWeight={600}>
-                                {user?.name}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                                {user?.role}
-                            </Typography>
-                        </Box>
-                        <IconButton onClick={handleMenu} size="large">
-                            <Avatar
-                                sx={{
-                                    width: 40,
-                                    height: 40,
-                                    bgcolor: 'primary.main',
-                                    fontSize: '1rem',
-                                    fontWeight: 600,
-                                }}
-                            >
-                                {user?.name?.charAt(0).toUpperCase()}
-                            </Avatar>
-                        </IconButton>
-                    </Box>
+                    {/* Language Switcher */}
+                    <LanguageSwitcher />
 
-                    <Menu
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
-                        onClose={handleClose}
-                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        PaperProps={{
-                            elevation: 3,
-                            sx: { mt: 1.5, minWidth: 200 },
-                        }}
-                    >
-                        <Box sx={{ px: 2, py: 1.5 }}>
-                            <Typography variant="subtitle2" fontWeight={600}>
-                                {user?.name} {user?.surname}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary" fontSize="0.875rem">
-                                {user?.email}
-                            </Typography>
-                        </Box>
-                        <Divider />
-                        <MenuItem onClick={() => { handleClose(); router.push('/user/profile') }}>
-                            <AccountCircle sx={{ mr: 1.5 }} fontSize="small" />
-                            Profilo
-                        </MenuItem>
-                        <Divider />
-                        <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
-                            <Logout sx={{ mr: 1.5 }} fontSize="small" />
-                            Logout
-                        </MenuItem>
-                    </Menu>
+                    {/* Notifications */}
+                    <IconButton color="inherit" sx={{ ml: 1 }}>
+                        <Badge badgeContent={3} color="error">
+                            <Notifications />
+                        </Badge>
+                    </IconButton>
+
+                    {/* User Menu */}
+                    <IconButton onClick={handleMenuOpen} sx={{ ml: 1 }}>
+                        <Avatar sx={{ bgcolor: 'primary.main', width: 36, height: 36 }}>
+                            {user?.name?.[0]?.toUpperCase()}
+                        </Avatar>
+                    </IconButton>
                 </Toolbar>
             </AppBar>
+
+            {/* User Menu Dropdown */}
+            <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                PaperProps={{
+                    elevation: 3,
+                    sx: { mt: 1.5, minWidth: 200 },
+                }}
+            >
+                <Box sx={{ px: 2, py: 1.5 }}>
+                    <Typography variant="subtitle2" fontWeight={600}>
+                        {user?.name} {user?.surname}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" fontSize="0.875rem">
+                        {user?.email}
+                    </Typography>
+                </Box>
+                <Divider />
+                <MenuItem onClick={() => { handleClose(); router.push('/user/profile') }}>
+                    <ListItemIcon>
+                        <AccountCircle fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>{t('nav.profile')}</ListItemText>
+                </MenuItem>
+                <Divider />
+                <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
+                    <ListItemIcon sx={{ color: 'error.main' }}>
+                        <Logout fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>{t('nav.logout')}</ListItemText>
+                </MenuItem>
+            </Menu>
 
             {/* Sidebar Drawer */}
             <Box
                 component="nav"
-                sx={{
-                    width: { md: DRAWER_WIDTH },
-                    flexShrink: { md: 0 },
-                }}
+                sx={{ width: { md: 280 }, flexShrink: { md: 0 } }}
             >
-                {/* Mobile drawer */}
                 <Drawer
-                    variant="temporary"
-                    open={mobileOpen}
+                    variant={isMobile ? 'temporary' : 'permanent'}
+                    open={isMobile ? mobileOpen : true}
                     onClose={handleDrawerToggle}
                     ModalProps={{ keepMounted: true }}
                     sx={{
-                        display: { xs: 'block', md: 'none' },
                         '& .MuiDrawer-paper': {
                             boxSizing: 'border-box',
-                            width: DRAWER_WIDTH,
-                        },
-                    }}
-                >
-                    {drawer}
-                </Drawer>
-
-                {/* Desktop drawer */}
-                <Drawer
-                    variant="permanent"
-                    sx={{
-                        display: { xs: 'none', md: 'block' },
-                        '& .MuiDrawer-paper': {
-                            boxSizing: 'border-box',
-                            width: DRAWER_WIDTH,
+                            width: 280,
                             borderRight: 1,
                             borderColor: 'divider',
                         },
                     }}
-                    open
                 >
                     {drawer}
                 </Drawer>
             </Box>
 
-            {/* Main content */}
+            {/* Main Content */}
             <Box
                 component="main"
                 sx={{
                     flexGrow: 1,
-                    width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
-                    minHeight: '100vh',
-                    pt: 8,
+                    p: 3,
+                    width: { md: `calc(100% - 280px)` },
+                    mt: '64px',
+                    bgcolor: 'background.default',
                 }}
             >
-                <Container maxWidth="xl" sx={{ py: 4 }}>
-                    {children}
-                </Container>
+                {children}
             </Box>
         </Box>
     )

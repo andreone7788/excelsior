@@ -1,167 +1,146 @@
 'use client'
 
-import { useState, FormEvent } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Container, Paper, TextField, Button, Typography, Box, Alert, CircularProgress, Divider } from '@mui/material'
-import { LoginOutlined } from '@mui/icons-material'
+import { useTranslation } from 'react-i18next'
+import { useAuth } from '@/lib/hooks/useAuth'
+import { Container, Paper, TextField, Button, Typography, Box, Alert, CircularProgress, Divider, FormControlLabel, Checkbox } from '@mui/material'
+import { Login as LoginIcon } from '@mui/icons-material'
 
 export default function LoginPage() {
+    const { t } = useTranslation()
     const router = useRouter()
+    const { login } = useAuth()
+
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [formData, setFormData] = useState({
         email: '',
         password: '',
+        rememberMe: false,
     })
 
-    const handleSubmit = async (e: FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        setLoading(true)
         setError(null)
+        setLoading(true)
 
         try {
-            const response = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
-            })
-
-            const data = await response.json()
-
-            if (!response.ok) {
-                throw new Error(data.error || 'Errore durante il login')
-            }
-
-            // Reindirizza alla dashboard dopo il login
+            await login(formData)
             router.push('/user/dashboard')
-            router.refresh()
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Errore sconosciuto')
+            setError((err instanceof Error ? err.message : t('auth.login.errors.generic')))
         } finally {
             setLoading(false)
         }
     }
 
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value, type, checked } = e.target
+        setFormData((prev) => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value,
+        }))
+    }
+
     return (
-        <Box
-            sx={{
-                minHeight: '100vh',
-                display: 'flex',
-                alignItems: 'center',
-                bgcolor: 'background.default',
-                py: 4,
-            }}
-        >
-            <Container maxWidth="sm">
-                <Paper
-                    elevation={3}
-                    sx={{
-                        p: 4,
-                        borderRadius: 2,
-                    }}
-                >
-                    {/* Header */}
-                    <Box sx={{ textAlign: 'center', mb: 3 }}>
-                        <LoginOutlined
-                            sx={{
-                                fontSize: 48,
-                                color: 'primary.main',
-                                mb: 1,
-                            }}
-                        />
-                        <Typography variant="h4" component="h1" fontWeight={700} gutterBottom>
-                            Benvenuto
-                        </Typography>
-                        <Typography variant="body1" color="text.secondary">
-                            Accedi al tuo account Excelsior
-                        </Typography>
-                    </Box>
-
-                    {/* Error Alert */}
-                    {error && (
-                        <Alert severity="error" sx={{ mb: 3 }}>
-                            {error}
-                        </Alert>
-                    )}
-
-                    {/* Form */}
-                    <form onSubmit={(e) => handleSubmit(e)}>
-                        <TextField
-                            fullWidth
-                            label="Email"
-                            type="email"
-                            margin="normal"
-                            required
-                            autoComplete="email"
-                            autoFocus
-                            value={formData.email}
-                            onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                            disabled={loading}
-                        />
-                        <TextField
-                            fullWidth
-                            label="Password"
-                            type="password"
-                            margin="normal"
-                            required
-                            autoComplete="current-password"
-                            value={formData.password}
-                            onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                            disabled={loading}
-                        />
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            size="large"
-                            disabled={loading}
-                            sx={{
-                                mt: 3,
-                                mb: 2,
-                                py: 1.5,
-                            }}
-                        >
-                            {loading ? (
-                                <CircularProgress size={24} color="inherit" />
-                            ) : (
-                                'Accedi'
-                            )}
-                        </Button>
-                    </form>
-
-                    {/* Divider */}
-                    <Divider sx={{ my: 3 }} />
-
-                    {/* Register Link */}
-                    <Typography variant="body2" align="center" color="text.secondary">
-                        Non hai ancora un account?{' '}
-                        <Link
-                            href="/register"
-                            style={{
-                                color: '#1976d2',
-                                textDecoration: 'none',
-                                fontWeight: 600,
-                            }}
-                        >
-                            Registrati ora
-                        </Link>
+        <Container maxWidth="sm" sx={{ mt: 8, mb: 8 }}>
+            <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+                {/* Header */}
+                <Box sx={{ textAlign: 'center', mb: 4 }}>
+                    <LoginIcon sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
+                    <Typography variant="h4" fontWeight={700} gutterBottom>
+                        {t('auth.login.title')}
                     </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                        {t('auth.login.subtitle')}
+                    </Typography>
+                </Box>
 
-                    {/* Test Credentials (solo per sviluppo) */}
-                    <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.100', borderRadius: 1 }}>
-                        <Typography variant="caption" display="block" gutterBottom fontWeight={600}>
-                            🔧 Credenziali di test:
+                {/* Error Alert */}
+                {error && (
+                    <Alert severity="error" sx={{ mb: 3 }}>
+                        {error}
+                    </Alert>
+                )}
+
+                {/* Form */}
+                <Box component="form" onSubmit={handleSubmit}>
+                    <TextField
+                        fullWidth
+                        label={t('auth.login.email')}
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder={t('auth.login.emailPlaceholder')}
+                        required
+                        autoComplete="email"
+                        sx={{ mb: 2 }}
+                    />
+
+                    <TextField
+                        fullWidth
+                        label={t('auth.login.password')}
+                        name="password"
+                        type="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        placeholder={t('auth.login.passwordPlaceholder')}
+                        required
+                        autoComplete="current-password"
+                        sx={{ mb: 2 }}
+                    />
+
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="rememberMe"
+                                    checked={formData.rememberMe}
+                                    onChange={handleChange}
+                                    color="primary"
+                                />
+                            }
+                            label={t('auth.login.rememberMe')}
+                        />
+                        <Link href="/forgot-password" style={{ textDecoration: 'none' }}>
+                            <Typography variant="body2" color="primary" sx={{ '&:hover': { textDecoration: 'underline' } }}>
+                                {t('auth.login.forgotPassword')}
+                            </Typography>
+                        </Link>
+                    </Box>
+
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        size="large"
+                        disabled={loading}
+                        sx={{ mb: 2, py: 1.5 }}
+                    >
+                        {loading ? <CircularProgress size={24} color="inherit" /> : t('auth.login.submit')}
+                    </Button>
+
+                    <Divider sx={{ my: 3 }}>
+                        <Typography variant="body2" color="text.secondary">
+                            {t('auth.login.or')}
                         </Typography>
-                        <Typography variant="caption" display="block">
-                            Email: test@example.com
-                        </Typography>
-                        <Typography variant="caption" display="block">
-                            Password: password123
+                    </Divider>
+
+                    <Box sx={{ textAlign: 'center' }}>
+                        <Typography variant="body2" color="text.secondary">
+                            {t('auth.login.noAccount')}{' '}
+                            <Link href="/register" style={{ textDecoration: 'none' }}>
+                                <Typography component="span" variant="body2" color="primary" fontWeight={600} sx={{ '&:hover': { textDecoration: 'underline' } }}>
+                                    {t('auth.login.registerLink')}
+                                </Typography>
+                            </Link>
                         </Typography>
                     </Box>
-                </Paper>
-            </Container>
-        </Box>
+                </Box>
+            </Paper>
+        </Container>
     )
 }
