@@ -104,13 +104,13 @@
   },
   "dashboard": {
     "user": {
-      "welcome": "Welcome, {name}!",
+      "welcome": "Welcome",
       "subtitle": "Here's an overview of your activities",
       "stats": {
         "activeBookings": "Active Bookings",
-        "aiMessages": "AI Messages",
-        "loyaltyPoints": "Loyalty Points",
-        "favoriteRooms": "Favorite Rooms"
+        "completedBookings": "Completed Bookings",
+        "aiConversations": "AI Conversations",
+        "totalMessages": "Messages"
       },
       "quickActions": {
         "title": "Quick Actions",
@@ -127,10 +127,27 @@
           "description": "Manage your bookings"
         }
       },
-      "recentActivity": {
-        "title": "Recent Activity",
-        "noActivity": "No recent activity",
-        "noActivitySubtitle": "Start exploring our rooms or chat with the AI assistant!"
+      "nextBooking": {
+        "title": "Next Booking",
+        "room": "Room",
+        "from": "From",
+        "to": "to",
+        "details": "Details"
+      },
+      "recentBookings": {
+        "title": "Recent Bookings",
+        "viewAll": "View all",
+        "noBookings": "No bookings",
+        "noBookingsMessage": "Start exploring our rooms!",
+        "room": "Room"
+      },
+      "recentConversations": {
+        "title": "Recent AI Conversations",
+        "viewAll": "View all",
+        "noConversations": "No conversations",
+        "noConversationsMessage": "Start a chat with our AI assistant!",
+        "messages": "messages",
+        "conversation": "Conversation"
       }
     }
   },

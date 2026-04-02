@@ -97,8 +97,8 @@ export interface Booking {
     id: number
     userId: number
     roomId: number
-    checkIn: string
-    checkOut: string
+    startDate: string
+    endDate: string
     guests: number
     status: BookingStatus
     notes?: string
@@ -147,6 +147,7 @@ export interface Conversation {
     id: number
     userId: number
     title: string
+    subject?: string | null
     lastMessageAt: string
     createdAt: string
     updatedAt: string

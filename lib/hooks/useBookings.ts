@@ -62,8 +62,8 @@ export function useBookings(
       const data = await apiClient.get<Booking[]>(endpoint)
       setBookings(data)
     } catch (err) {
-      const errorMessage = err instanceof ApiError 
-        ? err.message 
+      const errorMessage = err instanceof ApiError
+        ? err.message
         : 'Errore durante il caricamento delle prenotazioni'
       setError(errorMessage)
       console.error('useBookings error:', err)
@@ -99,7 +99,7 @@ export function useBookings(
    * Aggiorna stato prenotazione (ADMIN)
    */
   const updateBookingStatus = async (
-    id: number, 
+    id: number,
     data: UpdateBookingStatusInput
   ): Promise<Booking> => {
     try {
@@ -111,7 +111,7 @@ export function useBookings(
       )
 
       // Aggiorna lista locale
-      setBookings(prev => prev.map(booking => 
+      setBookings(prev => prev.map(booking =>
         booking.id === id ? updatedBooking : booking
       ))
 
@@ -159,7 +159,7 @@ export function useBookings(
       )
 
       // Aggiorna lista locale
-      setBookings(prev => prev.map(booking => 
+      setBookings(prev => prev.map(booking =>
         booking.id === id ? updated : booking
       ))
 
@@ -249,8 +249,10 @@ export function useMyBookings() {
       setLoading(true)
       setError(null)
 
-      const data = await apiClient.get<BookingWithRelations[]>('/user/bookings')
-      setBookings(data)
+      const response = await apiClient.get<{ bookings: BookingWithRelations[]; total: number }>(
+        '/user/bookings'
+      )
+      setBookings(response.bookings)
     } catch (err) {
       const errorMessage = err instanceof ApiError
         ? err.message
@@ -266,10 +268,10 @@ export function useMyBookings() {
     fetchMyBookings()
   }, [fetchMyBookings])
 
-  return { 
-    bookings, 
-    loading, 
-    error, 
-    refetch: fetchMyBookings 
+  return {
+    bookings,
+    loading,
+    error,
+    refetch: fetchMyBookings
   }
 }
