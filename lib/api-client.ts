@@ -15,13 +15,17 @@ class ApiClient {
     }
 
     /**
- * Recupera il token JWT da localStorage
- */
+    * Recupera il token JWT da localStorage
+    */
     private getToken(): string | null {
         if (typeof window === 'undefined') return null
 
-        // Usa la stessa chiave usata in useAuth per salvare il token
-        return localStorage.getItem('auth_token')
+        const cookies = document.cookie.split(';')
+        const tokenCookie = cookies.find(c => c.trim().startsWith('token='))
+
+        if (!tokenCookie) return null
+
+        return tokenCookie.split('=')[1]
     }
 
     /**

@@ -6,6 +6,7 @@ import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import { theme } from '@/lib/theme'
 import { AuthProvider } from '@/lib/context/AuthContext'
+import { NotificationProvider } from '@/lib/context/NotificationContext'
 import { I18nextProvider } from 'react-i18next'
 import i18n from '@/i18n/config'
 import './globals.css'
@@ -26,7 +27,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                     <AppRouterCacheProvider>
                         <ThemeProvider theme={theme}>
                             <CssBaseline />
-                            <AuthProvider>{children}</AuthProvider>
+                            <AuthProvider>
+                                <NotificationProvider>
+                                    {children}
+                                </NotificationProvider>
+                            </AuthProvider>
                         </ThemeProvider>
                     </AppRouterCacheProvider>
                 </I18nextProvider>
