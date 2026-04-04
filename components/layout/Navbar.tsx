@@ -77,7 +77,7 @@ export default function Navbar() {
 
     return (
         <>
-            <AppBar position="sticky" elevation={0} sx={{ bgcolor: 'background.paper', color: 'text.primary', borderBottom: 1, borderColor: 'divider' }}>
+            <AppBar position="fixed" elevation={0} sx={{ bgcolor: 'background.paper', color: 'text.primary', borderBottom: 1, borderColor: 'divider' }}>
                 <Container maxWidth="xl">
                     <Toolbar disableGutters>
                         {/* Logo */}

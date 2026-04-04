@@ -30,6 +30,58 @@
     "profile": "Profilo",
     "logout": "Esci"
   },
+  "rooms": {
+    "title": "Le Nostre Camere",
+    "subtitle": "Scegli la camera perfetta per il tuo soggiorno",
+    "filters": {
+      "title": "Filtri",
+      "minPrice": "Prezzo Minimo",
+      "maxPrice": "Prezzo Massimo",
+      "guests": "Ospiti",
+      "sortBy": "Ordina per",
+      "clearFilters": "Cancella Filtri"
+    },
+    "sortOptions": {
+      "roomType": "Tipo di camera",
+      "name": "Nome",
+      "price": "Prezzo",
+      "capacity": "Capacità",
+      "amenities": "Servizi",
+      "availability": "Disponibilità"
+    },
+    "results": {
+      "found": "{count} camera trovata",
+      "found_plural": "{count} camere trovate",
+      "noRooms": "Nessuna camera trovata",
+      "noRoomsMessage": "Prova a modificare i filtri di ricerca",
+      "showAll": "Mostra tutte le camere"
+    },
+    "card": {
+      "guest": "ospite",
+      "guests": "ospiti",
+      "perNight": "/notte",
+      "viewDetails": "Vedi Dettagli",
+      "backToList": "Torna alle camere",
+      "capacity": "Capacità",
+      "person": "persona",
+      "people": "persone",
+      "night": "notte",
+      "description": "Descrizione",
+      "amenities": "Servizi"
+    },
+    "booking": {
+      "bookNow": "Prenota ora",
+      "bookButton": "Prenota Ora",
+      "loginButton": "Accedi per Prenotare",
+      "loginRequired": "Devi effettuare il login per prenotare",
+      "loginMessage": "Devi effettuare il login per completare la prenotazione",
+      "selectDates": "Seleziona le date di check-in e check-out",
+      "invalidDates": "La data di check-out deve essere successiva al check-in",
+      "success": "Prenotazione creata con successo!",
+      "error": "Si è verificato un errore durante la prenotazione",
+      "total": "Totale"
+    }
+  },
   "footer": {
     "copyright": "© {year} Excelsior Hotel. Tutti i diritti riservati.",
     "address": "Via Roma 123, 00100 Roma, Italia",

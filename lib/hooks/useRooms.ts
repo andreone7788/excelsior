@@ -70,8 +70,8 @@ export function useRooms(filters?: RoomSearchFilters, autoFetch: boolean = true)
             const query = params.toString() ? `?${params.toString()}` : ''
             const endpoint = query ? `/rooms?${query}` : '/rooms'
 
-            const data = await apiClient.get<Room[]>(endpoint)
-            setRooms(data)
+            const data = await apiClient.get<{ rooms: Room[], count: number }>(endpoint)
+            setRooms(data.rooms || [])
             setLoading(false)
 
         } catch (err) {

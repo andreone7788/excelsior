@@ -7,7 +7,7 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
 
   // Percorsi pubblici (non serve autenticazione)
-  const publicPaths = ['/', '/login', '/register']
+  const publicPaths = ['/', '/login', '/register', '/rooms', '/contact', '/about']
   if (publicPaths.includes(pathname)) {
     return NextResponse.next()
   }

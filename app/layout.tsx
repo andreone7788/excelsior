@@ -9,7 +9,10 @@ import { AuthProvider } from '@/lib/context/AuthContext'
 import { NotificationProvider } from '@/lib/context/NotificationContext'
 import { I18nextProvider } from 'react-i18next'
 import i18n from '@/i18n/config'
+import Navbar from '@/components/layout/Navbar'
+import Footer from '@/components/layout/Footer'
 import './globals.css'
+import { Box } from '@mui/material'
 
 export default function RootLayout({ children }: { children: ReactNode }) {
     useEffect(() => {
@@ -29,7 +32,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                             <CssBaseline />
                             <AuthProvider>
                                 <NotificationProvider>
-                                    {children}
+                                    <Navbar />
+                                    <Box component="main" sx={{ minHeight: '100vh', pt: 8 }}>
+                                        {children}
+                                    </Box>
+                                    <Footer />
                                 </NotificationProvider>
                             </AuthProvider>
                         </ThemeProvider>

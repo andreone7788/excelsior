@@ -73,6 +73,7 @@ export interface Room {
     name: string
     description: string
     price: number
+    imageUrl: string
     capacity: number
     amenities: string[]
     available: boolean

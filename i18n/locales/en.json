@@ -206,5 +206,57 @@
     },
     "welcome": "Hello! I'm your virtual assistant. How can I help you today?",
     "error": "Error communicating with AI"
+  },
+  "rooms": {
+    "title": "Our Rooms",
+    "subtitle": "Choose the perfect room for your stay",
+    "filters": {
+      "title": "Filters",
+      "minPrice": "Min Price",
+      "maxPrice": "Max Price",
+      "guests": "Guests",
+      "sortBy": "Sort by",
+      "clearFilters": "Clear Filters"
+    },
+    "sortOptions": {
+      "roomType": "Room Type",
+      "name": "Name",
+      "price": "Price",
+      "capacity": "Capacity",
+      "amenities": "Amenities",
+      "availability": "Availability"
+    },
+    "results": {
+      "found": "{count} room found",
+      "found_plural": "{count} rooms found",
+      "noRooms": "No rooms found",
+      "noRoomsMessage": "Try adjusting your search filters",
+      "showAll": "Show all rooms"
+    },
+    "card": {
+      "guest": "guest",
+      "guests": "guests",
+      "perNight": "/night",
+      "viewDetails": "View Details",
+      "backToList": "Back to rooms",
+      "capacity": "Capacity",
+      "person": "person",
+      "people": "people",
+      "night": "night",
+      "description": "Description",
+      "amenities": "Amenities"
+    },
+    "booking": {
+      "bookNow": "Book now",
+      "bookButton": "Book Now",
+      "loginButton": "Login to Book",
+      "loginRequired": "You must log in to make a booking",
+      "loginMessage": "You must log in to complete your booking",
+      "selectDates": "Please select check-in and check-out dates",
+      "invalidDates": "Check-out date must be after check-in date",
+      "success": "Booking created successfully!",
+      "error": "An error occurred while creating the booking",
+      "total": "Total"
+    }
   }
 }
