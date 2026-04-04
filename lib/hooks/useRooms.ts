@@ -185,8 +185,8 @@ export function useRoom(id: number): UseRoomReturn {
             setLoading(true)
             setError(null)
 
-            const data = await apiClient.get<Room>(`/rooms/${id}`)
-            setRoom(data)
+            const data = await apiClient.get<{ room: Room }>(`/rooms/${id}`)
+            setRoom(data.room)
         } catch (err) {
             const errorMessage = err instanceof ApiError
                 ? err.message

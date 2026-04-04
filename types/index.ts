@@ -66,6 +66,19 @@ export interface UserStats {
 }
 
 /**
+ * Room image entity (da database)
+ */
+export interface RoomImage {
+    id: number
+    roomId: number
+    url: string
+    order: number
+    isPrimary: boolean
+    caption?: string | null
+    createdAt: string
+}
+
+/**
  * Room entity (da database)
  */
 export interface Room {
@@ -79,6 +92,7 @@ export interface Room {
     available: boolean
     createdAt: string
     updatedAt: string
+    images?: RoomImage[]
 }
 
 /**

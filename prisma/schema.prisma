@@ -25,16 +25,17 @@ model User {
 }
 
 model Room {
-  id          Int       @id @default(autoincrement())
-  name        String    @db.VarChar(255)
+  id          Int         @id @default(autoincrement())
+  name        String      @db.VarChar(255)
   description String
-  price       Decimal   @db.Decimal(10, 2)
-  imageUrl    String?   @db.VarChar(255)
-  isAvailable Boolean   @default(true)
-  capacity    Int       @default(1)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  price       Decimal     @db.Decimal(10, 2)
+  imageUrl    String?     @db.VarChar(255)
+  isAvailable Boolean     @default(true)
+  capacity    Int         @default(1)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
   bookings    Booking[]
+  images      RoomImage[]
 }
 
 model Booking {
@@ -107,4 +108,17 @@ enum BookingStatus {
 enum ConversationStatus {
   OPEN
   CLOSED
+}
+
+model RoomImage {
+  id        Int      @id @default(autoincrement())
+  roomId    Int
+  url       String   @db.VarChar(500)
+  order     Int      @default(0)
+  isPrimary Boolean  @default(false)
+  caption   String?  @db.VarChar(255)
+  createdAt DateTime @default(now())
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@index([roomId])
 }

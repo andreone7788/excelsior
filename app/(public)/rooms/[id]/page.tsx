@@ -190,7 +190,7 @@ export default function RoomDetailPage({ params }: { params: Promise<{ id: strin
 
                 {/* Colonna destra - Prenotazione */}
                 <Grid size={{ xs: 12, md: 4 }}>
-                    <Card elevation={3} sx={{ position: 'sticky', top: 80 }}>
+                    <Card elevation={3} sx={{ position: 'static', top: 80 }}>
                         <CardContent sx={{ p: 3 }}>
                             <Typography variant="h5" fontWeight={700} gutterBottom>
                                 {t('rooms.booking.bookNow')}

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useRooms } from '@/lib/hooks/useRooms'
 import { useTranslation } from 'react-i18next'
 import { Container, Box, Typography, Card, CardContent, CardMedia, CardActionArea, Button, Select, MenuItem, FormControl, InputLabel, Chip, LinearProgress, Paper, InputAdornment, TextField } from '@mui/material'
-import { Search, People, Euro, FilterList, BedOutlined } from '@mui/icons-material'
+import { People, Euro, FilterList, BedOutlined } from '@mui/icons-material'
 import Grid from '@mui/material/Grid'
 import type { RoomSearchFilters } from '@/types'
 
@@ -252,13 +252,14 @@ export default function RoomsPage() {
                                                 />
                                             </Box>
 
-                                            <Button
-                                                variant="contained"
-                                                fullWidth
-                                                startIcon={<Search />}
+                                            <Typography
+                                                variant="body2"
+                                                color="primary"
+                                                fontWeight={600}
+                                                sx={{ textAlign: 'center', mt: 'auto' }}
                                             >
-                                                {t('rooms.card.viewDetails')}
-                                            </Button>
+                                                {t('rooms.card.viewDetails')} →
+                                            </Typography>
                                         </CardContent>
                                     </CardActionArea>
                                 </Card>

@@ -12,6 +12,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // Controlla se il path è nella lista oppure inizia con /rooms/
+  const isPublicPath = publicPaths.includes(pathname) || pathname.startsWith('/rooms/')
+
+  if (isPublicPath) {
+    return NextResponse.next()
+  }
+
   // Verifica solo se è autenticato (non il ruolo!)
   if (!token) {
     return NextResponse.redirect(new URL('/login', request.url))
