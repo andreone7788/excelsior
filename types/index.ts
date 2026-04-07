@@ -280,6 +280,15 @@ export interface UserDashboardStats {
 // ==================== AI TYPES ====================
 
 /**
+ * AI chat message
+ */
+export interface AIChatMessage {
+    role: 'user' | 'assistant'
+    content: string
+    timestamp: string
+}
+
+/**
  * AI chat response
  */
 export interface AIChatResponse {

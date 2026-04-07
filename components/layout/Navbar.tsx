@@ -23,9 +23,9 @@ export default function Navbar() {
 
     const navLinks = [
         { label: t('nav.home'), href: '/' },
-        { label: t('nav.rooms'), href: '/rooms' },
         { label: t('nav.about'), href: '/about' },
         { label: t('nav.contact'), href: '/contact' },
+        { label: t('nav.rooms'), href: '/rooms' },
     ]
 
     const drawer = (

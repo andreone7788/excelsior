@@ -4,28 +4,31 @@ import Link from 'next/link'
 import Grid from '@mui/material/Grid'
 import { Button, Container, Typography, Box, Card, CardContent } from '@mui/material'
 import { Hotel, Star, LocalOffer, SupportAgent } from '@mui/icons-material'
+import { useTranslation } from 'react-i18next'
 
 export default function HomePage() {
+  const { t } = useTranslation()
+
   const features = [
     {
       icon: <Hotel sx={{ fontSize: 48, color: 'primary.main' }} />,
-      title: 'Camere Lussuose',
-      description: 'Camere eleganti con tutti i comfort'
+      title: t('home.features.luxuryRooms.title'),
+      description: t('home.features.luxuryRooms.description')
     },
     {
       icon: <Star sx={{ fontSize: 48, color: 'warning.main' }} />,
-      title: 'Servizio 5 Stelle',
-      description: 'Personale qualificato al tuo servizio'
+      title: t('home.features.fiveStarService.title'),
+      description: t('home.features.fiveStarService.description')
     },
     {
       icon: <LocalOffer sx={{ fontSize: 48, color: 'success.main' }} />,
-      title: 'Offerte Esclusive',
-      description: 'Tariffe speciali per i nostri ospiti'
+      title: t('home.features.exclusiveOffers.title'),
+      description: t('home.features.exclusiveOffers.description')
     },
     {
       icon: <SupportAgent sx={{ fontSize: 48, color: 'info.main' }} />,
-      title: 'AI Assistant',
-      description: 'Assistente virtuale sempre disponibile'
+      title: t('home.features.aiAssistant.title'),
+      description: t('home.features.aiAssistant.description')
     }
   ]
 
@@ -48,7 +51,7 @@ export default function HomePage() {
               Excelsior Hotel
             </Typography>
             <Typography variant="h5" sx={{ mb: 4, opacity: 0.9 }}>
-              Vivi un&apos;esperienza di lusso indimenticabile
+              {t('home.hero.subtitle')}
             </Typography>
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
               <Button
@@ -62,7 +65,7 @@ export default function HomePage() {
                   '&:hover': { bgcolor: 'grey.100' }
                 }}
               >
-                Esplora Camere
+                {t('home.hero.exploreRooms')}
               </Button>
               <Button
                 variant="outlined"
@@ -78,7 +81,7 @@ export default function HomePage() {
                   }
                 }}
               >
-                Accedi
+                {t('home.hero.login')}
               </Button>
             </Box>
           </Box>
@@ -88,10 +91,10 @@ export default function HomePage() {
       {/* Features Section */}
       <Container maxWidth="lg" sx={{ py: 8 }}>
         <Typography variant="h3" textAlign="center" fontWeight={600} gutterBottom>
-          Perché sceglierci
+          {t('home.features.title')}
         </Typography>
         <Typography variant="body1" textAlign="center" color="text.secondary" sx={{ mb: 6 }}>
-          Offriamo un&apos;esperienza unica con servizi di alta qualità
+          {t('home.features.subtitle')}
         </Typography>
         <Grid container spacing={4}>
           {features.map((feature, index) => (
@@ -130,10 +133,10 @@ export default function HomePage() {
         <Container maxWidth="md">
           <Box sx={{ textAlign: 'center' }}>
             <Typography variant="h4" fontWeight={600} gutterBottom>
-              Pronto per prenotare?
+              {t('home.cta.title')}
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-              Inizia ora a scoprire le nostre camere disponibili
+              {t('home.cta.subtitle')}
             </Typography>
             <Button
               variant="contained"
@@ -141,7 +144,7 @@ export default function HomePage() {
               component={Link}
               href="/rooms"
             >
-              Vedi Disponibilità
+              {t('home.cta.button')}
             </Button>
           </Box>
         </Container>

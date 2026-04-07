@@ -258,5 +258,112 @@
       "error": "An error occurred while creating the booking",
       "total": "Total"
     }
+  },
+  "home": {
+    "hero": {
+      "title": "Excelsior Hotel",
+      "subtitle": "Experience unforgettable luxury",
+      "exploreRooms": "Explore Rooms",
+      "login": "Login"
+    },
+    "features": {
+      "title": "Why Choose Us",
+      "subtitle": "We offer a unique experience with high-quality services",
+      "luxuryRooms": {
+        "title": "Luxury Rooms",
+        "description": "Elegant rooms with all comforts"
+      },
+      "fiveStarService": {
+        "title": "5-Star Service",
+        "description": "Qualified staff at your service"
+      },
+      "exclusiveOffers": {
+        "title": "Exclusive Offers",
+        "description": "Special rates for our guests"
+      },
+      "aiAssistant": {
+        "title": "AI Assistant",
+        "description": "Virtual assistant always available"
+      }
+    },
+    "cta": {
+      "title": "Ready to book?",
+      "subtitle": "Start discovering our available rooms now",
+      "button": "View Availability"
+    }
+  },
+  "about": {
+    "hero": {
+      "title": "About Us",
+      "subtitle": "Your home away from home"
+    },
+    "history": {
+      "title": "Our Story",
+      "paragraph1": "The Excelsior Hotel was born in 1975 from the Rossi family's passion for hospitality and design. Located in the heart of the city, the hotel has welcomed thousands of guests from around the world over the years, becoming a reference point for those seeking comfort, elegance and professionalism.",
+      "paragraph2": "In 2020 we completed a complete renovation that brought new life to our facilities, keeping the classic charm intact but adding all modern comforts. Each room has been redesigned to offer a unique experience, dedicated to the great names of Italian cinema.",
+      "paragraph3": "Today Excelsior represents the perfect balance between tradition and innovation, continuing to write its story with the goal of always exceeding our guests' expectations.",
+      "paragraph4": "Our team works daily to ensure impeccable service and a memorable experience."
+    },
+    "values": {
+      "title": "Our Values",
+      "quality": {
+        "title": "Superior quality",
+        "description": "Every room is tastefully furnished and equipped with modern comforts to ensure maximum relaxation."
+      },
+      "excellence": {
+        "title": "Excellence in service",
+        "description": "For over 50 years we have offered an unforgettable stay experience with attention to detail."
+      },
+      "customerFocus": {
+        "title": "Italian hospitality",
+        "description": "Our multilingual staff is always available to satisfy your every need."
+      },
+      "reliability": {
+        "title": "Strategic location",
+        "description": "In the heart of the city, close to main attractions and transportation."
+      }
+    },
+    "stats": {
+      "hotels": "Years of history",
+      "customers": "Available rooms",
+      "bookings": "Satisfied clients",
+      "support": "Support"
+    }
+  },
+  "contact": {
+    "hero": {
+      "title": "Contact Us",
+      "subtitle": "We're here to help you"
+    },
+    "form": {
+      "title": "Send a Message",
+      "name": "Full Name",
+      "namePlaceholder": "John Doe",
+      "email": "Email",
+      "emailPlaceholder": "your@email.com",
+      "subject": "Subject",
+      "subjectPlaceholder": "Information request",
+      "message": "Message",
+      "messagePlaceholder": "Write your message here...",
+      "send": "Send Message",
+      "sending": "Sending...",
+      "success": "Message sent successfully! We'll reply soon.",
+      "error": "Error sending message. Please try again later."
+    },
+    "info": {
+      "title": "Contact Information",
+      "address": "Address",
+      "addressValue": "Via Roma 123, 00100 Rome, Italy",
+      "phone": "Phone",
+      "phoneValue": "+39 06 1234567",
+      "email": "Email",
+      "emailValue": "info@excelsior.com",
+      "hours": "Hours",
+      "hoursValue": "24/7 - Always open"
+    },
+    "map": {
+      "title": "Where We Are",
+      "viewOnMaps": "View on Google Maps"
+    }
   }
 }

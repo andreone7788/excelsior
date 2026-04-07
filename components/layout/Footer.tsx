@@ -38,14 +38,14 @@ export default function Footer() {
                             <Link href="/" color="text.secondary" underline="hover">
                                 {t('nav.home')}
                             </Link>
-                            <Link href="/rooms" color="text.secondary" underline="hover">
-                                {t('nav.rooms')}
-                            </Link>
                             <Link href="/about" color="text.secondary" underline="hover">
                                 {t('nav.about')}
                             </Link>
                             <Link href="/contact" color="text.secondary" underline="hover">
                                 {t('nav.contact')}
+                            </Link>
+                            <Link href="/rooms" color="text.secondary" underline="hover">
+                                {t('nav.rooms')}
                             </Link>
                         </Box>
                     </Grid>

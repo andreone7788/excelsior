@@ -258,5 +258,112 @@
     },
     "welcome": "Ciao! Sono il tuo assistente virtuale. Come posso aiutarti oggi?",
     "error": "Errore nella comunicazione con l'AI"
+  },
+  "home": {
+    "hero": {
+      "title": "Excelsior Hotel",
+      "subtitle": "Vivi un'esperienza di lusso indimenticabile",
+      "exploreRooms": "Esplora Camere",
+      "login": "Accedi"
+    },
+    "features": {
+      "title": "Perché sceglierci",
+      "subtitle": "Offriamo un'esperienza unica con servizi di alta qualità",
+      "luxuryRooms": {
+        "title": "Camere Lussuose",
+        "description": "Camere eleganti con tutti i comfort"
+      },
+      "fiveStarService": {
+        "title": "Servizio 5 Stelle",
+        "description": "Personale qualificato al tuo servizio"
+      },
+      "exclusiveOffers": {
+        "title": "Offerte Esclusive",
+        "description": "Tariffe speciali per i nostri ospiti"
+      },
+      "aiAssistant": {
+        "title": "AI Assistant",
+        "description": "Assistente virtuale sempre disponibile"
+      }
+    },
+    "cta": {
+      "title": "Pronto per prenotare?",
+      "subtitle": "Inizia ora a scoprire le nostre camere disponibili",
+      "button": "Vedi Disponibilità"
+    }
+  },
+  "about": {
+    "hero": {
+      "title": "Chi Siamo",
+      "subtitle": "La tua casa lontano da casa"
+    },
+    "history": {
+      "title": "La Nostra Storia",
+      "paragraph1": "L'Hotel Excelsior nasce nel 1975 dalla passione della famiglia Rossi per l'ospitalità e il design. Situato nel cuore della città, l'hotel ha accolto nel corso degli anni migliaia di ospiti da tutto il mondo, diventando un punto di riferimento per chi cerca comfort, eleganza e professionalità.",
+      "paragraph2": "Nel 2020 abbiamo completato una ristrutturazione completa che ha portato nuova vita alle nostre strutture, mantenendo intatto il fascino classico ma aggiungendo tutti i comfort moderni. Ogni camera è stata ripensata per offrire un'esperienza unica, dedicata ai grandi nomi del cinema italiano.",
+      "paragraph3": "Oggi l'Excelsior rappresenta il perfetto equilibrio tra tradizione e innovazione, continuando a scrivere la sua storia con l'obiettivo di superare sempre le aspettative dei nostri ospiti.",
+      "paragraph4": "Il nostro team lavora ogni giorno per garantire un servizio impeccabile e un'esperienza memorabile."
+    },
+    "values": {
+      "title": "I Nostri Valori",
+      "quality": {
+        "title": "Qualità superiore",
+        "description": "Ogni camera è arredata con gusto e dotata di comfort moderni per garantire il massimo relax."
+      },
+      "excellence": {
+        "title": "Eccellenza nel servizio",
+        "description": "Da oltre 50 anni offriamo un'esperienza di soggiorno indimenticabile con attenzione ai dettagli."
+      },
+      "customerFocus": {
+        "title": "Ospitalità italiana",
+        "description": "Il nostro staff multilingue è sempre a disposizione per soddisfare ogni vostra esigenza."
+      },
+      "reliability": {
+        "title": "Posizione strategica",
+        "description": "Nel cuore della città, vicino ai principali luoghi di interesse e ai mezzi di trasporto."
+      }
+    },
+    "stats": {
+      "hotels": "Anni di storia",
+      "customers": "Camere disponibili",
+      "bookings": "Clienti soddisfatti",
+      "support": "Assistenza"
+    }
+  },
+  "contact": {
+    "hero": {
+      "title": "Contattaci",
+      "subtitle": "Siamo qui per aiutarti"
+    },
+    "form": {
+      "title": "Invia un Messaggio",
+      "name": "Nome Completo",
+      "namePlaceholder": "Mario Rossi",
+      "email": "Email",
+      "emailPlaceholder": "tuo@email.com",
+      "subject": "Oggetto",
+      "subjectPlaceholder": "Richiesta informazioni",
+      "message": "Messaggio",
+      "messagePlaceholder": "Scrivi qui il tuo messaggio...",
+      "send": "Invia Messaggio",
+      "sending": "Invio in corso...",
+      "success": "Messaggio inviato con successo! Ti risponderemo presto.",
+      "error": "Errore durante l'invio. Riprova più tardi."
+    },
+    "info": {
+      "title": "Informazioni di Contatto",
+      "address": "Indirizzo",
+      "addressValue": "Via Roma 123, 00100 Roma, Italia",
+      "phone": "Telefono",
+      "phoneValue": "+39 06 1234567",
+      "email": "Email",
+      "emailValue": "info@excelsior.com",
+      "hours": "Orari",
+      "hoursValue": "24/7 - Sempre aperti"
+    },
+    "map": {
+      "title": "Dove Siamo",
+      "viewOnMaps": "Vedi su Google Maps"
+    }
   }
 }
