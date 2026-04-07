@@ -36,33 +36,86 @@ async function main() {
     });
     console.log("User created:", user.email);
 
+
     // Rooms di prova
-    const room1 = await prisma.room.upsert({
-        where: { id: 1 },
-        update: {},
-        create: {
-            name: "Celentano",
-            description: "Camera ispirata al grande Adriano Celentano...",
+    const room1 = await prisma.room.create({
+        data: {
+            name: "Abatantuono",
+            description: "Camera elegante ispirata al grande Diego Abatantuono. Arredata con gusto e dotata di tutti i comfort moderni.",
             price: 50.00,
-            imageUrl: "https://example.com/celentano.jpg",
+            imageUrl: "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800",
             capacity: 2,
-            isAvailable: true
+            isAvailable: true,
+            images: {
+                create: [
+                    {
+                        url: "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800",
+                        order: 0,
+                        isPrimary: true,
+                        caption: "Vista generale della camera"
+                    },
+                    {
+                        url: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800",
+                        order: 1,
+                        isPrimary: false,
+                        caption: "Letto matrimoniale king size"
+                    },
+                    {
+                        url: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800",
+                        order: 2,
+                        isPrimary: false,
+                        caption: "Bagno privato con doccia"
+                    },
+                    {
+                        url: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800",
+                        order: 3,
+                        isPrimary: false,
+                        caption: "Vista dalla finestra"
+                    }
+                ]
+            }
         }
     });
 
-    const room2 = await prisma.room.upsert({
-        where: { id: 2 },
-        update: {},
-        create: {
-            name: "Montesano",
-            description: "Camera dedicata al mitico Enrico Montesano...",
+    const room2 = await prisma.room.create({
+        data: {
+            name: "Verdone",
+            description: "Camera dedicata al mitico Carlo Verdone. Spaziosa e confortevole con vista panoramica.",
             price: 60.00,
-            imageUrl: "https://example.com/montesano.jpg",
+            imageUrl: "https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800",
             capacity: 2,
-            isAvailable: true
+            isAvailable: true,
+            images: {
+                create: [
+                    {
+                        url: "https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800",
+                        order: 0,
+                        isPrimary: true,
+                        caption: "Camera vista panoramica"
+                    },
+                    {
+                        url: "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800",
+                        order: 1,
+                        isPrimary: false,
+                        caption: "Zona relax con poltrone"
+                    },
+                    {
+                        url: "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=800",
+                        order: 2,
+                        isPrimary: false,
+                        caption: "Bagno in marmo"
+                    },
+                    {
+                        url: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=800",
+                        order: 3,
+                        isPrimary: false,
+                        caption: "Scrivania e area lavoro"
+                    }
+                ]
+            }
         }
     });
-    console.log("Rooms created:", room1.name, room2.name);
+    console.log("Rooms with images created:", room1.name, room2.name);
 
     // Prenotazione di test
     const booking = await prisma.booking.upsert({

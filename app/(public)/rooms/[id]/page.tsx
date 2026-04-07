@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/hooks/useAuth'
 import { useTranslation } from 'react-i18next'
 import { Container, Box, Typography, Button, Paper, Chip, LinearProgress, Alert, Divider, TextField, Card, CardContent } from '@mui/material'
 import Grid from '@mui/material/Grid'
+import RoomGallery from '@/components/rooms/RoomGallery'
 import { ArrowBack, People, Euro, CalendarMonth, CheckCircle } from '@mui/icons-material'
 import { useNotification } from '@/lib/context/NotificationContext'
 
@@ -35,8 +36,9 @@ export default function RoomDetailPage({ params }: { params: Promise<{ id: strin
         return diffDays
     }
 
-    const nights = calculateNights()
-    const totalPrice = room ? nights * parseFloat(room.price.toString()) : 0
+    const roomPrice = Number(room?.price) || 0;
+    const nights = calculateNights();
+    const totalPrice = nights * roomPrice;
 
     const handleBooking = async () => {
         if (!user) {
@@ -123,19 +125,8 @@ export default function RoomDetailPage({ params }: { params: Promise<{ id: strin
             <Grid container spacing={4}>
                 {/* Colonna sinistra - Immagine e info */}
                 <Grid size={{ xs: 12, md: 8 }}>
-                    {/* Immagine principale */}
-                    <Box
-                        component="img"
-                        src={room.imageUrl || '/placeholder-room.jpg'}
-                        alt={room.name}
-                        sx={{
-                            width: '100%',
-                            height: 400,
-                            objectFit: 'cover',
-                            borderRadius: 2,
-                            mb: 3
-                        }}
-                    />
+                    {/* Galleria immagini */}
+                    <RoomGallery images={room.images || []} roomName={room.name} />
 
                     {/* Info camera */}
                     <Paper elevation={2} sx={{ p: 3, mb: 3 }}>

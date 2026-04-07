@@ -18,11 +18,14 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         const room = await prisma.room.findUnique({
             where: { id: roomId },
             include: {
+                images: {
+                    orderBy: { order: "asc" }, // Ordina per il campo 'order' (0, 1, 2...)
+                },
                 bookings: {
                     where: {
                         status: "CONFIRMED",
                         endDate: {
-                            gte: new Date(), // Mostra solo prenotazioni future o in corso
+                            gte: new Date(),
                         },
                     },
                     orderBy: { startDate: "asc" },
