@@ -161,7 +161,7 @@
       "stats": {
         "activeBookings": "Prenotazioni Attive",
         "completedBookings": "Prenotazioni Completate",
-        "aiConversations": "Conversazioni AI",
+        "aiConversations": "Conversazioni",
         "totalMessages": "Messaggi"
       },
       "quickActions": {
@@ -365,6 +365,29 @@
     "map": {
       "title": "Dove Siamo",
       "viewOnMaps": "Vedi su Google Maps"
+    }
+  },
+  "conversations": {
+    "title": "Le Mie Conversazioni",
+    "subtitle": "Messaggi e richieste con il nostro staff",
+    "defaultTitle": "Conversazione",
+    "empty": {
+      "title": "Nessuna conversazione",
+      "message": "Non hai ancora messaggi. Contatta il nostro staff per qualsiasi richiesta!"
+    },
+    "status": {
+      "open": "Aperta",
+      "closed": "Chiusa"
+    },
+    "time": {
+      "minutesAgo": "{count} min fa",
+      "hoursAgo": "{count} ore fa",
+      "daysAgo": "{count} giorni fa"
+    },
+    "labels": {
+      "conversation": "Conversazione",
+      "messages": "msg",
+      "subject": "Oggetto"
     }
   }
 }

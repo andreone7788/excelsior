@@ -390,3 +390,10 @@ export interface Notification {
     message: string
     duration?: number // in milliseconds
 }
+
+/**
+ * Unread notifications count response
+ */
+export interface UnreadCountResponse {
+    count: number
+}

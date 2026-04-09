@@ -1,7 +1,6 @@
 'use client'
 
 import { useAuth } from '@/lib/hooks/useAuth'
-// ✅ Importa useMyBookings invece di useBookings
 import { useMyBookings } from '@/lib/hooks/useBookings'
 import { useConversations } from '@/lib/hooks/useConversations'
 import { useTranslation } from 'react-i18next'
@@ -13,8 +12,7 @@ import { CalendarMonth, ChatBubble, HotelOutlined, ArrowForward, CheckCircle, Me
 export default function UserDashboardPage() {
   const { t } = useTranslation()
   const { user, loading: authLoading } = useAuth()
-  
-  // ✅ Usa useMyBookings al posto di useBookings
+
   const { bookings, loading: bookingsLoading } = useMyBookings()
   const { conversations, loading: conversationsLoading } = useConversations()
   const router = useRouter()

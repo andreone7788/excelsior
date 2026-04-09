@@ -109,7 +109,7 @@
       "stats": {
         "activeBookings": "Active Bookings",
         "completedBookings": "Completed Bookings",
-        "aiConversations": "AI Conversations",
+        "aiConversations": "Conversations",
         "totalMessages": "Messages"
       },
       "quickActions": {
@@ -364,6 +364,29 @@
     "map": {
       "title": "Where We Are",
       "viewOnMaps": "View on Google Maps"
+    }
+  },
+  "conversations": {
+    "title": "My Conversations",
+    "subtitle": "Messages and requests with our staff",
+    "defaultTitle": "Conversation",
+    "empty": {
+      "title": "No conversations",
+      "message": "You don't have any messages yet. Contact our staff for any request!"
+    },
+    "status": {
+      "open": "Open",
+      "closed": "Closed"
+    },
+    "time": {
+      "minutesAgo": "{count} min ago",
+      "hoursAgo": "{count} hours ago",
+      "daysAgo": "{count} days ago"
+    },
+    "labels": {
+      "conversation": "Conversation",
+      "messages": "msg",
+      "subject": "Subject"
     }
   }
 }

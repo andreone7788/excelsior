@@ -7,6 +7,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { Box, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText, Avatar, Menu, MenuItem, useTheme, useMediaQuery, Badge } from '@mui/material'
 import { Menu as MenuIcon, Dashboard, CalendarMonth, ChatBubble, AccountCircle, Logout, Home, Notifications } from '@mui/icons-material'
 import { useAuth } from '@/lib/hooks/useAuth'
+import { useUnreadCount } from '@/lib/hooks/useUnreadCount'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from '../language/LanguageSwitcher'
 
@@ -16,6 +17,7 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
     const { t } = useTranslation()
+    const { unreadCount } = useUnreadCount(true, 30000)
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down('md'))
     const pathname = usePathname()
@@ -145,8 +147,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                     <LanguageSwitcher />
 
                     {/* Notifications */}
-                    <IconButton color="inherit" sx={{ ml: 1 }}>
-                        <Badge badgeContent={3} color="error">
+                    <IconButton
+                        color="inherit"
+                        sx={{ ml: 1 }}
+                        onClick={() => router.push('/user/conversations')}
+                    >
+                        <Badge badgeContent={unreadCount} color="error">
                             <Notifications />
                         </Badge>
                     </IconButton>
