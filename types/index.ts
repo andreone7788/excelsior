@@ -145,8 +145,10 @@ export type MessageRole = 'USER' | 'ADMIN'
 export interface Message {
     id: number
     conversationId: number
+    senderId: number
     role: MessageRole
     content: string
+    isRead: boolean
     createdAt: string
 }
 

@@ -35,8 +35,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
                     orderBy: { createdAt: 'asc' },
                     select: {
                         id: true,
+                        conversationId: true,
+                        senderId: true,
                         content: true,
-                        role: true,
+                        isRead: true,
                         createdAt: true,
                     }
                 },

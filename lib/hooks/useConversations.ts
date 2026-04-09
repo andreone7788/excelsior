@@ -139,8 +139,8 @@ export function useConversation(id: number | null): UseConversationReturn {
             setLoading(true)
             setError(null)
 
-            const data = await apiClient.get<ConversationWithMessages>(`/chat/${id}`)
-            setConversation(data)
+            const data = await apiClient.get<{ conversation: ConversationWithMessages }>(`/chat/${id}`)
+            setConversation(data.conversation)
 
         } catch (err) {
             const errorMessage = err instanceof ApiError ? err.message : 'Errore durante il caricamento della conversazione'
@@ -160,22 +160,21 @@ export function useConversation(id: number | null): UseConversationReturn {
             setSending(true)
             setError(null)
 
+            // Invia a /chat/{id}/messages
             const response = await apiClient.post<{
-                userMessage: Message
-                aiMessage: Message
-            }>(`/chat/${id}`, JSON.stringify({ content })
-            )
+                message: Message  // ← L'API ritorna { message: {...} }
+            }>(`/chat/${id}/messages`, JSON.stringify({ content }))
 
             setConversation(prev => {
                 if (!prev) return null
                 return {
                     ...prev,
-                    messages: [...prev.messages, response.userMessage, response.aiMessage],
+                    messages: [...prev.messages, response.message],  // ← Solo il nuovo messaggio
                     updatedAt: new Date().toISOString()
                 }
             })
 
-            return response.aiMessage
+            return response.message
 
         } catch (err) {
             const errorMessage = err instanceof ApiError ? err.message : 'Errore durante l\'invio del messaggio'
@@ -345,5 +344,3 @@ export function useChat(initialConversationId?: number): UseChatReturn {
         clearError: clearMsgError
     }
 }
-
-    

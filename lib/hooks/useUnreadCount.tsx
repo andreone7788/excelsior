@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import apiClient, { ApiError } from '@/lib/api-client'
 import { useAuth } from './useAuth'
 import { UnreadCountResponse } from '@/types'
@@ -54,18 +54,29 @@ export function useUnreadCount(autofetch: boolean = true, pollInterval?: number)
     // ═══════════════════════════════════════════════════════════
     // FETCH: Carica il conteggio dal server
     // ═══════════════════════════════════════════════════════════
+
+    // Ref per evitare fetch multipli simultanei
+    const isFetchingRef = useRef(false)
+
+    // Determina ruolo utente (USER o ADMIN)
+    const userRole = user?.role
+
     const fetchUnreadCount = useCallback(async () => {
-        if (!isAuthenticated || !user) {
-            setUnreadCount(0)
+        // Guard: se non autenticato o già in fetch, salta
+        if (!isAuthenticated || !userRole || isFetchingRef.current) {
+            if (!isAuthenticated || !userRole) {
+                setUnreadCount(0)
+            }
             return
         }
 
         try {
+            isFetchingRef.current = true
             setLoading(true)
             setError(null)
 
             // Endpoint differente per USER e ADMIN
-            const endpoint = user.role === 'ADMIN'
+            const endpoint = userRole === 'ADMIN'
                 ? '/admin/unread-count'
                 : '/user/unread-count'
 
@@ -78,7 +89,7 @@ export function useUnreadCount(autofetch: boolean = true, pollInterval?: number)
         } finally {
             setLoading(false)
         }
-    }, [isAuthenticated, user])
+    }, [isAuthenticated, userRole])
 
     // ═══════════════════════════════════════════════════════════
     // EFFECT: Auto-fetch iniziale

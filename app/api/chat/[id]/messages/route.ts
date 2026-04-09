@@ -58,12 +58,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             data: {
                 conversationId,
                 content,
-                role: 'USER',
+                senderId: userId,
             },
             select: {
                 id: true,
+                conversationId: true,
                 content: true,
-                role: true,
+                senderId: true,
+                isRead: true,
                 createdAt: true,
             }
         });
