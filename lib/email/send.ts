@@ -1,4 +1,5 @@
 import { resend, EMAIL_FROM, EMAIL_ADMIN } from './client'
+import { render } from '@react-email/render'
 import {
     BookingRequestUserTemplate,
     BookingRequestAdminTemplate,
@@ -35,13 +36,13 @@ export async function sendBookingRequestToUser({
             from: EMAIL_FROM,
             to,
             subject: `Richiesta Prenotazione Ricevuta - Hotel Excelsior`,
-            react: BookingRequestUserTemplate({
+            html: await render(BookingRequestUserTemplate({
                 userName,
                 roomName,
                 checkIn,
                 checkOut,
                 bookingId,
-            }),
+            })),
         })
 
         if (error) {
@@ -82,14 +83,14 @@ export async function sendBookingRequestToAdmin({
             from: EMAIL_FROM,
             to: EMAIL_ADMIN,
             subject: `🔔 Nuova Prenotazione da Approvare - #${bookingId}`,
-            react: BookingRequestAdminTemplate({
+            html: await render(BookingRequestAdminTemplate({
                 userName,
                 userEmail,
                 roomName,
                 checkIn,
                 checkOut,
                 bookingId,
-            }),
+            })),
         })
 
         if (error) {
@@ -132,14 +133,14 @@ export async function sendBookingConfirmed({
             from: EMAIL_FROM,
             to,
             subject: `✅ Prenotazione Confermata - Hotel Excelsior #${bookingId}`,
-            react: BookingConfirmedTemplate({
+            html: await render(BookingConfirmedTemplate({
                 userName,
                 roomName,
                 checkIn,
                 checkOut,
                 bookingId,
                 totalPrice,
-            }),
+            })),
         })
 
         if (error) {
@@ -182,14 +183,14 @@ export async function sendBookingRejected({
             from: EMAIL_FROM,
             to,
             subject: `Prenotazione Non Approvata - Hotel Excelsior #${bookingId}`,
-            react: BookingRejectedTemplate({
+            html: await render(BookingRejectedTemplate({
                 userName,
                 roomName,
                 checkIn,
                 checkOut,
                 bookingId,
                 reason,
-            }),
+            })),
         })
 
         if (error) {
@@ -234,7 +235,7 @@ export async function sendModificationRequestToUser({
             from: EMAIL_FROM,
             to,
             subject: `Richiesta Modifica Prenotazione #${bookingId}`,
-            react: BookingModificationRequestTemplate({
+            html: await render(BookingModificationRequestTemplate({
                 userName,
                 roomName,
                 originalDates,
@@ -242,7 +243,7 @@ export async function sendModificationRequestToUser({
                 bookingId,
                 priceDifference,
                 reason,
-            }),
+            })),
         })
 
         if (error) {
@@ -283,14 +284,14 @@ export async function sendModificationRequestToAdmin({
             from: EMAIL_FROM,
             to: EMAIL_ADMIN,
             subject: `🔔 Richiesta Modifica Prenotazione #${bookingId}`,
-            react: BookingModificationRequestAdminTemplate({
+            html: await render(BookingModificationRequestAdminTemplate({  // ✅ MODIFICATO
                 userName,
                 userEmail,
                 roomName,
                 checkIn,
                 checkOut,
                 bookingId,
-            }),
+            })),
         })
 
         if (error) {
@@ -331,13 +332,13 @@ export async function sendModificationApproved({
             from: EMAIL_FROM,
             to,
             subject: `Modifica Prenotazione Approvata - Hotel Excelsior #${bookingId}`,
-            react: BookingModificationApprovedTemplate({
+            html: await render(BookingModificationApprovedTemplate({
                 userName,
                 roomName,
                 newDates,
                 bookingId,
                 priceDifference,
-            }),
+            })),
         })
 
         if (error) {
@@ -376,12 +377,12 @@ export async function sendModificationRejected({
             from: EMAIL_FROM,
             to,
             subject: `Modifica Prenotazione Rifiutata - Hotel Excelsior #${bookingId}`,
-            react: BookingModificationRejectedTemplate({
+            html: await render(BookingModificationRejectedTemplate({  // ✅ MODIFICATO
                 userName,
                 roomName,
                 bookingId,
                 reason,
-            }),
+            })),
         })
 
         if (error) {

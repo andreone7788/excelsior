@@ -44,7 +44,7 @@ export function usePublicChat(): UsePublicChatReturn {
 
         // Aggiungi il messaggio dell'utente alla chat
         const userMessage: AIChatMessage = {
-            role: 'user',
+            role: 'USER',
             content,
             timestamp: new Date().toISOString(),
         }
@@ -58,7 +58,7 @@ export function usePublicChat(): UsePublicChatReturn {
 
             // Chiamata API pubblica (NO autenticazione)
             const data = await apiClient.post<{ response: string; timestamp: string }>(
-                '/api/ai/chat',
+                '/ai/chat',
                 JSON.stringify({
                     message: content,
                     conversationHistory
@@ -66,7 +66,7 @@ export function usePublicChat(): UsePublicChatReturn {
             )
 
             const aiMessage: AIChatMessage = {
-                role: 'assistant',
+                role: 'ASSISTANT',
                 content: data.response,
                 timestamp: data.timestamp,
             }

@@ -19,6 +19,7 @@
     "@mui/x-date-pickers": "^8.27.2",
     "@prisma/client": "5.0.0",
     "@react-email/components": "^1.0.8",
+    "@react-email/render": "^2.0.5",
     "bcrypt": "^6.0.0",
     "dayjs": "^1.11.20",
     "dotenv": "^17.3.1",

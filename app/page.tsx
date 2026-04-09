@@ -1,5 +1,6 @@
 'use client'
 
+import Footer from '@/components/layout/Footer'
 import Link from 'next/link'
 import Grid from '@mui/material/Grid'
 import { Button, Container, Typography, Box, Card, CardContent } from '@mui/material'
@@ -149,6 +150,7 @@ export default function HomePage() {
           </Box>
         </Container>
       </Box>
+      <Footer />
     </>
   )
 }

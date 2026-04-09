@@ -283,7 +283,7 @@ export interface UserDashboardStats {
  * AI chat message
  */
 export interface AIChatMessage {
-    role: 'user' | 'assistant'
+    role: 'USER' | 'ASSISTANT'
     content: string
     timestamp: string
 }

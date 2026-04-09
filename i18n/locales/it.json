@@ -209,6 +209,7 @@
     "noBookings": "Non hai ancora prenotazioni",
     "createFirst": "Prenota la tua prima camera",
     "status": {
+      "all": "Tutte",
       "pending": "In Attesa",
       "confirmed": "Confermata",
       "cancelled": "Cancellata",

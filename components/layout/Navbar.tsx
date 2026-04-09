@@ -7,7 +7,7 @@ import { useAuth } from '@/lib/hooks/useAuth'
 import { useTranslation } from 'react-i18next'
 import { AppBar, Toolbar, Typography, Button, IconButton, Drawer, List, ListItem, ListItemButton, ListItemText, Box, Container, useTheme, useMediaQuery } from '@mui/material'
 import { Menu as MenuIcon, Close } from '@mui/icons-material'
-import LanguageSwitcher from '@/components/LanguageSwitcher'
+import LanguageSwitcher from '@/components/language/LanguageSwitcher'
 
 export default function Navbar() {
     const { t } = useTranslation()

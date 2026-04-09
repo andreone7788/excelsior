@@ -1,5 +1,6 @@
 'use client'
 
+import Footer from './Footer'
 import { ReactNode, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -7,7 +8,7 @@ import { Box, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, Li
 import { Menu as MenuIcon, Dashboard, CalendarMonth, ChatBubble, AccountCircle, Logout, Home, Notifications } from '@mui/icons-material'
 import { useAuth } from '@/lib/hooks/useAuth'
 import { useTranslation } from 'react-i18next'
-import LanguageSwitcher from '../LanguageSwitcher'
+import LanguageSwitcher from '../language/LanguageSwitcher'
 
 interface DashboardLayoutProps {
     children: ReactNode
@@ -108,13 +109,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                     </ListItem>
                 ))}
             </List>
-
-            {/* Footer */}
-            <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
-                <Typography variant="caption" color="text.secondary">
-                    {t('footer.copyright', { year: new Date().getFullYear() })}
-                </Typography>
-            </Box>
         </Box>
     )
 
@@ -225,18 +219,25 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 </Drawer>
             </Box>
 
-            {/* Main Content */}
+            {/* Main Content + Footer */}
             <Box
                 component="main"
                 sx={{
                     flexGrow: 1,
-                    p: 3,
                     width: { md: `calc(100% - 280px)` },
                     mt: '64px',
                     bgcolor: 'background.default',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    minHeight: 'calc(100vh - 64px)', // Altezza minima meno l'AppBar
                 }}
             >
-                {children}
+                <Box sx={{ flexGrow: 1, p: 3 }}>
+                    {children}
+                </Box>
+
+                {/* Footer dashboard - allineato con sidebar */}
+                <Footer />
             </Box>
         </Box>
     )
