@@ -5,9 +5,11 @@ import { useMyBookings } from '@/lib/hooks/useBookings'
 import { useConversations } from '@/lib/hooks/useConversations'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/navigation'
-import { Box, Typography, Card, CardContent, Button, Paper, Divider, LinearProgress, Chip, Avatar, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material'
+import NewConversationDialog from '@/components/chat/NewConversationDialog'
+import { Box, Typography, Card, CardContent, Button, Paper, Divider, LinearProgress, Chip, Avatar, List, ListItem, ListItemAvatar, ListItemText, Alert } from '@mui/material'
 import Grid from '@mui/material/Grid'
 import { CalendarMonth, ChatBubble, HotelOutlined, ArrowForward, CheckCircle, Message as MessageIcon } from '@mui/icons-material'
+import { useState } from 'react'
 
 export default function UserDashboardPage() {
   const { t } = useTranslation()
@@ -16,6 +18,7 @@ export default function UserDashboardPage() {
   const { bookings, loading: bookingsLoading } = useMyBookings()
   const { conversations, loading: conversationsLoading } = useConversations()
   const router = useRouter()
+  const [newConversationOpen, setNewConversationOpen] = useState(false)
 
   // Calcola stats dinamiche
   const activeBookings = bookings.filter(b =>
@@ -29,6 +32,9 @@ export default function UserDashboardPage() {
   const totalMessages = conversations.reduce((sum, conv) =>
     sum + (conv.messages?.length || 0), 0
   )
+
+  const pendingBookings = bookings.filter(b => b.status === 'PENDING')
+  const pendingCount = pendingBookings.length
 
   // Prossima prenotazione
   const nextBooking = bookings
@@ -83,7 +89,7 @@ export default function UserDashboardPage() {
       title: t('dashboard.user.quickActions.support.title'),
       description: t('dashboard.user.quickActions.support.description'),
       icon: <ChatBubble sx={{ fontSize: 32 }} />,
-      action: () => router.push('/user/chat'),
+      action: () => setNewConversationOpen(true),
       color: 'success.main',
     },
     {
@@ -106,6 +112,30 @@ export default function UserDashboardPage() {
           {t('dashboard.user.subtitle')}
         </Typography>
       </Box>
+
+      {/* ALERT PRENOTAZIONI PENDING */}
+      {pendingCount > 0 && (
+        <Alert
+          severity="info"
+          sx={{ mb: 4 }}
+          action={
+            <Button
+              color="inherit"
+              size="small"
+              onClick={() => router.push('/user/bookings')}
+            >
+              {t('common.view')}
+            </Button>
+          }
+        >
+          <Typography variant="subtitle2" fontWeight={600} gutterBottom>
+            📋 {t('dashboard.user.pendingBookings.title', { count: pendingCount })}
+          </Typography>
+          <Typography variant="body2">
+            {t('dashboard.user.pendingBookings.message')}
+          </Typography>
+        </Alert>
+      )}
 
       {/* Stats Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -277,7 +307,7 @@ export default function UserDashboardPage() {
           <Button
             variant="text"
             endIcon={<ArrowForward />}
-            onClick={() => router.push('/user/chat')}
+            onClick={() => router.push('/user/conversations')}
           >
             {t('common.viewMore')}
           </Button>
@@ -290,9 +320,6 @@ export default function UserDashboardPage() {
           <Box sx={{ textAlign: 'center', py: 6 }}>
             <Typography variant="h6" color="text.secondary" gutterBottom>
               {t('dashboard.user.recentConversations.noConversations')}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Inizia una chat con il nostro assistente AI!
             </Typography>
           </Box>
         ) : (
@@ -308,7 +335,7 @@ export default function UserDashboardPage() {
                   cursor: 'pointer',
                   '&:hover': { bgcolor: 'action.hover' }
                 }}
-                onClick={() => router.push(`/user/chat`)}
+                onClick={() => router.push(`/user/conversations/${conv.id}`)}
               >
                 <ListItemAvatar>
                   <Avatar sx={{ bgcolor: 'success.main' }}>
@@ -329,6 +356,12 @@ export default function UserDashboardPage() {
           </List>
         )}
       </Paper>
+
+      {/* New Conversation Dialog */}
+      <NewConversationDialog
+        open={newConversationOpen}
+        onClose={() => setNewConversationOpen(false)}
+      />
     </Box>
   )
 }

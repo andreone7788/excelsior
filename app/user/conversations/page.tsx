@@ -1,17 +1,20 @@
 'use client'
 
+import { useState } from 'react'
 import { useConversations } from '@/lib/hooks/useConversations'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
-import { Box, Typography, Card, CardContent, CardActionArea, Chip, LinearProgress, Avatar, Alert } from '@mui/material'
+import { Box, Typography, Button, Card, CardContent, CardActionArea, Chip, LinearProgress, Avatar, Alert } from '@mui/material'
 import Grid from '@mui/material/Grid'
-import { ChatBubble, Schedule } from '@mui/icons-material'
+import NewConversationDialog from '@/components/chat/NewConversationDialog'
+import { Add, ChatBubble, Schedule } from '@mui/icons-material'
 import type { Conversation } from '@/types'
 
 export default function ConversationsPage() {
     const router = useRouter()
     const { t } = useTranslation()
     const { conversations, loading, error } = useConversations()
+    const [newConversationOpen, setNewConversationOpen] = useState(false)
 
     // Formatta data relativa (es. "5 minuti fa", "2 ore fa", "3 giorni fa")
     const getRelativeTime = (dateString: string) => {
@@ -58,13 +61,22 @@ export default function ConversationsPage() {
     return (
         <Box>
             {/* Header */}
-            <Box mb={4}>
-                <Typography variant="h4" fontWeight={700} gutterBottom>
-                    {t('conversations.title')}
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                    {t('conversations.subtitle')}
-                </Typography>
+            <Box mb={4} display="flex" justifyContent="space-between" alignItems="flex-start">
+                <Box>
+                    <Typography variant="h4" fontWeight={700} gutterBottom>
+                        {t('conversations.title')}
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                        {t('conversations.subtitle')}
+                    </Typography>
+                </Box>
+                <Button
+                    variant="contained"
+                    startIcon={<Add />}
+                    onClick={() => setNewConversationOpen(true)}
+                >
+                    {t('conversations.new.button')}
+                </Button>
             </Box>
 
             {/* Lista conversazioni */}
@@ -162,6 +174,12 @@ export default function ConversationsPage() {
                     ))}
                 </Grid>
             )}
+
+            {/* Dialog Nuova Conversazione */}
+            <NewConversationDialog
+                open={newConversationOpen}
+                onClose={() => setNewConversationOpen(false)}
+            />
         </Box>
     )
 }

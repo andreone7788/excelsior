@@ -16,6 +16,7 @@
     "back": "Back",
     "next": "Next",
     "previous": "Previous",
+    "view": "View",
     "viewMore": "View More"
   },
   "nav": {
@@ -113,6 +114,11 @@
         "conversations": "Conversations",
         "totalMessages": "Messages"
       },
+      "pendingBookings": {
+        "title": "You have {{count}} booking awaiting confirmation",
+        "title_plural": "You have {{count}} bookings awaiting confirmation",
+        "message": "You'll receive a notification as soon as our staff confirms your booking!"
+      },
       "quickActions": {
         "title": "Quick Actions",
         "bookRoom": {
@@ -158,6 +164,7 @@
     "noBookings": "You don't have any bookings yet",
     "createFirst": "Book your first room",
     "status": {
+      "all": "All",
       "pending": "Pending",
       "confirmed": "Confirmed",
       "cancelled": "Cancelled",
@@ -387,7 +394,22 @@
     "labels": {
       "conversation": "Conversation",
       "messages": "msg",
-      "subject": "Subject"
+      "subject": "Object"
+    },
+    "new": {
+      "title": "New Conversation",
+      "subject": "Subject",
+      "subjectPlaceholder": "E.g. Problem with booking",
+      "messagePlaceholder": "Describe your problem or request...",
+      "tip": "Suggestion",
+      "message": "Message",
+      "ask": "For quick questions, use the AI chatbot at the bottom right. For complex requests (booking changes, payment issues), contact the staff here.",
+      "button": "New Conversation"
+    },
+    "common": {
+      "cancel": "Cancel",
+      "send": "Send",
+      "sending": "Sending..."
     }
   }
 }

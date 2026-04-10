@@ -16,6 +16,7 @@
     "back": "Indietro",
     "next": "Avanti",
     "previous": "Precedente",
+    "view": "Visualizza",
     "viewMore": "Vedi altro"
   },
   "nav": {
@@ -164,6 +165,11 @@
         "completedBookings": "Prenotazioni Completate",
         "conversations": "Conversazioni",
         "totalMessages": "Messaggi"
+      },
+      "pendingBookings": {
+        "title": "Hai {{count}} prenotazione in attesa di conferma",
+        "title_plural": "Hai {{count}} prenotazioni in attesa di conferma",
+        "message": "Riceverai una notifica appena il nostro staff confermerà la tua prenotazione!"
       },
       "quickActions": {
         "title": "Azioni Rapide",
@@ -389,6 +395,21 @@
       "conversation": "Conversazione",
       "messages": "msg",
       "subject": "Oggetto"
+    },
+    "new": {
+      "title": "Nuova Conversazione",
+      "subject": "Oggetto",
+      "subjectPlaceholder": "Es: Problema con la prenotazione",
+      "messagePlaceholder": "Descrivi il tuo problema o la tua richiesta...",
+      "tip": "Suggerimento:",
+      "message": "Messaggio",
+      "ask": "Per domande veloci, usa il chatbot AI in basso a destra. Per richieste complesse (modifiche prenotazioni, problemi pagamento), contatta lo staff qui.",
+      "button": "Nuova Conversazione"
+    },
+    "common": {
+      "cancel": "Annulla",
+      "send": "Invia",
+      "sending": "Invio in corso..."
     }
   }
 }
