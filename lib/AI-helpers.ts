@@ -11,13 +11,16 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
 
 export async function generateAIResponse(userMessage: string, context?: string): Promise<string> {
     try {
-        const model = genAI.getGenerativeModel({ 
+        const model = genAI.getGenerativeModel({
             model: 'gemini-2.5-flash',
             generationConfig: {
                 temperature: 0.7,
                 maxOutputTokens: 500,
             }
         })
+
+        // ✅ NUOVO: Rileva se serve supporto umano
+        const needsHumanSupport = requiresHumanSupport(userMessage)
 
         const systemPrompt = `
 Sei l'assistente virtuale dell'Hotel Excelsior, un hotel di lusso in Italia.
@@ -43,7 +46,12 @@ REGOLE IMPORTANTI:
 - NON inventare informazioni su prezzi, disponibilità o servizi non menzionati
 - Risposte brevi: massimo 3-4 righe
 - Usa emoji appropriati (🏨 ⭐ 🌊 etc.) per rendere amichevole
-- Se l'utente vuole prenotare, invitalo a usare il sistema di prenotazione o contattare reception
+- Se l'utente vuole prenotare, invitalo a usare il sistema di prenotazione
+
+${needsHumanSupport ? `
+⚠️ ATTENZIONE: Questa domanda riguarda modifiche, problemi o richieste complesse.
+Dopo aver dato una risposta generica, INVITA L'UTENTE a contattare lo staff per assistenza personalizzata.
+` : ''}
 `;
 
         const prompt = `${systemPrompt}\n\nDomanda utente: ${userMessage}\nRisposta:`
@@ -53,9 +61,15 @@ REGOLE IMPORTANTI:
                 setTimeout(() => reject(new Error('TIMEOUT_AI')), 10000)
             )
         ])
-        const response = result.response;
 
-        return response.text()
+        let response = result.response.text()
+
+        // ✅ NUOVO: Aggiungi escalation se necessario
+        if (needsHumanSupport && !response.toLowerCase().includes('staff') && !response.toLowerCase().includes('personale')) {
+            response += '\n\n💬 Per questo tipo di richiesta, ti consiglio di contattare il nostro staff attraverso il sistema di conversazioni. Potranno assisterti personalmente e risolvere la tua richiesta nel miglior modo possibile!'
+        }
+
+        return response
 
     } catch (error) {
         console.error('Errore generazione AI:', error)
@@ -82,7 +96,7 @@ export async function suggestRooms(userPreferences: string,
     }>
 ): Promise<{ suggestion: string; roomIds: number[] }> {
     try {
-        const model = genAI.getGenerativeModel({ 
+        const model = genAI.getGenerativeModel({
             model: 'gemini-2.5-flash',
             generationConfig: {
                 temperature: 0.3,
@@ -174,7 +188,7 @@ export async function suggestAdminReply(
     userQuestion: string
 ): Promise<string> {
     try {
-        const model = genAI.getGenerativeModel({ 
+        const model = genAI.getGenerativeModel({
             model: 'gemini-2.5-flash',
             generationConfig: {
                 temperature: 0.3,
@@ -244,4 +258,37 @@ export function handleAIError(error: unknown) {
         }
     }
     return { error: 'Errore sconosciuto', status: 500 }
+}
+
+/**
+ * Rileva se una domanda richiede assistenza umana
+ */
+function requiresHumanSupport(userMessage: string): boolean {
+    const complexKeywords = [
+        // Modifiche/Cancellazioni
+        'modificare', 'cambiare', 'cancellare', 'annullare', 'spostare',
+        'modifico', 'cambio', 'cancello', 'annullo',
+
+        // Problemi
+        'problema', 'errore', 'non funziona', 'sbagliato', 'difetto',
+        'reclamo', 'lamentela', 'guasto', 'rotto',
+
+        // Pagamenti
+        'pagamento', 'pagare', 'carta', 'rimborso', 'fattura',
+        'non mi hanno addebitato', 'errore pagamento', 'bonifico',
+
+        // Prenotazioni esistenti
+        'mia prenotazione', 'ho prenotato', 'ho già prenotato',
+        'conferma prenotazione', 'numero prenotazione',
+
+        // Richieste personalizzate
+        'speciale', 'personalizzato', 'particolare', 'allergie',
+        'disabilità', 'accessibilità', 'necessità specifiche',
+
+        // Urgenze
+        'urgente', 'subito', 'emergenza', 'aiuto'
+    ]
+
+    const lowerMessage = userMessage.toLowerCase()
+    return complexKeywords.some(keyword => lowerMessage.includes(keyword))
 }

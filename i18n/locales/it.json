@@ -27,6 +27,7 @@
     "register": "Registrati",
     "dashboard": "Dashboard",
     "bookings": "Prenotazioni",
+    "support": "Supporto",
     "profile": "Profilo",
     "logout": "Esci"
   },
@@ -161,7 +162,7 @@
       "stats": {
         "activeBookings": "Prenotazioni Attive",
         "completedBookings": "Prenotazioni Completate",
-        "aiConversations": "Conversazioni",
+        "conversations": "Conversazioni",
         "totalMessages": "Messaggi"
       },
       "quickActions": {
@@ -170,9 +171,9 @@
           "title": "Prenota una camera",
           "description": "Esplora le nostre camere disponibili"
         },
-        "chatAI": {
-          "title": "Chatta con AI",
-          "description": "Chiedi consigli al nostro assistente"
+        "support": {
+          "title": "Hai bisogno di aiuto?",
+          "description": "Chiedi consigli al nostro staff, saremo lieti di aiutarti!"
         },
         "viewBookings": {
           "title": "Le mie prenotazioni",
@@ -194,7 +195,7 @@
         "room": "Camera"
       },
       "recentConversations": {
-        "title": "Conversazioni AI Recenti",
+        "title": "Conversazioni Recenti",
         "viewAll": "Vedi tutte",
         "noConversations": "Nessuna conversazione",
         "noConversationsMessage": "Inizia una chat con il nostro assistente AI!",

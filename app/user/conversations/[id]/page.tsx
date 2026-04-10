@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { useState, useEffect, useRef } from 'react'
 import { Box, Typography, Paper, TextField, IconButton, Avatar, Chip, LinearProgress, Alert, Button } from '@mui/material'
 import { Send, ArrowBack, Person, SupportAgent } from '@mui/icons-material'
+import { useUnreadCount } from '@/lib/hooks/useUnreadCount'
 
 interface ConversationPageProps {
     params: Promise<{ id: string }>
@@ -18,6 +19,7 @@ export default function ConversationDetailsPage({ params }: ConversationPageProp
     const router = useRouter()
     const { t } = useTranslation()
     const { conversation, sending, loading, error, sendMessage } = useConversation(conversationId)
+    const { refetch: refetchUnreadCount } = useUnreadCount(false) // Refetch contatore messaggi non letti quando carichiamo la conversazione
     const [messageInput, setMessageInput] = useState('')
     const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -27,6 +29,16 @@ export default function ConversationDetailsPage({ params }: ConversationPageProp
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
         }
     }, [conversation?.messages])
+
+    // Aggiorna badge messaggi non letti quando carichiamo la conversazione
+    useEffect(() => {
+        if (conversation && !loading) {
+            // Timeout di attesa API che marca i messaggi come letti
+            setTimeout(() => {
+                refetchUnreadCount()
+            }, 500)
+        }
+    }, [conversation, loading, refetchUnreadCount])
 
     // Formatta timestamp
     const formatTime = (dateString: string) => {

@@ -49,7 +49,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         { text: t('nav.home'), icon: <Home />, path: '/' },
         { text: t('nav.dashboard'), icon: <Dashboard />, path: '/user/dashboard' },
         { text: t('nav.bookings'), icon: <CalendarMonth />, path: '/user/bookings' },
-        { text: 'AI Assistant', icon: <ChatBubble />, path: '/user/chat' },
+        { text: t('nav.support'), icon: <ChatBubble />, path: '/user/chat' },
         { text: t('nav.profile'), icon: <AccountCircle />, path: '/user/profile' },
     ]
 

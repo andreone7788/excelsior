@@ -59,7 +59,7 @@ export default function UserDashboardPage() {
     },
     {
       icon: <ChatBubble sx={{ fontSize: 40, color: 'info.main' }} />,
-      label: t('dashboard.user.stats.aiConversations'),
+      label: t('dashboard.user.stats.conversations'),
       value: conversations.length,
       color: 'info.main',
     },
@@ -80,8 +80,8 @@ export default function UserDashboardPage() {
       color: 'primary.main',
     },
     {
-      title: t('dashboard.user.quickActions.chatAI.title'),
-      description: t('dashboard.user.quickActions.chatAI.description'),
+      title: t('dashboard.user.quickActions.support.title'),
+      description: t('dashboard.user.quickActions.support.description'),
       icon: <ChatBubble sx={{ fontSize: 32 }} />,
       action: () => router.push('/user/chat'),
       color: 'success.main',

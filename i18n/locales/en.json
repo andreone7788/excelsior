@@ -27,6 +27,7 @@
     "register": "Sign Up",
     "dashboard": "Dashboard",
     "bookings": "Bookings",
+    "support": "Support",
     "profile": "Profile",
     "logout": "Logout"
   },
@@ -109,7 +110,7 @@
       "stats": {
         "activeBookings": "Active Bookings",
         "completedBookings": "Completed Bookings",
-        "aiConversations": "Conversations",
+        "conversations": "Conversations",
         "totalMessages": "Messages"
       },
       "quickActions": {
@@ -118,9 +119,9 @@
           "title": "Book a room",
           "description": "Explore our available rooms"
         },
-        "chatAI": {
-          "title": "Chat with AI",
-          "description": "Ask our assistant for advice"
+        "support": {
+          "title": "Need help?",
+          "description": "Ask our assistant for advice, we will be happy to help you!"
         },
         "viewBookings": {
           "title": "My bookings",
@@ -142,7 +143,7 @@
         "room": "Room"
       },
       "recentConversations": {
-        "title": "Recent AI Conversations",
+        "title": "Recent Conversations",
         "viewAll": "View all",
         "noConversations": "No conversations",
         "noConversationsMessage": "Start a chat with our AI assistant!",

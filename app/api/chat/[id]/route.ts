@@ -67,6 +67,17 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             );
         }
 
+        await prisma.message.updateMany({
+            where: {
+                conversationId: conversationId,
+                senderId: { not: userId },  // Solo messaggi ricevuti
+                isRead: false               // Solo quelli non ancora letti
+            },
+            data: {
+                isRead: true
+            }
+        });
+
         return NextResponse.json({
             conversation
         }, { status: 200 });
