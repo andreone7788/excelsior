@@ -198,7 +198,8 @@
     "confirmNewPassword": "Confirm New Password",
     "saveChanges": "Save Changes",
     "success": "Profile updated successfully!",
-    "error": "Error updating profile"
+    "error": "Error updating profile",
+    "userNotFound": "Profile not found"
   },
   "chat": {
     "title": "AI Assistant",

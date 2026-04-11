@@ -38,7 +38,7 @@ export function useUserProfile(autoFetch: boolean = true): UseUserProfileReturn 
             setLoading(true)
             setError(null)
 
-            const data = await apiClient.get<{ user: User }>('/user/me')
+            const data = await apiClient.get<{ user: User }>('/user/profile')
             setUser(data.user)
 
         } catch (err) {
@@ -158,11 +158,11 @@ export function useUserStats(autoFetch: boolean = true): UseUserStatsReturn {
                 totalBookings: bookings.length,
                 upcomingBookings: bookings.filter(
                     b => ['PENDING', 'CONFIRMED'].includes(b.status) &&
-                        new Date(b.checkIn) > now
+                        new Date(b.startDate) > now
                 ).length,
                 completedBookings: bookings.filter(
                     b => b.status === 'CONFIRMED' &&
-                        new Date(b.checkOut) < now
+                        new Date(b.endDate) < now
                 ).length,
                 cancelledBookings: bookings.filter(b => b.status === 'CANCELLED').length,
                 totalSpent: bookings

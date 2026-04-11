@@ -250,7 +250,8 @@
     "confirmNewPassword": "Conferma Nuova Password",
     "saveChanges": "Salva Modifiche",
     "success": "Profilo aggiornato con successo!",
-    "error": "Errore durante l'aggiornamento del profilo"
+    "error": "Errore durante l'aggiornamento del profilo",
+    "userNotFound": "Profilo non trovato"
   },
   "chat": {
     "title": "AI Assistant",

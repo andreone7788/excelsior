@@ -5,8 +5,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/lib/hooks/useAuth'
-import { Container, Paper, TextField, Button, Typography, Box, Alert, CircularProgress, Divider, FormControlLabel, Checkbox } from '@mui/material'
-import { Login as LoginIcon } from '@mui/icons-material'
+import { Container, Paper, TextField, Button, Typography, Box, Alert, CircularProgress, Divider, FormControlLabel, Checkbox, InputAdornment, IconButton } from '@mui/material'
+import { Login as LoginIcon, Visibility, VisibilityOff } from '@mui/icons-material'
 
 export default function LoginPage() {
     const { t } = useTranslation()
@@ -15,6 +15,7 @@ export default function LoginPage() {
 
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [showPassword, setShowPassword] = useState(false)
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -84,13 +85,26 @@ export default function LoginPage() {
                         fullWidth
                         label={t('auth.login.password')}
                         name="password"
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         value={formData.password}
                         onChange={handleChange}
                         placeholder={t('auth.login.passwordPlaceholder')}
                         required
                         autoComplete="current-password"
                         sx={{ mb: 2 }}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        onMouseDown={(e) => e.preventDefault()} // Evita blur
+                                        edge="end"
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            )
+                        }}
                     />
 
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>

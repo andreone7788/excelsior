@@ -183,3 +183,70 @@ useEffect(() => {
         }, 500)
     }
 }, [conversation, loading, refetchUnreadCount])
+
+### #6 — Approfondimento: "You Might Not Need an Effect"  
+**Data**: 10 Aprile 2026  
+**File**: `app/user/profile/page.tsx`  
+**Severità**: 🔧 Educativa — Ottimizzazione architetturale
+
+#### 🧠 Concetto Chiave
+Durante lo sviluppo della pagina profilo (`ProfilePage`), è emerso un errore comune:
+
+Calling setState synchronously within an effect can trigger cascading renders
+
+Questo errore è collegato a un principio fondamentale di React illustrato nella documentazione ufficiale:  
+["You Might Not Need an Effect"](https://react.dev/learn/you-might-not-need-an-effect)
+
+#### 🔍 Problema Iniziale
+Nella prima versione del componente, lo stato `profileForm` veniva inizializzato in modo simile a questo:
+```ts
+const [profileForm, setProfileForm] = useState<UpdateProfileInput>({
+    name: user?.name || '',
+    surname: user?.surname || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+})
+
+In alcuni casi, quando user arrivava dopo il primo render (es. durante caricamento asincrono), si tentava di aggiornare lo stato direttamente nel corpo del componente, causando un loop di render.
+🧪 Soluzione Errata (da evitare)
+
+// ❌ MAI fare così
+if (user && !profileForm.name && ...) {
+  setProfileForm({ ... })
+}
+
+✅ Soluzione Corretta Adottata
+Abbiamo inizializzato lo stato direttamente con i valori disponibili da user, evitando useEffect per trasformare dati derivati:
+
+const [profileForm, setProfileForm] = useState<UpdateProfileInput>({
+    name: user?.name || '',
+    surname: user?.surname || '',
+    email: user?.email || '',
+    phone: user?.phone || ''
+})
+
+Inoltre, abbiamo aggiunto un key al wrapper principale per garantire il reset completo dello stato se l’utente cambia:
+
+<Box key={user?.id || 'no-user'}>
+
+🧠 Principi Applicati
+"You don’t need an Effect to transform data for rendering"
+→ Se puoi calcolare qualcosa da props o state, fallo direttamente nel componente.
+Evitare "cascading renders"
+→ Non aggiornare lo stato immediatamente in un useEffect se non necessario.
+Usare key per resettare lo stato
+→ Quando un componente deve "ricominciare da zero", usa key={qualcosaDiUnico}.
+
+✅ Risultato
+Nessun errore di React
+Codice più chiaro e manutenibile
+Nessun rischio di loop infiniti
+Migliore performance grazie all’eliminazione di render inutili
+
+📚 Approfondimento
+La lettura di "You Might Not Need an Effect" è stata fondamentale per risolvere alcuni errori di architettura e comprendere quando NON usare useEffect:
+Non usarlo per trasformare dati
+Non usarlo per gestire eventi utente
+Usarlo solo per sincronizzare con sistemi esterni (es. API, DOM, WebSocket)
+Conclusione: Capire quando non usare useEffect è cruciale per scrivere codice React efficiente e privo di bug.
+

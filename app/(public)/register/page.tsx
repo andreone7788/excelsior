@@ -4,8 +4,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
-import { Box, Container, Paper, TextField, Button, Typography, Alert, Divider, Checkbox, FormControlLabel, CircularProgress, Grid } from '@mui/material'
-import { PersonAdd } from '@mui/icons-material'
+import { Box, Container, Paper, TextField, Button, Typography, Alert, Divider, Checkbox, FormControlLabel, CircularProgress, Grid, InputAdornment, IconButton } from '@mui/material'
+import { PersonAdd, Visibility, VisibilityOff } from '@mui/icons-material'
 
 export default function RegisterPage() {
   const { t } = useTranslation()
@@ -23,6 +23,8 @@ export default function RegisterPage() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [apiError, setApiError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -136,84 +138,110 @@ export default function RegisterPage() {
                 helperText={errors.name}
               />
             </Grid>
+          </Grid>
 
-            {/* Surname */}
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                label={t('auth.register.surname')}
-                name="surname"
-                value={formData.surname}
-                onChange={handleChange}
-                placeholder={t('auth.register.surnamePlaceholder')}
-                required
-                error={!!errors.surname}
-                helperText={errors.surname}
-              />
-            </Grid>
+          {/* Surname */}
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              fullWidth
+              label={t('auth.register.surname')}
+              name="surname"
+              value={formData.surname}
+              onChange={handleChange}
+              placeholder={t('auth.register.surnamePlaceholder')}
+              required
+              error={!!errors.surname}
+              helperText={errors.surname}
+            />
+          </Grid>
 
-            {/* Email */}
-            <Grid size={{ xs: 12 }}>
-              <TextField
-                fullWidth
-                label={t('auth.register.email')}
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder={t('auth.register.emailPlaceholder')}
-                required
-                error={!!errors.email}
-                helperText={errors.email}
-              />
-            </Grid>
+          {/* Email */}
+          <Grid size={{ xs: 12 }}>
+            <TextField
+              fullWidth
+              label={t('auth.register.email')}
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder={t('auth.register.emailPlaceholder')}
+              required
+              error={!!errors.email}
+              helperText={errors.email}
+            />
+          </Grid>
 
-            {/* Phone */}
-            <Grid size={{ xs: 12 }}>
-              <TextField
-                fullWidth
-                label={`${t('auth.register.phone')} ${t('auth.register.phoneOptional')}`}
-                name="phone"
-                type="tel"
-                value={formData.phone}
-                onChange={handleChange}
-                placeholder={t('auth.register.phonePlaceholder')}
-                error={!!errors.phone}
-                helperText={errors.phone}
-              />
-            </Grid>
+          {/* Phone */}
+          <Grid size={{ xs: 12 }}>
+            <TextField
+              fullWidth
+              label={`${t('auth.register.phone')} ${t('auth.register.phoneOptional')}`}
+              name="phone"
+              type="tel"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder={t('auth.register.phonePlaceholder')}
+              error={!!errors.phone}
+              helperText={errors.phone}
+            />
+          </Grid>
 
-            {/* Password */}
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                label={t('auth.register.password')}
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder={t('auth.register.passwordPlaceholder')}
-                required
-                error={!!errors.password}
-                helperText={errors.password}
-              />
-            </Grid>
+          {/* Password */}
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              fullWidth
+              label={t('auth.register.password')}
+              name="password"
+              type={showPassword ? 'text' : 'password'}  // <-- Dinamico!
+              value={formData.password}
+              onChange={handleChange}
+              placeholder={t('auth.register.passwordPlaceholder')}
+              required
+              error={!!errors.password}
+              helperText={errors.password}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      onMouseDown={(e) => e.preventDefault()} // Evita blur
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+            />
+          </Grid>
 
-            {/* Confirm Password */}
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                label={t('auth.register.confirmPassword')}
-                name="confirmPassword"
-                type="password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                placeholder={t('auth.register.confirmPasswordPlaceholder')}
-                required
-                error={!!errors.confirmPassword}
-                helperText={errors.confirmPassword}
-              />
-            </Grid>
+          {/* Confirm Password */}
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField
+              fullWidth
+              label={t('auth.register.confirmPassword')}
+              name="confirmPassword"
+              type={showConfirmPassword ? 'text' : 'password'}  // <-- Dinamico!
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder={t('auth.register.confirmPasswordPlaceholder')}
+              required
+              error={!!errors.confirmPassword}
+              helperText={errors.confirmPassword}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onMouseDown={(e) => e.preventDefault()} // Evita blur
+                      edge="end"
+                    >
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+            />
           </Grid>
 
           {/* Terms */}
