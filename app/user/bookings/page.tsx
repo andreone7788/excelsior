@@ -3,9 +3,9 @@
 import { useState } from 'react'
 import { useMyBookings } from '@/lib/hooks/useBookings'
 import { useTranslation } from 'react-i18next'
-import { Box, Typography, Card, CardContent, Chip, Button, LinearProgress, Tabs, Tab, Alert, Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText } from '@mui/material'
+import { Box, Typography, Card, CardContent, Chip, Button, LinearProgress, Tabs, Tab, Alert, Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText, TextField, Stack } from '@mui/material'
 import Grid from '@mui/material/Grid'
-import { Hotel, CalendarToday, People, Euro, Cancel } from '@mui/icons-material'
+import { Hotel, CalendarToday, People, Euro, Cancel, Edit } from '@mui/icons-material'
 import type { BookingWithRelations, BookingStatus } from '@/types'
 import apiClient, { ApiError } from '@/lib/api-client'
 
@@ -18,6 +18,16 @@ export default function UserBookingsPage() {
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
     const [selectedBooking, setSelectedBooking] = useState<BookingWithRelations | null>(null)
     const [cancelling, setCancelling] = useState(false)
+
+    // Stato modifica prenotazione
+    const [modifyDialogOpen, setModifyDialogOpen] = useState(false)
+    const [modifying, setModifying] = useState(false)
+    const [modifyError, setModifyError] = useState<string | null>(null)
+    const [modifyForm, setModifyForm] = useState({
+        newStartDate: '',
+        newEndDate: '',
+        reason: ''
+    })
 
     // Filtra prenotazioni in base allo stato
     const filteredBookings = statusFilter === 'ALL'
@@ -57,6 +67,71 @@ export default function UserBookingsPage() {
             alert(`Errore cancellazione: ${errorMessage}`)
         } finally {
             setCancelling(false)
+        }
+    }
+
+    // Gestione apertura dialog modifica
+    const handleModifyClick = (booking: BookingWithRelations) => {
+        setSelectedBooking(booking)
+        setModifyError(null)
+
+        // Pre-compila le date con quelle esistenti (opzionale)
+        const startDate = new Date(booking.startDate).toISOString().split('T')[0]
+        const endDate = new Date(booking.endDate).toISOString().split('T')[0]
+
+        setModifyForm({
+            newStartDate: startDate,
+            newEndDate: endDate,
+            reason: ''
+        })
+        setModifyDialogOpen(true)
+    }
+
+    // Gestione conferma modifica
+    const handleModifyConfirm = async () => {
+        if (!selectedBooking) return
+
+        if (!modifyForm.reason || modifyForm.reason.trim().length < 10) {
+            setModifyError('Inserisci una motivazione di almeno 10 caratteri')
+            return
+        }
+
+        try {
+            setModifying(true)
+            setModifyError(null)
+
+            const payload: {
+                newStartDate?: string
+                newEndDate?: string
+                reason: string
+            } = {
+                reason: modifyForm.reason
+            }
+
+            // Includi solo le date se modificate
+            const originalStart = new Date(selectedBooking.startDate).toISOString().split('T')[0]
+            const originalEnd = new Date(selectedBooking.endDate).toISOString().split('T')[0]
+
+            if (modifyForm.newStartDate !== originalStart) {
+                payload.newStartDate = modifyForm.newStartDate
+            }
+            if (modifyForm.newEndDate !== originalEnd) {
+                payload.newEndDate = modifyForm.newEndDate
+            }
+
+            await apiClient.put(`/bookings/${selectedBooking.id}`, JSON.stringify(payload))
+
+            await refetch()
+            setModifyDialogOpen(false)
+            setSelectedBooking(null)
+            setModifyForm({ newStartDate: '', newEndDate: '', reason: '' })
+
+            alert('Richiesta di modifica inviata! Riceverai conferma via email.')
+        } catch (err) {
+            const errorMessage = err instanceof ApiError ? err.message : 'Errore sconosciuto'
+            setModifyError(errorMessage)
+        } finally {
+            setModifying(false)
         }
     }
 
@@ -101,6 +176,7 @@ export default function UserBookingsPage() {
                     <Tab label={t('bookings.status.all')} value="ALL" />
                     <Tab label={t('bookings.status.pending')} value="PENDING" />
                     <Tab label={t('bookings.status.confirmed')} value="CONFIRMED" />
+                    <Tab label={t('bookings.status.pendingModification')} value="PENDING_MODIFICATION" />
                     <Tab label={t('bookings.status.completed')} value="REPLACED" />
                     <Tab label={t('bookings.status.cancelled')} value="CANCELLED" />
                 </Tabs>
@@ -125,7 +201,7 @@ export default function UserBookingsPage() {
                     <Typography variant="body2" color="text.secondary" paragraph>
                         {statusFilter === 'ALL'
                             ? t('bookings.createFirst')
-                            : `Nessuna prenotazione con questo stato`
+                            : t('bookings.noBookingsWithStatus', { status: t(`bookings.status.${statusFilter.toLowerCase()}`) })
                         }
                     </Typography>
                     <Button variant="contained" href="/rooms">
@@ -138,6 +214,7 @@ export default function UserBookingsPage() {
                         const statusConfig = getStatusConfig(booking.status)
                         const nights = calculateNights(booking.startDate, booking.endDate)
                         const canCancel = booking.status === 'PENDING' || booking.status === 'CONFIRMED'
+                        const canModify = booking.status === 'CONFIRMED'
 
                         return (
                             <Grid size={{ xs: 12, md: 6 }} key={booking.id}>
@@ -210,6 +287,18 @@ export default function UserBookingsPage() {
 
                                         {/* Azioni */}
                                         <Box sx={{ display: 'flex', gap: 1, mt: 2, pt: 2, borderTop: 1, borderColor: 'divider' }}>
+                                            {canModify && (
+                                                <Button
+                                                    variant="outlined"
+                                                    color="primary"
+                                                    size="small"
+                                                    startIcon={<Edit />}
+                                                    onClick={() => handleModifyClick(booking)}
+                                                    fullWidth
+                                                >
+                                                    {t('bookings.common.modify')}
+                                                </Button>
+                                            )}
                                             {canCancel && (
                                                 <Button
                                                     variant="outlined"
@@ -219,7 +308,7 @@ export default function UserBookingsPage() {
                                                     onClick={() => handleCancelClick(booking)}
                                                     fullWidth
                                                 >
-                                                    Cancella
+                                                    {t('bookings.common.cancel')}
                                                 </Button>
                                             )}
                                         </Box>
@@ -236,18 +325,19 @@ export default function UserBookingsPage() {
                 open={cancelDialogOpen}
                 onClose={() => !cancelling && setCancelDialogOpen(false)}
             >
-                <DialogTitle>Conferma Cancellazione</DialogTitle>
+                <DialogTitle>{t('bookings.dialogs.confirmCancellation.title')}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Sei sicuro di voler cancellare la prenotazione per{' '}
-                        <strong>{selectedBooking?.room?.name || `Camera #${selectedBooking?.roomId}`}</strong>?
+                        {t('bookings.dialogs.confirmCancellation.message', {
+                            room: selectedBooking?.room?.name || `Camera #${selectedBooking?.roomId}`
+                        })}
                         <br />
-                        Questa azione non può essere annullata.
+                        {t('bookings.dialogs.confirmCancellation.warning')}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setCancelDialogOpen(false)} disabled={cancelling}>
-                        Annulla
+                        {t('bookings.common.cancel')}
                     </Button>
                     <Button
                         onClick={handleCancelConfirm}
@@ -255,7 +345,80 @@ export default function UserBookingsPage() {
                         variant="contained"
                         disabled={cancelling}
                     >
-                        {cancelling ? 'Cancellazione...' : 'Conferma'}
+                        {cancelling ? t('bookings.common.cancelling') : t('bookings.common.confirm')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Dialog modifica prenotazione */}
+            <Dialog
+                open={modifyDialogOpen}
+                onClose={() => !modifying && setModifyDialogOpen(false)}
+                maxWidth="sm"
+                fullWidth
+            >
+                <DialogTitle>{t('bookings.dialogs.modifyBooking.title')}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText sx={{ mb: 2 }}>
+                        {t('bookings.dialogs.modifyBooking.message', {
+                            room: selectedBooking?.room?.name || `Camera #${selectedBooking?.roomId}`
+                        })}
+                        <br />
+                        {t('bookings.dialogs.modifyBooking.note')}
+                    </DialogContentText>
+
+                    {modifyError && (
+                        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setModifyError(null)}>
+                            {modifyError}
+                        </Alert>
+                    )}
+
+                    <Stack spacing={2}>
+                        <TextField
+                            label={t('bookings.dialogs.modifyBooking.newCheckInDate')}
+                            type="date"
+                            value={modifyForm.newStartDate}
+                            onChange={(e) => setModifyForm(prev => ({ ...prev, newStartDate: e.target.value }))}
+                            InputLabelProps={{ shrink: true }}
+                            fullWidth
+                            disabled={modifying}
+                            helperText={t('bookings.dialogs.modifyBooking.newCheckInDateHelper')}
+                        />
+                        <TextField
+                            label={t('bookings.dialogs.modifyBooking.newCheckOutDate')}
+                            type="date"
+                            value={modifyForm.newEndDate}
+                            onChange={(e) => setModifyForm(prev => ({ ...prev, newEndDate: e.target.value }))}
+                            InputLabelProps={{ shrink: true }}
+                            fullWidth
+                            disabled={modifying}
+                            helperText={t('bookings.dialogs.modifyBooking.newCheckOutDateHelper')}
+                        />
+                        <TextField
+                            label={t('bookings.dialogs.modifyBooking.reason')}
+                            multiline
+                            rows={4}
+                            value={modifyForm.reason}
+                            onChange={(e) => setModifyForm(prev => ({ ...prev, reason: e.target.value }))}
+                            fullWidth
+                            disabled={modifying}
+                            helperText={t('bookings.dialogs.modifyBooking.reasonHelper')}
+                            required
+                            error={!!modifyError && modifyForm.reason.length < 10}
+                        />
+                    </Stack>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setModifyDialogOpen(false)} disabled={modifying}>
+                        {t('bookings.common.cancel')}
+                    </Button>
+                    <Button
+                        onClick={handleModifyConfirm}
+                        color="primary"
+                        variant="contained"
+                        disabled={modifying || !modifyForm.reason || modifyForm.reason.trim().length < 10}
+                    >
+                        {modifying ? t('bookings.common.sending') : t('bookings.common.send')}
                     </Button>
                 </DialogActions>
             </Dialog>

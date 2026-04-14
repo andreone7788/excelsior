@@ -250,3 +250,399 @@ Non usarlo per gestire eventi utente
 Usarlo solo per sincronizzare con sistemi esterni (es. API, DOM, WebSocket)
 Conclusione: Capire quando non usare useEffect è cruciale per scrivere codice React efficiente e privo di bug.
 
+---
+
+### #7 — Pattern UI Diversi: Dialog (Admin) vs Routing (User)
+**📅 Data:** 14 Aprile 2026  
+**📂 Files:** 
+- `app/admin/conversations/page.tsx` (Dialog pattern)
+- `app/user/conversations/[id]/page.tsx` (Routing pattern, da implementare)
+
+**🎯 Contesto**
+
+Durante lo sviluppo delle interfacce di gestione conversazioni, è emersa la domanda: 
+**"Dobbiamo usare lo stesso pattern UI per admin e user?"**
+
+#### 🧠 Analisi dei Contesti
+
+**Admin (`/admin/conversations`):**
+- Gestisce **MOLTE** conversazioni (di tutti gli utenti del sistema)
+- Necessità di **switching rapido** tra conversazioni diverse
+- Deve mantenere **filtri e stato** della lista durante la navigazione
+- Visualizzazione a **tabella** con statistiche aggregate
+
+**User (`/user/conversations`):**
+- Gestisce solo le **PROPRIE** conversazioni (tipicamente 1-5 in un contesto hotel)
+- **Non** serve switching rapido
+- Focus su **una conversazione alla volta**
+- Esperienza più **lineare e semplice**
+
+#### 🎨 Decisione Architetturale
+
+**✅ SCELTA:** Pattern diversi per contesti diversi
+
+| Aspetto | Admin | User |
+|---------|-------|------|
+| **Pattern** | Dialog (MUI) | Routing classico |
+| **URL** | `/admin/conversations` (statico) | `/user/conversations/[id]` (dinamico) |
+| **Navigazione** | Click → Dialog overlay | Click → Nuova pagina |
+| **Back button** | Chiudi Dialog | Browser back naturale |
+| **Deep linking** | ❌ Non supportato | ✅ URL condivisibili |
+| **Complessità** | ✅ Giustificata per bulk operations | ❌ Overkill per poche conversazioni |
+
+#### 📊 Benefici della Scelta
+
+**Per Admin (Dialog):**
+- ✅ Preserva filtri e posizione scroll nella tabella
+- ✅ Transizioni fluide senza page reload
+- ✅ UX ottimale per gestione volumi alti
+- ✅ Stato conversazione non interferisce con lista
+
+**Per User (Routing):**
+- ✅ URL significativi e condivisibili
+- ✅ Browser back/forward funziona naturalmente
+- ✅ Codice più semplice e manutenibile
+- ✅ Meglio per SEO (se necessario)
+- ✅ Esperienza più familiare per utenti finali
+
+#### 💡 Principio Generale
+
+**"Non forzare pattern per consistenza superficiale quando i contesti d'uso sono sostanzialmente diversi"**
+
+La consistenza UI non significa usare sempre gli stessi componenti, ma:
+- **Consistenza concettuale** → Stesso comportamento per azioni simili
+- **Consistenza visiva** → Stesso design system (colori, tipografia, spacing)
+- **Pattern contestuali** → Soluzioni ottimali per ogni caso d'uso
+
+#### 🔍 Alternative Valutate
+
+1. **❌ Dialog anche per user**
+   - Pro: Consistenza con admin
+   - Contro: Overkill, perde deep linking, back button innaturale
+
+2. **❌ Routing anche per admin**
+   - Pro: Consistenza con user
+   - Contro: Perde filtri, scroll position, switching lento
+
+3. **✅ Pattern diversi basati sul contesto** ← Scelta adottata
+
+#### 📚 Riferimenti
+
+- [Material-UI Dialog Best Practices](https://mui.com/material-ui/react-dialog/)
+- [Next.js Dynamic Routes](https://nextjs.org/docs/app/building-your-application/routing/dynamic-routes)
+- Principio YAGNI: Non aggiungere complessità dove non serve
+
+---
+
+### #8 — Implementazione Modifica Prenotazioni User
+**📅 Data:** 14 Aprile 2026  
+**📂 Files:**
+- `app/user/bookings/page.tsx` (UI modifica prenotazione)
+- `app/api/bookings/[id]/route.ts` (endpoint PUT già esistente)
+- `lib/validations/booking.ts` (schema già esistente)
+
+**🎯 Situazione**
+
+L'endpoint backend per la modifica prenotazioni (`PUT /api/bookings/:id`) era già completamente implementato con:
+- ✅ Validazione Zod (`requestBookingModificationSchema`)
+- ✅ Verifica disponibilità nuove date/camera
+- ✅ Calcolo differenza prezzo (`priceDifference`)
+- ✅ Cambio status → `PENDING_MODIFICATION`
+- ✅ Invio email a utente e admin
+- ✅ Gestione stato `originalStartDate`, `originalEndDate`, `originalRoomId`
+
+**❌ Mancava:** L'interfaccia utente per permettere agli utenti di richiedere modifiche.
+
+#### 🛠 Implementazione Frontend
+
+**Aggiunte a `app/user/bookings/page.tsx`:**
+
+1. **Nuovo stato modifica:**
+```tsx
+const [modifyDialogOpen, setModifyDialogOpen] = useState(false)
+const [modifying, setModifying] = useState(false)
+const [modifyError, setModifyError] = useState<string | null>(null)
+const [modifyForm, setModifyForm] = useState({
+    newStartDate: '',
+    newEndDate: '',
+    reason: ''
+})
+```
+
+2. **Handler apertura dialog modifica:**
+```tsx
+const handleModifyClick = (booking: BookingWithRelations) => {
+    setSelectedBooking(booking)
+    setModifyError(null)
+    
+    // Pre-compila date esistenti
+    const startDate = new Date(booking.startDate).toISOString().split('T')[0]
+    const endDate = new Date(booking.endDate).toISOString().split('T')[0]
+    
+    setModifyForm({
+        newStartDate: startDate,
+        newEndDate: endDate,
+        reason: ''
+    })
+    setModifyDialogOpen(true)
+}
+```
+
+3. **Handler invio richiesta modifica:**
+```tsx
+const handleModifyConfirm = async () => {
+    // Validazione motivazione (min 10 caratteri)
+    if (!modifyForm.reason || modifyForm.reason.trim().length < 10) {
+        setModifyError('Inserisci una motivazione di almeno 10 caratteri')
+        return
+    }
+
+    const payload = { reason: modifyForm.reason }
+    
+    // Includi solo date modificate (confronto con originali)
+    const originalStart = new Date(selectedBooking.startDate).toISOString().split('T')[0]
+    const originalEnd = new Date(selectedBooking.endDate).toISOString().split('T')[0]
+    
+    if (modifyForm.newStartDate !== originalStart) {
+        payload.newStartDate = modifyForm.newStartDate
+    }
+    if (modifyForm.newEndDate !== originalEnd) {
+        payload.newEndDate = modifyForm.newEndDate
+    }
+
+    await apiClient.put(`/bookings/${selectedBooking.id}`, JSON.stringify(payload))
+    await refetch()
+    // Mostra messaggio successo
+}
+```
+
+4. **Tab "In Modifica":**
+```tsx
+<Tabs value={statusFilter} onChange={...}>
+    <Tab label="Tutte" value="ALL" />
+    <Tab label="In Attesa" value="PENDING" />
+    <Tab label="Confermate" value="CONFIRMED" />
+    <Tab label="In Modifica" value="PENDING_MODIFICATION" /> {/* ← NUOVO */}
+    <Tab label="Completate" value="REPLACED" />
+    <Tab label="Cancellate" value="CANCELLED" />
+</Tabs>
+```
+
+5. **Bottone Modifica nelle Card:**
+```tsx
+const canModify = booking.status === 'CONFIRMED'
+
+{canModify && (
+    <Button
+        variant="outlined"
+        color="primary"
+        size="small"
+        startIcon={<Edit />}
+        onClick={() => handleModifyClick(booking)}
+        fullWidth
+    >
+        Modifica
+    </Button>
+)}
+```
+
+6. **Dialog Modifica Prenotazione:**
+```tsx
+<Dialog open={modifyDialogOpen} onClose={...} maxWidth="sm" fullWidth>
+    <DialogTitle>Richiedi Modifica Prenotazione</DialogTitle>
+    <DialogContent>
+        <DialogContentText>
+            Modifica le date della tua prenotazione.
+            La richiesta sarà valutata dall'amministrazione.
+        </DialogContentText>
+
+        {modifyError && <Alert severity="error">{modifyError}</Alert>}
+
+        <Stack spacing={2}>
+            <TextField
+                label="Nuova Data Check-in"
+                type="date"
+                value={modifyForm.newStartDate}
+                onChange={(e) => setModifyForm(prev => ({ 
+                    ...prev, 
+                    newStartDate: e.target.value 
+                }))}
+                InputLabelProps={{ shrink: true }}
+                helperText="Modifica la data di arrivo"
+            />
+            <TextField
+                label="Nuova Data Check-out"
+                type="date"
+                value={modifyForm.newEndDate}
+                onChange={(e) => setModifyForm(prev => ({ 
+                    ...prev, 
+                    newEndDate: e.target.value 
+                }))}
+                InputLabelProps={{ shrink: true }}
+                helperText="Modifica la data di partenza"
+            />
+            <TextField
+                label="Motivazione *"
+                multiline
+                rows={4}
+                value={modifyForm.reason}
+                onChange={(e) => setModifyForm(prev => ({ 
+                    ...prev, 
+                    reason: e.target.value 
+                }))}
+                required
+                helperText="Spiega brevemente il motivo (min. 10 caratteri)"
+                error={!!modifyError && modifyForm.reason.length < 10}
+            />
+        </Stack>
+    </DialogContent>
+    <DialogActions>
+        <Button onClick={() => setModifyDialogOpen(false)}>
+            Annulla
+        </Button>
+        <Button
+            onClick={handleModifyConfirm}
+            variant="contained"
+            disabled={modifying || modifyForm.reason.trim().length < 10}
+        >
+            {modifying ? 'Invio...' : 'Invia Richiesta'}
+        </Button>
+    </DialogActions>
+</Dialog>
+```
+
+#### 🔄 Flusso Completo
+
+1. **User** → Apre `/user/bookings`
+2. **User** → Vede prenotazione `CONFIRMED`, clicca "Modifica"
+3. **Dialog** → Si apre con date pre-compilate
+4. **User** → Modifica date e inserisce motivazione (min 10 caratteri)
+5. **Frontend** → Chiama `PUT /api/bookings/:id` con payload `{ newStartDate?, newEndDate?, reason }`
+6. **Backend** → Verifica disponibilità, calcola `priceDifference`, aggiorna status → `PENDING_MODIFICATION`
+7. **Backend** → Invia email a user e admin
+8. **Frontend** → Ricarica lista, mostra prenotazione in tab "In Modifica"
+9. **Admin** → Riceve richiesta in `/admin/bookings`, approva o rifiuta
+
+#### ✅ Benefici
+
+- ✅ **Funzionalità completa**: User può modificare date senza contattare admin manualmente
+- ✅ **UX trasparente**: Dialog modale chiaro con validazione in tempo reale
+- ✅ **Tracciabilità**: Stato `PENDING_MODIFICATION` visibile in tab dedicato
+- ✅ **Notifiche**: Email automatiche a user e admin
+- ✅ **Validazione robusta**: Frontend + Backend validano motivazione e disponibilità
+- ✅ **Calcolo prezzo**: Backend calcola automaticamente differenza di costo
+
+#### 🧪 Test Consigliati
+
+1. ✅ Modifica solo data check-in
+2. ✅ Modifica solo data check-out
+3. ✅ Modifica entrambe le date
+4. ✅ Tentativo modifica senza motivazione (deve bloccare)
+5. ✅ Tentativo modifica prenotazione già in modifica (backend rifiuta)
+6. ✅ Tentativo modifica con date non disponibili (backend rifiuta con 409)
+7. ✅ Verifica email inviate correttamente
+
+#### 💰 Calcolo Differenza Prezzo
+
+Il backend calcola automaticamente:
+```ts
+// Se modifichi solo le date
+const oldNights = (endDate - startDate) / (1000 * 60 * 60 * 24)
+const newNights = (newEndDate - newStartDate) / (1000 * 60 * 60 * 24)
+const pricePerNight = totalPrice / oldNights
+const priceDifference = (pricePerNight * newNights) - totalPrice
+
+// Se modifichi anche la camera (non ancora implementato in UI)
+priceDifference += (newRoom.price - oldRoom.price) * nights
+```
+
+#### 📝 Note Implementative
+
+- **Solo date modificabili**: Per ora l'UI permette solo modifica date. L'endpoint supporta anche cambio camera (`newRoomId`), ma non è esposto nel form (decisione UX: evitare complessità)
+- **Validazione motivazione**: Min 10 caratteri richiesti (conforme a schema backend)
+- **Pre-compilazione form**: Date esistenti caricate automaticamente per comodità
+- **Invio solo campi modificati**: Il frontend confronta date originali e invia solo quelle cambiate
+- **Stato prenotazione**: Solo `CONFIRMED` può essere modificata (logica backend)
+
+---### #7 — Pattern UI Diversi: Dialog (Admin) vs Routing (User)
+**📅 Data:** 14 Aprile 2026  
+**📂 Files:** 
+- `app/admin/conversations/page.tsx` (Dialog pattern)
+- `app/user/conversations/[id]/page.tsx` (Routing pattern, da implementare)
+
+**🎯 Contesto**
+
+Durante lo sviluppo delle interfacce di gestione conversazioni, è emersa la domanda: 
+**"Dobbiamo usare lo stesso pattern UI per admin e user?"**
+
+#### 🧠 Analisi dei Contesti
+
+**Admin (`/admin/conversations`):**
+- Gestisce **MOLTE** conversazioni (di tutti gli utenti del sistema)
+- Necessità di **switching rapido** tra conversazioni diverse
+- Deve mantenere **filtri e stato** della lista durante la navigazione
+- Visualizzazione a **tabella** con statistiche aggregate
+
+**User (`/user/conversations`):**
+- Gestisce solo le **PROPRIE** conversazioni (tipicamente 1-5 in un contesto hotel)
+- **Non** serve switching rapido
+- Focus su **una conversazione alla volta**
+- Esperienza più **lineare e semplice**
+
+#### 🎨 Decisione Architetturale
+
+**✅ SCELTA:** Pattern diversi per contesti diversi
+
+| Aspetto | Admin | User |
+|---------|-------|------|
+| **Pattern** | Dialog (MUI) | Routing classico |
+| **URL** | `/admin/conversations` (statico) | `/user/conversations/[id]` (dinamico) |
+| **Navigazione** | Click → Dialog overlay | Click → Nuova pagina |
+| **Back button** | Chiudi Dialog | Browser back naturale |
+| **Deep linking** | ❌ Non supportato | ✅ URL condivisibili |
+| **Complessità** | ✅ Giustificata per bulk operations | ❌ Overkill per poche conversazioni |
+
+#### 📊 Benefici della Scelta
+
+**Per Admin (Dialog):**
+- ✅ Preserva filtri e posizione scroll nella tabella
+- ✅ Transizioni fluide senza page reload
+- ✅ UX ottimale per gestione volumi alti
+- ✅ Stato conversazione non interferisce con lista
+
+**Per User (Routing):**
+- ✅ URL significativi e condivisibili
+- ✅ Browser back/forward funziona naturalmente
+- ✅ Codice più semplice e manutenibile
+- ✅ Meglio per SEO (se necessario)
+- ✅ Esperienza più familiare per utenti finali
+
+#### 💡 Principio Generale
+
+**"Non forzare pattern per consistenza superficiale quando i contesti d'uso sono sostanzialmente diversi"**
+
+La consistenza UI non significa usare sempre gli stessi componenti, ma:
+- **Consistenza concettuale** → Stesso comportamento per azioni simili
+- **Consistenza visiva** → Stesso design system (colori, tipografia, spacing)
+- **Pattern contestuali** → Soluzioni ottimali per ogni caso d'uso
+
+#### 🔍 Alternative Valutate
+
+1. **❌ Dialog anche per user**
+   - Pro: Consistenza con admin
+   - Contro: Overkill, perde deep linking, back button innaturale
+
+2. **❌ Routing anche per admin**
+   - Pro: Consistenza con user
+   - Contro: Perde filtri, scroll position, switching lento
+
+3. **✅ Pattern diversi basati sul contesto** ← Scelta adottata
+
+#### 📚 Riferimenti
+
+- [Material-UI Dialog Best Practices](https://mui.com/material-ui/react-dialog/)
+- [Next.js Dynamic Routes](https://nextjs.org/docs/app/building-your-application/routing/dynamic-routes)
+- Principio YAGNI: Non aggiungere complessità dove non serve
+
+---
+

@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, JSX, useCallback, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Button, IconButton, TextField, MenuItem, LinearProgress, Alert, Stack, Tooltip, Card, CardContent, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material'
-import { CheckCircle, Cancel, Visibility, FilterList, Refresh, HourglassEmpty, TaskAlt, Block } from '@mui/icons-material'
+import { CheckCircle, Cancel, Visibility, FilterList, Refresh, HourglassEmpty, TaskAlt, Block, ArrowBack } from '@mui/icons-material'
 import Grid from '@mui/material/Grid'
 import apiClient, { ApiError } from '@/lib/api-client'
 import type { BookingStatus, BookingWithRelations } from '@/types'
@@ -24,6 +25,7 @@ interface AdminBookingsResponse {
 }
 
 export default function AdminBookingPage() {
+    const router = useRouter()
     const searchParams = useSearchParams()
     const [bookings, setBookings] = useState<BookingExtended[]>([])
     const [loading, setLoading] = useState<boolean>(true)
@@ -125,15 +127,19 @@ export default function AdminBookingPage() {
 
     return (
         <Box sx={{ maxWidth: 1600, mx: 'auto', p: 3 }}>
-            {/* Header */}
-            <Box sx={{ mb: 4 }}>
-                <Typography variant="h4" fontWeight={700} gutterBottom>
-                    Gestione Prenotazioni
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                    Visualizza, approva o rifiuta le prenotazioni
-                </Typography>
-            </Box>
+            <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
+                <IconButton onClick={() => router.push('/admin/dashboard')}>
+                    <ArrowBack />
+                </IconButton>
+                <Box sx={{ flexGrow: 1 }}>
+                    <Typography variant="h4" fontWeight={700} gutterBottom>
+                        Gestione Prenotazioni
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                        Visualizza, approva o rifiuta le prenotazioni
+                    </Typography>
+                </Box>
+            </Stack>
 
             {error && (
                 <Alert severity="error" sx={{ mb: 3 }}>

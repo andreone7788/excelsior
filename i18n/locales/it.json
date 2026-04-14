@@ -215,12 +215,14 @@
     "subtitle": "Gestisci le tue prenotazioni",
     "noBookings": "Non hai ancora prenotazioni",
     "createFirst": "Prenota la tua prima camera",
+    "noBookingsWithStatus": "Nessuna prenotazione con questo stato",
     "status": {
       "all": "Tutte",
       "pending": "In Attesa",
       "confirmed": "Confermata",
       "cancelled": "Cancellata",
-      "completed": "Completata"
+      "completed": "Completata",
+      "pendingModification": "In Modifica"
     },
     "actions": {
       "view": "Visualizza",
@@ -234,6 +236,32 @@
       "nights": "Notti",
       "guests": "Ospiti",
       "totalPrice": "Totale"
+    },
+    "common": {
+      "modify": "Modifica",
+      "cancel": "Annulla",
+      "confirm": "Conferma",
+      "send": "Invia Richiesta",
+      "sending": "Invio...",
+      "cancelling": "Cancellazione..."
+    },
+    "dialogs": {
+      "modifyBooking": {
+        "title": "Richiedi Modifica Prenotazione",
+        "message": "Modifica le date della tua prenotazione per {{room}}.",
+        "note": "La richiesta sarà valutata dall'amministrazione.",
+        "newCheckInDate": "Nuova Data Check-in",
+        "newCheckInDateHelper": "Modifica la data di arrivo",
+        "newCheckOutDate": "Nuova Data Check-out",
+        "newCheckOutDateHelper": "Modifica la data di partenza",
+        "reason": "Motivazione *",
+        "reasonHelper": "Spiega brevemente il motivo della modifica (min. 10 caratteri)"
+      },
+      "confirmCancellation": {
+        "title": "Conferma Cancellazione",
+        "message": "Sei sicuro di voler cancellare la prenotazione per {{room}}?",
+        "warning": "Questa azione non può essere annullata."
+      }
     }
   },
   "profile": {

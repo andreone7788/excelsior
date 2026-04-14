@@ -163,12 +163,14 @@
     "subtitle": "Manage your bookings",
     "noBookings": "You don't have any bookings yet",
     "createFirst": "Book your first room",
+    "noBookingsWithStatus": "No bookings with this status",
     "status": {
       "all": "All",
       "pending": "Pending",
       "confirmed": "Confirmed",
       "cancelled": "Cancelled",
-      "completed": "Completed"
+      "completed": "Completed",
+      "pendingModification": "Pending Modification"
     },
     "actions": {
       "view": "View",
@@ -182,6 +184,32 @@
       "nights": "Nights",
       "guests": "Guests",
       "totalPrice": "Total"
+    },
+    "common": {
+      "modify": "Modify",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "send": "Submit Request",
+      "sending": "Submitting...",
+      "cancelling": "Cancelling..."
+    },
+    "dialogs": {
+      "modifyBooking": {
+        "title": "Request Booking Modification",
+        "message": "Modify the dates of your booking for {{room}}.",
+        "note": "The request will be reviewed by the administration.",
+        "newCheckInDate": "New Check-in Date",
+        "newCheckInDateHelper": "Modify your arrival date",
+        "newCheckOutDate": "New Check-out Date",
+        "newCheckOutDateHelper": "Modify your departure date",
+        "reason": "Reason *",
+        "reasonHelper": "Briefly explain the reason for the modification (min. 10 characters)"
+      },
+      "confirmCancellation": {
+        "title": "Confirm Cancellation",
+        "message": "Are you sure you want to cancel the booking for {{room}}?",
+        "warning": "This action cannot be undone."
+      }
     }
   },
   "profile": {
