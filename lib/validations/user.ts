@@ -15,7 +15,7 @@ export const createUserSchema = z.object({
 
 // Schema per aggiornamento utente (Admin)
 export const updateUserSchema = z.object({
-    userId: z.coerce.number().int().positive("ID utente non valido"),
+    userId: z.coerce.number().int().positive("ID utente non valido").optional(),
     name: z.string().min(2, "Il nome deve contenere almeno 2 caratteri").optional(),
     surname: z.string().min(2, "Il cognome deve contenere almeno 2 caratteri").optional(),
     email: z.string().email("Indirizzo email non valido").optional(),
