@@ -29,6 +29,18 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             include: {
                 _count: {
                     select: { bookings: true }
+                },
+                images: {
+                    orderBy: { order: 'asc' }
+                },
+                bookings: {
+                    take: 10,
+                    orderBy: { startDate: 'desc' },
+                    include: {
+                        user: {
+                            select: { id: true, name: true, surname: true, email: true }
+                        }
+                    }
                 }
             }
         })

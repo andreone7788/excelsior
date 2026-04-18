@@ -16,14 +16,23 @@ export async function GET(request: NextRequest) {
             include: {
                 _count: {
                     select: { bookings: true }
+                },
+                images: {
+                    orderBy: { order: 'asc' }
                 }
             }
         })
 
+        // Converti Decimal in number per evitare problemi nel frontend
+        const roomsWithNumberPrice = rooms.map(room => ({
+            ...room,
+            price: parseFloat(room.price.toString())
+        }))
+
         console.log(`Admin (ID: ${adminUserId}) ha visualizzato la lista delle camere. Camere trovate: ${rooms.length}`)
 
-        return NextResponse.json({ rooms }, { status: 200 })
-        
+        return NextResponse.json({ rooms: roomsWithNumberPrice }, { status: 200 })
+
     } catch (error) {
         const { error: message, status } = handleAuthError(error)
         return NextResponse.json({ error: message }, { status })

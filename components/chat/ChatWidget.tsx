@@ -158,7 +158,7 @@ export default function ChatWidget() {
                                     display: 'flex',
                                     gap: 1,
                                     alignItems: 'flex-start',
-                                    flexDirection: msg.role === 'user' ? 'row-reverse' : 'row'
+                                    flexDirection: msg.role === 'USER' ? 'row-reverse' : 'row'
                                 }}
                             >
                                 {/* Avatar */}
@@ -167,7 +167,7 @@ export default function ChatWidget() {
                                         width: 32,
                                         height: 32,
                                         borderRadius: '50%',
-                                        bgcolor: msg.role === 'user' ? 'primary.main' : 'secondary.main',
+                                        bgcolor: msg.role === 'USER' ? 'primary.main' : 'secondary.main',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
@@ -175,7 +175,7 @@ export default function ChatWidget() {
                                         flexShrink: 0
                                     }}
                                 >
-                                    {msg.role === 'user' ? <Person fontSize="small" /> : <SmartToy fontSize="small" />}
+                                    {msg.role === 'USER' ? <Person fontSize="small" /> : <SmartToy fontSize="small" />}
                                 </Box>
 
                                 {/* Messaggio */}
@@ -184,8 +184,8 @@ export default function ChatWidget() {
                                     sx={{
                                         p: 1.5,
                                         maxWidth: '75%',
-                                        bgcolor: msg.role === 'user' ? 'primary.main' : 'background.paper',
-                                        color: msg.role === 'user' ? 'white' : 'text.primary'
+                                        bgcolor: msg.role === 'USER' ? 'primary.main' : 'background.paper',
+                                        color: msg.role === 'USER' ? 'white' : 'text.primary'
                                     }}
                                 >
                                     <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
