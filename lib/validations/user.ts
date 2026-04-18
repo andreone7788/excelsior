@@ -15,7 +15,6 @@ export const createUserSchema = z.object({
 
 // Schema per aggiornamento utente (Admin)
 export const updateUserSchema = z.object({
-    userId: z.coerce.number().int().positive("ID utente non valido").optional(),
     name: z.string().min(2, "Il nome deve contenere almeno 2 caratteri").optional(),
     surname: z.string().min(2, "Il cognome deve contenere almeno 2 caratteri").optional(),
     email: z.string().email("Indirizzo email non valido").optional(),
@@ -55,13 +54,7 @@ export const updatePasswordSchema = z.object({
         path: ["newPassword"]}
 );
 
-//Schema per cancellazione utente (Admin)
-export const deleteUserSchema = z.object({
-    userId: z.coerce.number().int().positive("ID utente non valido"),
-});
-
 export type CreateUserInput = z.infer<typeof createUserSchema>;
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;
-export type DeleteUserInput = z.infer<typeof deleteUserSchema>;
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 export type UpdatePasswordInput = z.infer<typeof updatePasswordSchema>;

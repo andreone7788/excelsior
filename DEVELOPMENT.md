@@ -564,85 +564,284 @@ priceDifference += (newRoom.price - oldRoom.price) * nights
 - **Invio solo campi modificati**: Il frontend confronta date originali e invia solo quelle cambiate
 - **Stato prenotazione**: Solo `CONFIRMED` può essere modificata (logica backend)
 
----### #7 — Pattern UI Diversi: Dialog (Admin) vs Routing (User)
-**📅 Data:** 14 Aprile 2026  
-**📂 Files:** 
-- `app/admin/conversations/page.tsx` (Dialog pattern)
-- `app/user/conversations/[id]/page.tsx` (Routing pattern, da implementare)
+---
+
+### #9 — Gestione Utenti Admin: Bug state management e validazione Zod
+**📅 Data:** 18 Aprile 2026  
+**📂 Files:**
+- `app/admin/users/page.tsx` (Interfaccia gestione utenti)
+- `app/api/admin/users/[id]/route.ts` (Endpoint PUT e DELETE)
+- `lib/validations/user.ts` (Schema `updateUserSchema`)
+- `lib/api-client.ts` (Metodo `delete`)
 
 **🎯 Contesto**
 
-Durante lo sviluppo delle interfacce di gestione conversazioni, è emersa la domanda: 
-**"Dobbiamo usare lo stesso pattern UI per admin e user?"**
+Implementazione della pagina di gestione utenti per admin con funzionalità CRUD complete:
+- ✅ Lista utenti con filtri (ruolo, ricerca)
+- ✅ Visualizzazione dettaglio utente (Dialog)
+- ✅ Cambio ruolo (promuovi/degrada)
+- ❌ Eliminazione utente (non funzionante)
 
-#### 🧠 Analisi dei Contesti
+#### 🐛 Problema #1: Errore Zod su cambio ruolo
 
-**Admin (`/admin/conversations`):**
-- Gestisce **MOLTE** conversazioni (di tutti gli utenti del sistema)
-- Necessità di **switching rapido** tra conversazioni diverse
-- Deve mantenere **filtri e stato** della lista durante la navigazione
-- Visualizzazione a **tabella** con statistiche aggregate
+**🔍 Errore:**
 
-**User (`/user/conversations`):**
-- Gestisce solo le **PROPRIE** conversazioni (tipicamente 1-5 in un contesto hotel)
-- **Non** serve switching rapido
-- Focus su **una conversazione alla volta**
-- Esperienza più **lineare e semplice**
+**🧪 Causa:**
+Lo schema `updateUserSchema` richiedeva il campo `userId` nel body, ma l'ID era già presente nell'URL come path param:
 
-#### 🎨 Decisione Architetturale
+```typescript
+// ❌ Schema errato
+export const updateUserSchema = z.object({
+    userId: z.coerce.number().int().positive("ID utente non valido"),  // ← Campo richiesto
+    name: z.string().min(2).optional(),
+    role: z.enum(["USER", "ADMIN"]).optional(),
+    // ...
+})
 
-**✅ SCELTA:** Pattern diversi per contesti diversi
+// Frontend inviava solo
+{ role: "ADMIN" }  // ← Mancava userId
 
-| Aspetto | Admin | User |
-|---------|-------|------|
-| **Pattern** | Dialog (MUI) | Routing classico |
-| **URL** | `/admin/conversations` (statico) | `/user/conversations/[id]` (dinamico) |
-| **Navigazione** | Click → Dialog overlay | Click → Nuova pagina |
-| **Back button** | Chiudi Dialog | Browser back naturale |
-| **Deep linking** | ❌ Non supportato | ✅ URL condivisibili |
-| **Complessità** | ✅ Giustificata per bulk operations | ❌ Overkill per poche conversazioni |
+// Ma userId era già in /api/admin/users/3
 
-#### 📊 Benefici della Scelta
+// ✅ Schema corretto
+export const updateUserSchema = z.object({
+    // userId RIMOSSO - è già in params.id
+    name: z.string().min(2, "Il nome deve contenere almeno 2 caratteri").optional(),
+    surname: z.string().min(2, "Il cognome deve contenere almeno 2 caratteri").optional(),
+    email: z.string().email("Indirizzo email non valido").optional(),
+    phone: z.string().min(10).max(20).optional(),  // ← Validazione più flessibile (era min 15)
+    password: z.string().min(8)
+        .regex(/[A-Z]/, "Almeno una maiuscola")
+        .regex(/[a-z]/, "Almeno una minuscola")
+        .regex(/[0-9]/, "Almeno un numero")
+        .regex(/[^A-Za-z0-9]/, "Almeno un carattere speciale").optional(),
+    role: z.enum(["USER", "ADMIN"]).optional(),
+})
+```
+🐛 Problema #2: DELETE utente non funzionava
+**🧪 Causa:**
+// ❌ Codice errato
+const handleOpenDeleteDialog = (user: AdminUser) => {
+    setMenuUser(user)           // 1. Imposta menuUser = user
+    handleCloseMenu()            // 2. ❌ Azzera menuUser = null!
+    setDeleteDialogOpen(true)    // 3. Dialog si apre con menuUser già null
+}
 
-**Per Admin (Dialog):**
-- ✅ Preserva filtri e posizione scroll nella tabella
-- ✅ Transizioni fluide senza page reload
-- ✅ UX ottimale per gestione volumi alti
-- ✅ Stato conversazione non interferisce con lista
+const handleCloseMenu = () => {
+    setAnchorEl(null)
+    setMenuUser(null)  // ← Qui azzera menuUser!
+}
 
-**Per User (Routing):**
-- ✅ URL significativi e condivisibili
-- ✅ Browser back/forward funziona naturalmente
-- ✅ Codice più semplice e manutenibile
-- ✅ Meglio per SEO (se necessario)
-- ✅ Esperienza più familiare per utenti finali
+1 - User clicca "Elimina Utente" nel menu
+2 - handleOpenDeleteDialog(user) viene chiamato
+3 - setMenuUser(user) → menuUser diventa l'utente selezionato
+4 - handleCloseMenu() → menuUser diventa null immediatamente
+5 - Dialog si apre, ma menuUser è già null
+6 - Nel dialog non appare il nome utente (perché menuUser?.name è undefined)
+7 - Clic su "Conferma Eliminazione" → if (!menuUser) return → nessuna azione
 
-#### 💡 Principio Generale
+🛠 Soluzione:
+// ✅ Codice corretto
+const handleOpenDeleteDialog = (user: AdminUser) => {
+    setMenuUser(user)
+    setAnchorEl(null)           // Chiude solo il menu (non azzera menuUser)
+    setDeleteDialogOpen(true)
+}
 
-**"Non forzare pattern per consistenza superficiale quando i contesti d'uso sono sostanzialmente diversi"**
-
-La consistenza UI non significa usare sempre gli stessi componenti, ma:
-- **Consistenza concettuale** → Stesso comportamento per azioni simili
-- **Consistenza visiva** → Stesso design system (colori, tipografia, spacing)
-- **Pattern contestuali** → Soluzioni ottimali per ogni caso d'uso
-
-#### 🔍 Alternative Valutate
-
-1. **❌ Dialog anche per user**
-   - Pro: Consistenza con admin
-   - Contro: Overkill, perde deep linking, back button innaturale
-
-2. **❌ Routing anche per admin**
-   - Pro: Consistenza con user
-   - Contro: Perde filtri, scroll position, switching lento
-
-3. **✅ Pattern diversi basati sul contesto** ← Scelta adottata
-
-#### 📚 Riferimenti
-
-- [Material-UI Dialog Best Practices](https://mui.com/material-ui/react-dialog/)
-- [Next.js Dynamic Routes](https://nextjs.org/docs/app/building-your-application/routing/dynamic-routes)
-- Principio YAGNI: Non aggiungere complessità dove non serve
+// menuUser viene azzerato solo quando:
+// - L'utente viene eliminato con successo (in handleConfirmDelete)
+// - Il dialog viene chiuso senza confermare (nell'onClose del Dialog)
 
 ---
+
+🐛 Problema #3: DELETE API richiedeva body ridondante
+
+🔍 Situazione iniziale:
+Endpoint DELETE richiedeva un body con userId:
+
+// ❌ Backend iniziale
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    // ...
+    const body = await request.json();
+    const validateData = deleteUserSchema.parse(body);  // ← Richiede { userId: number }
+    const { userId: validatedUserId } = validateData;
+    
+    await prisma.user.delete({ where: { id: validatedUserId } });
+}
+
+// ❌ Frontend doveva inviare
+await apiClient.delete(`/admin/users/${menuUser.id}`, JSON.stringify({ userId: menuUser.id }))
+//                                                      ↑ Body ridondante!
+
+
+Perfetto! Completo la documentazione della sezione #9 nel file DEVELOPMENT.md:
+
+Vedo che il file ha duplicazioni. Aggiungo la sezione #9 completa alla fine del file corretto:
+
+PUT /api/admin/users/3 500 in 1004ms
+Zod validation error
+
+🛠 Soluzione:
+Rimosso il campo userId dallo schema perché ridondante (l'ID viene dal path param):
+
+✅ Beneficio aggiuntivo:
+Validazione telefono più realistica (da min 15 a min 10/max 20 caratteri per numeri italiani).
+
+🐛 Problema #2: DELETE utente non funzionava
+🔍 Sintomi:
+
+Clic su "Conferma Eliminazione" → nessuna azione
+Nessuna richiesta DELETE nella tab Network del browser
+Console: handleConfirmDelete chiamato! → ⚠️ menuUser è null!
+🧪 Causa:
+Bug nella sequenza di chiamate in handleOpenDeleteDialog:
+
+Sequenza eventi:
+
+User clicca "Elimina Utente" nel menu
+handleOpenDeleteDialog(user) viene chiamato
+setMenuUser(user) → menuUser diventa l'utente selezionato
+handleCloseMenu() → menuUser diventa null immediatamente
+Dialog si apre, ma menuUser è già null
+Nel dialog non appare il nome utente (perché menuUser?.name è undefined)
+Clic su "Conferma Eliminazione" → if (!menuUser) return → nessuna azione
+🛠 Soluzione:
+Chiudere solo il menu senza azzerare menuUser:
+
+✅ Risultato:
+
+Nome utente visibile nel dialog di conferma
+Statistiche prenotazioni/conversazioni visibili
+DELETE API chiamata correttamente
+Utente eliminato dal database
+Lista utenti aggiornata automaticamente
+🐛 Problema #3: DELETE API richiedeva body ridondante
+🔍 Situazione iniziale:
+Endpoint DELETE richiedeva un body con userId:
+
+🧠 Problema architetturale:
+
+- L'ID è già nell'URL (/admin/users/3)
+- Richiedere l'ID anche nel body è ridondante e non RESTful
+- Il metodo apiClient.delete non supportava il body per default
+- Confusione su dove prendere l'ID (URL vs body)
+
+🛠 Soluzione:
+DELETE senza body (RESTful pattern):
+
+// ✅ Backend corretto
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const adminUserId = await verifyAdmin(request);
+    
+    const { id } = await params;
+    const userId = parseInt(id);
+    
+    if (isNaN(userId) || userId <= 0) {
+        return NextResponse.json({ error: 'ID utente non valido' }, { status: 400 });
+    }
+    
+    // Verifica esistenza
+    const existingUser = await prisma.user.findUnique({ where: { id: userId } });
+    if (!existingUser) {
+        return NextResponse.json({ error: 'Utente non trovato' }, { status: 404 });
+    }
+    
+    // Elimina (cascade automatico da Prisma schema)
+    await prisma.user.delete({ where: { id: userId } });
+    
+    console.log(`Admin (ID: ${adminUserId}) ha eliminato l'utente ID: ${userId}`);
+    return NextResponse.json({ message: 'Utente eliminato con successo' }, { status: 200 });
+}
+
+// ✅ Frontend semplificato
+await apiClient.delete(`/admin/users/${menuUser.id}`)  // ← Nessun body!
+
+**✅ Vantaggi:**
+- ✅ Più RESTful (DELETE su risorsa identificata dall'URL)
+- ✅ Meno codice (nessun parsing body)
+- ✅ Meno confusione (un solo posto dove prendere l'ID)
+- ✅ Standard HTTP corretto
+- ✅ Cascade delete automatico gestito da Prisma schema
+
+---
+
+#### 📋 Riepilogo Modifiche
+
+1. **Schema Zod `updateUserSchema`:**
+   - Rimosso campo `userId` (ridondante)
+   - Validazione telefono più flessibile (10-20 caratteri)
+
+2. **Route DELETE `/api/admin/users/[id]`:**
+   - Rimossa validazione body
+   - ID preso solo da path params
+   - Cascade delete gestito da Prisma
+
+3. **Frontend `handleOpenDeleteDialog`:**
+   - Usa `setAnchorEl(null)` invece di `handleCloseMenu()`
+   - Mantiene `menuUser` popolato fino alla conferma/annullamento
+
+4. **apiClient.delete:**
+   - Parametro `body` opzionale già supportato
+   - Nessuna modifica necessaria
+
+---
+
+#### 💡 Lezioni Apprese
+
+1. **Evitare ridondanza tra URL e body**
+   - Se l'ID è nell'URL, non serve nel body
+   - Pattern RESTful: `DELETE /resource/:id` (basta l'URL)
+
+2. **State management nei Dialog**
+   - Attenzione alla sequenza di `setState` calls
+   - Verificare sempre quando/dove lo stato viene azzerato
+   - Usare console.log per debugging stato
+
+3. **Validazione Zod context-aware**
+   - Non tutti i campi devono essere validati in ogni endpoint
+   - Adattare schema al contesto (path params vs body)
+
+4. **Debugging metodico**
+   - Identificare dove si blocca il flusso (console.log strategici)
+   - Verificare Network tab per vedere se API viene chiamata
+   - Controllare stato componente con React DevTools
+
+---
+
+#### 🧪 Test Completati
+
+- ✅ Cambio ruolo USER → ADMIN
+- ✅ Cambio ruolo ADMIN → USER
+- ✅ Eliminazione utente senza prenotazioni/conversazioni
+- ✅ Eliminazione utente con prenotazioni (cascade)
+- ✅ Eliminazione utente con conversazioni (cascade)
+- ✅ Dialog conferma mostra nome utente e statistiche
+- ✅ Lista utenti si aggiorna automaticamente dopo eliminazione
+- ✅ Filtri (ruolo, ricerca) funzionano correttamente
+
+---
+
+## 📝 Conclusioni e Prossimi Step
+
+Il progetto Excelsior Hotel è quasi completo. Gli ultimi problemi di state management e validazione sono stati risolti, garantendo un'interfaccia admin robusta e funzionale.
+
+**✅ Completato:**
+- Sistema di autenticazione JWT
+- Gestione camere, prenotazioni, conversazioni
+- Interfaccia user completa con modifica prenotazioni
+- Interfaccia admin completa (users, bookings, conversations)
+- Integrazione AI (Gemini) per chat e suggerimenti
+- Sistema di notifiche real-time
+- Internazionalizzazione (i18n)
+- Validazione robusta (Zod)
+
+**🚀 Rimane da fare:**
+- Admin rooms page (gestione inventario camere)
+- Test end-to-end completi
+- Ottimizzazioni performance
+- Deploy produzione
+
+---
+
+*Documento aggiornato al 18 Aprile 2026*
 

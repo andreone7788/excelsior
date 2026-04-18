@@ -106,8 +106,8 @@ class ApiClient {
         return this.request<T>(endpoint, { method: 'PATCH', body })
     }
 
-    async delete<T>(endpoint: string): Promise<T> {
-        return this.request<T>(endpoint, { method: 'DELETE' })
+    async delete<T>(endpoint: string, body?: undefined | string | FormData | URLSearchParams | ReadableStream<Uint8Array>): Promise<T> {
+        return this.request<T>(endpoint, { method: 'DELETE', body })
     }
 }
 

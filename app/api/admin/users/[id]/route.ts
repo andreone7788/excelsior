@@ -11,7 +11,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma.client';
 import { handleAuthError, verifyAdmin } from '@/lib/auth-helpers';
-import { updateUserSchema, deleteUserSchema } from '@/lib/validations/user';
+import { updateUserSchema } from '@/lib/validations/user';
 import { Prisma } from '@prisma/client';
 
 /**
@@ -192,8 +192,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 }
 
 /**
-* DELETE - Elimina utente
-*/
+ * DELETE - Elimina utente
+ */
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         // 1 - Verifica ruolo admin
@@ -210,15 +210,9 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
             );
         }
 
-        // 3 - Validazione input
-        const body = await request.json();
-        const validateData = deleteUserSchema.parse(body);
-
-        const { userId: validatedUserId } = validateData;
-
         // 3 - Verifica esistenza utente
         const existingUser = await prisma.user.findUnique({
-            where: { id: validatedUserId }
+            where: { id: userId }
         });
 
         if (!existingUser) {
@@ -228,9 +222,9 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
             );
         }
 
-        // 4 - Elimina utente
+        // 4 - Elimina utente (cascade automatico da Prisma schema)
         await prisma.user.delete({
-            where: { id: validatedUserId }
+            where: { id: userId }
         });
 
         console.log(`Admin (ID: ${adminUserId}) ha eliminato l'utente ID: ${userId}`);

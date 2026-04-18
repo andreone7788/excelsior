@@ -161,7 +161,7 @@ export default function AdminUsersPage() {
     // Apri dialog delete
     const handleOpenDeleteDialog = (user: AdminUser) => {
         setMenuUser(user)
-        handleCloseMenu()
+        setAnchorEl(null)
         setDeleteDialogOpen(true)
     }
 
