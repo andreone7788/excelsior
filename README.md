@@ -236,6 +236,8 @@ pnpm prisma migrate deploy
 4. Popola Database con Dati di Test (Opzionale)
 pnpm seed
 
+```
+
 ## 📸 Screenshots
 
 ### Admin Dashboard
