@@ -122,9 +122,141 @@ Prima di iniziare, assicurati di avere installato:
 
 ---
 
+excelsior/
+├── app/                        # Next.js App Router
+│   ├── (public)/              # Route pubbliche
+│   │   ├── login/
+│   │   ├── register/
+│   │   ├── rooms/
+│   │   └── [id]/
+│   ├── admin/                 # Dashboard amministratore
+│   │   ├── dashboard/
+│   │   ├── users/
+│   │   ├── rooms/
+│   │   ├── bookings/
+│   │   └── conversations/
+│   ├── user/                  # Dashboard utente
+│   │   └── dashboard/
+│   └── api/                   # API Routes
+│       ├── auth/              # Login, logout, register
+│       ├── rooms/             # CRUD stanze
+│       ├── bookings/          # Gestione prenotazioni
+│       ├── chat/              # Conversazioni
+│       └── ai/                # Endpoints AI (Gemini)
+├── components/                # Componenti React riutilizzabili
+│   ├── layout/               # Navbar, Footer, Layouts
+│   ├── dashboard/            # Admin/User dashboard components
+│   ├── rooms/                # RoomGallery, RoomCard
+│   └── chat/                 # ChatWidget, MessageList
+├── lib/                      # Utilities & helpers
+│   ├── prisma.client.ts      # Prisma singleton
+│   ├── jwt.ts                # JWT utilities
+│   ├── logger.ts             # Custom logger (dev/prod)
+│   ├── api-client.ts         # Fetch wrapper
+│   ├── hooks/                # Custom React hooks
+│   │   ├── useAuth.ts
+│   │   ├── useRooms.ts
+│   │   ├── useBookings.ts
+│   │   └── useConversations.ts
+│   ├── validations/          # Zod schemas
+│   │   ├── auth.ts
+│   │   ├── room.ts
+│   │   ├── booking.ts
+│   │   └── user.ts
+│   └── email/                # Email templates & sender
+├── i18n/                     # Internazionalizzazione
+│   ├── config.ts
+│   └── locales/
+│       ├── it.json
+│       └── en.json
+├── prisma/                   # Database schema & migrations
+│   ├── schema.prisma
+│   ├── seed.ts
+│   └── migrations/
+├── types/                    # TypeScript type definitions
+│   └── index.ts
+├── middleware.ts             # Next.js middleware (auth protection)
+├── scripts/                  # Utility scripts
+│   └── debug-gemini.js       # Gemini API troubleshooting
+└── public/                   # Static assets
+
 ## 🚀 Installazione
 
 ### 1. **Clona il Repository**
 ```bash
 git clone https://github.com/andreone7788/excelsior.git
 cd excelsior
+
+2. Installa le Dipendenze
+pnpm install
+# oppure: npm install
+
+3. Configura Environment Variables
+cp .env.example .env
+
+⚙️ Configurazione
+
+Crea un file .env nella root del progetto:
+
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/excelsior"
+
+# JWT Secret (genera una stringa random sicura)
+JWT_SECRET="your-super-secret-jwt-key-min-32-chars"
+
+# Google Gemini AI
+GEMINI_API_KEY="your-gemini-api-key"
+
+# Email (Resend)
+RESEND_API_KEY="your-resend-api-key"
+EMAIL_FROM="noreply@yourhotel.com"
+
+# Node Environment
+NODE_ENV="development"
+
+# Next.js
+NEXT_PUBLIC_API_URL="http://localhost:3000"
+
+Ottenere le API Keys
+Gemini API: Google AI Studio
+Resend API: Resend Dashboard
+
+🗄️ Database Setup
+1. Crea il Database PostgreSQL
+createdb excelsior
+
+2. Genera Prisma Client
+pnpm prisma generate
+
+3. Esegui le Migrations
+pnpm prisma migrate deploy
+
+4. Popola Database con Dati di Test (Opzionale)
+pnpm seed
+
+ADMIN DASHBOARD
+
+![alt text](image.png)
+
+HOME PAGE
+
+![alt text](image-1.png)
+![alt text](image-2.png)
+
+ROOM PAGE
+
+![alt text](image-3.png)
+
+---
+
+## 📸 Screenshots
+
+### Admin Dashboard
+![Admin Dashboard](docs/images/admin-dashboard.png)
+
+### Home Page
+![Home Page Hero](docs/images/home-page-hero.png)
+![Home Page Features](docs/images/home-page-features.png)
+
+### Room Details
+![Room Details Page](docs/images/room-details.png)
