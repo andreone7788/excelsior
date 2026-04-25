@@ -120,7 +120,8 @@ Prima di iniziare, assicurati di avere installato:
 - **PostgreSQL**: v14.0 o superiore
 - **Git**: Per clonare il repository
 
----
+```
+
 ## 📁 Struttura Progetto
 
 excelsior/
