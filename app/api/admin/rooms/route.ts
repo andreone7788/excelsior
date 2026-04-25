@@ -1,7 +1,17 @@
+/**
+ * ==============================================
+ * ADMIN - GESTIONE CAMERE
+ * ==============================================
+ * GET /api/admin/rooms => Lista tutte le camere con statistiche (SOLO ADMIN)
+ * POST /api/admin/rooms => Crea nuova camera (SOLO ADMIN)
+ * ==============================================
+ */
+
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma.client'
 import { verifyAdmin, handleAuthError } from '@/lib/auth-helpers'
 import { createRoomSchema } from '@/lib/validations/room'
+import { logger } from '@/lib/logger'
 
 /**
  * GET /api/admin/rooms
@@ -29,7 +39,7 @@ export async function GET(request: NextRequest) {
             price: parseFloat(room.price.toString())
         }))
 
-        console.log(`Admin (ID: ${adminUserId}) ha visualizzato la lista delle camere. Camere trovate: ${rooms.length}`)
+        logger.info(`Admin (ID: ${adminUserId}) ha visualizzato la lista delle camere. Camere trovate: ${rooms.length}`)
 
         return NextResponse.json({ rooms: roomsWithNumberPrice }, { status: 200 })
 
@@ -50,7 +60,7 @@ export async function POST(request: NextRequest) {
         const body = await request.json()
         const validatedData = createRoomSchema.parse(body)
 
-        console.log(`Admin (ID: ${adminUserId}) crea una nuova camera:`, validatedData)
+        logger.info(`Admin (ID: ${adminUserId}) crea una nuova camera:`, validatedData)
 
         const room = await prisma.room.create({
             data: {
@@ -62,7 +72,7 @@ export async function POST(request: NextRequest) {
             }
         })
 
-        console.log(`Admin (ID: ${adminUserId}) ha creato una nuova camera:`, room)
+        logger.info(`Admin (ID: ${adminUserId}) ha creato una nuova camera:`, room)
 
         return NextResponse.json({ room }, { status: 201 })
 

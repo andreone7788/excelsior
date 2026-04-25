@@ -2,9 +2,9 @@
  * ==============================================
  * ADMIN USER DETAIL - GESTIONE SINGOLO UTENTE
  * ==============================================
- * GET    /api/admin/users/[id] → Dettaglio utente
- * PUT    /api/admin/users/[id] → Modifica utente
- * DELETE /api/admin/users/[id] → Elimina utente
+ * GET    /api/admin/users/[id] => Dettaglio utente
+ * PUT    /api/admin/users/[id] => Modifica utente
+ * DELETE /api/admin/users/[id] => Elimina utente
  * ==============================================
  */
 
@@ -13,6 +13,7 @@ import { prisma } from '@/lib/prisma.client';
 import { handleAuthError, verifyAdmin } from '@/lib/auth-helpers';
 import { updateUserSchema } from '@/lib/validations/user';
 import { Prisma } from '@prisma/client';
+import { logger } from '@/lib/logger';
 
 /**
  * GET - Lista utenti con filtri
@@ -92,7 +93,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             );
         }
 
-        console.log(`Admin (ID: ${adminUserId}) ha visualizzato il dettaglio dell'utente ID: ${userId}`);
+        logger.info(`Admin (ID: ${adminUserId}) ha visualizzato il dettaglio dell'utente ID: ${userId}`);
 
         // 4 - Risposta
         return NextResponse.json({ user }, { status: 200 });
@@ -180,7 +181,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
             }
         });
 
-        console.log(`Admin (ID: ${adminUserId}) ha modificato l'utente ID: ${userId}`);
+        logger.info(`Admin (ID: ${adminUserId}) ha modificato l'utente ID: ${userId}`);
 
         // 7 - Risposta
         return NextResponse.json({ user: updatedUser }, { status: 200 });
@@ -227,7 +228,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
             where: { id: userId }
         });
 
-        console.log(`Admin (ID: ${adminUserId}) ha eliminato l'utente ID: ${userId}`);
+        logger.info(`Admin (ID: ${adminUserId}) ha eliminato l'utente ID: ${userId}`);
 
         // 5 - Risposta
         return NextResponse.json({ message: 'Utente eliminato con successo' }, { status: 200 });

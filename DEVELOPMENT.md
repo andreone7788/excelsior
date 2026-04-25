@@ -749,7 +749,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     // Elimina (cascade automatico da Prisma schema)
     await prisma.user.delete({ where: { id: userId } });
     
-    console.log(`Admin (ID: ${adminUserId}) ha eliminato l'utente ID: ${userId}`);
+    logger.info(`Admin (ID: ${adminUserId}) ha eliminato l'utente ID: ${userId}`);
     return NextResponse.json({ message: 'Utente eliminato con successo' }, { status: 200 });
 }
 
@@ -795,14 +795,14 @@ await apiClient.delete(`/admin/users/${menuUser.id}`)  // ← Nessun body!
 2. **State management nei Dialog**
    - Attenzione alla sequenza di `setState` calls
    - Verificare sempre quando/dove lo stato viene azzerato
-   - Usare console.log per debugging stato
+   - Usare logger.info per debugging stato
 
 3. **Validazione Zod context-aware**
    - Non tutti i campi devono essere validati in ogni endpoint
    - Adattare schema al contesto (path params vs body)
 
 4. **Debugging metodico**
-   - Identificare dove si blocca il flusso (console.log strategici)
+   - Identificare dove si blocca il flusso (logger.info strategici)
    - Verificare Network tab per vedere se API viene chiamata
    - Controllare stato componente con React DevTools
 

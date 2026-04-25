@@ -7,6 +7,7 @@ import { CalendarMonth, ChatBubble, People, Hotel, CheckCircle, Cancel, Hourglas
 import Grid from '@mui/material/Grid'
 import apiClient, { ApiError } from '@/lib/api-client'
 import type { BookingWithRelations, Conversation } from '@/types'
+import { logger } from '@/lib/logger'
 
 interface BookingsApiResponse {
     bookings: BookingWithRelations[]
@@ -129,7 +130,7 @@ export default function AdminDashboard() {
                 }
             }))
         } catch (err) {
-            console.error('Errore approvazione:', err)
+            logger.error('Errore approvazione:', err)
         }
     }
 
@@ -147,7 +148,7 @@ export default function AdminDashboard() {
                 }
             }))
         } catch (err) {
-            console.error('Errore rifiuto:', err)
+            logger.error('Errore rifiuto:', err)
         }
     }
 

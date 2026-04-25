@@ -72,7 +72,7 @@ Dopo aver dato una risposta generica, INVITA L'UTENTE a contattare lo staff per 
         return response
 
     } catch (error) {
-        console.error('Errore generazione AI:', error)
+        logger.error('Errore generazione AI:', error)
 
         if (error instanceof Error && error.message === 'TIMEOUT_AI') {
             throw new Error('Il servizio AI sta impiegando troppo tempo. Riprova tra poco.');
@@ -170,7 +170,7 @@ Se NESSUNA camera soddisfa i requisiti, usa roomIds vuoto: []
         return { suggestion: parsed.suggestion, roomIds: validRoomIds }
     }
     catch (error) {
-        console.error('Errore suggerimento AI:', error)
+        logger.error('Errore suggerimento AI:', error)
 
         if (error instanceof Error && error.message === 'TIMEOUT_AI') {
             throw new Error('Il servizio AI sta impiegando troppo tempo. Riprova tra poco.');
@@ -229,7 +229,7 @@ Genera SOLO la risposta suggerita (niente prefissi come "Risposta:" o altro):
         return result.response.text().trim()
 
     } catch (error) {
-        console.error('Errore suggerimento risposta admin AI:', error)
+        logger.error('Errore suggerimento risposta admin AI:', error)
 
         if (error instanceof Error && error.message === 'TIMEOUT_AI') {
             throw new Error('Il servizio AI sta impiegando troppo tempo. Riprova tra poco.');
@@ -243,7 +243,7 @@ Genera SOLO la risposta suggerita (niente prefissi come "Risposta:" o altro):
  * Error handler specifico per AI
  */
 export function handleAIError(error: unknown) {
-    console.error('Errore AI:', error)
+    logger.error('Errore AI:', error)
 
     if (error instanceof Error) {
         switch (error.message) {

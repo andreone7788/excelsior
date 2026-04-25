@@ -12,6 +12,7 @@ import { prisma } from '@/lib/prisma.client'
 import { verifyAuth, handleAuthError } from '@/lib/auth-helpers'
 import { requestBookingModificationSchema } from '@/lib/validations/booking'
 import { sendModificationRequestToUser, sendModificationRequestToAdmin } from '@/lib/email/send'
+import { logger } from '@/lib/logger'
 
 /**
  * GET - Dettaglio prenotazione
@@ -68,7 +69,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         const endDate = new Date(booking.endDate)
         const nights = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
 
-        console.log('Dettaglio prenotazione:', booking.id, 'Numero di notti:', nights)
+        logger.info('Dettaglio prenotazione:', booking.id, 'Numero di notti:', nights)
 
         return NextResponse.json({
             booking: {
@@ -248,7 +249,7 @@ export async function PUT(
             bookingId: updatedBooking.id,
         })
 
-        console.log(`Richiesta modifica prenotazione ${bookingId} da user ${userId}`)
+        logger.info(`Richiesta modifica prenotazione ${bookingId} da user ${userId}`)
 
         return NextResponse.json({
             booking: updatedBooking,

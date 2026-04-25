@@ -1,5 +1,19 @@
 'use client'
 
+/**
+ * ContactPage.tsx - Pagina di contatto per l'applicazione Excelsior
+ * 
+ * Questa pagina include:
+ * - Una sezione hero con titolo e sottotitolo
+ * - Un modulo di contatto con campi per nome, email, oggetto e messaggio
+ * - Informazioni di contatto con icone per indirizzo, telefono, email e orari
+ * - Una sezione con mappa integrata (Google Maps)
+ * 
+ * La pagina utilizza Material-UI per lo styling e i componenti, e supporta l'internazionalizzazione tramite react-i18next.
+ * Il modulo di contatto simula l'invio dei dati e mostra messaggi di successo o errore in base al risultato dell'operazione.
+ * 
+ */
+
 import { Container, Box, Typography, Paper, TextField, Button, Alert, Divider } from '@mui/material'
 import Grid from '@mui/material/Grid'
 import { LocationOn, Phone, Email, AccessTime, Send } from '@mui/icons-material'

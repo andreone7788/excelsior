@@ -1,5 +1,18 @@
 'use client'
 
+/**
+ * Questa pagina contiene la sezione "Login" del sito, inclusi:
+ * - Form di login: un modulo per inserire email e password.
+ * - Gestione degli errori: visualizzazione di messaggi di errore in caso di credenziali errate o problemi di connessione.
+ * - Link per il recupero password e la registrazione: collegamenti per accedere alla pagina di recupero password e alla pagina di registrazione.
+ *
+ * Utilizza Material-UI per la struttura e lo stile, con componenti 
+ * come Box, Container, Paper, TextField, Button, Typography, Alert, CircularProgress, Divider, FormControlLabel, Checkbox e InputAdornment.
+ * I testi sono gestiti tramite i18next per la localizzazione.
+ * La logica di autenticazione è gestita tramite un hook personalizzato useAuth, 
+ * che si occupa di inviare le credenziali al backend e gestire la sessione utente.
+ */
+
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'

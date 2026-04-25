@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma.client";
 import { handleAuthError } from "@/lib/auth-helpers";
+import { logger } from "@/lib/logger";
 
 /**
  * GET /api/rooms/[id]
@@ -43,7 +44,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             return NextResponse.json({ error: "Room not found" }, { status: 404 });
         }
 
-        console.log("Room details:", room); // Log dettagli camera
+        logger.info("Room details:", room); // Log dettagli camera
 
         return NextResponse.json({ room }, { status: 200 });
 

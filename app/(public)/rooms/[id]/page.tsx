@@ -1,5 +1,15 @@
 'use client'
 
+/**
+ * Pagina di dettaglio per una singola camera.
+ * Mostra tutte le informazioni sulla camera, inclusa una galleria di immagini, descrizione, servizi e un modulo di prenotazione.
+ * Utilizza il custom hook useRoom per fetchare i dati della camera in base all'ID passato come parametro.
+ * Implementa un'interfaccia utente moderna e responsive con Material-UI, con supporto per la localizzazione tramite react-i18next.
+ * Gestisce stati di loading, errori e validazione del modulo di prenotazione in modo user-friendly.
+ * Permette agli utenti autenticati di prenotare la camera selezionando le date di check-in e check-out, calcolando il prezzo totale in base al numero di notti.
+ * Se l'utente non è autenticato, mostra un messaggio che invita a effettuare il login prima di prenotare.
+ */
+
 import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useRoom } from '@/lib/hooks/useRooms'

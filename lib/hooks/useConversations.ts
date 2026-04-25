@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import apiClient, { ApiError } from '@/lib/api-client'
 import { Conversation, ConversationWithMessages, Message, AISuggestPreferences, AIRoomSuggestion } from '@/types'
+import { logger } from '../logger'
 
 /**
  * ═══════════════════════════════════════════════════════════
@@ -51,7 +52,7 @@ export function useConversations(autoFetch: boolean = true): UseConversationsRet
         } catch (err) {
             const errorMessage = err instanceof ApiError ? err.message : 'Errore durante il recupero delle conversazioni'
             setError(errorMessage)
-            console.error('useConversations error:', err)
+            logger.error('useConversations error:', err)
         }
         finally {
             setLoading(false)
@@ -145,7 +146,7 @@ export function useConversation(id: number | null): UseConversationReturn {
         } catch (err) {
             const errorMessage = err instanceof ApiError ? err.message : 'Errore durante il caricamento della conversazione'
             setError(errorMessage)
-            console.error('useConversation error:', err)
+            logger.error('useConversation error:', err)
         } finally {
             setLoading(false)
         }

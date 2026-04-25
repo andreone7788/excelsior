@@ -11,7 +11,7 @@ export async function POST() {
             message: 'Logout effettuato'
         })
     } catch (error) {
-        console.error('Errore logout:', error)
+        logger.error('Errore logout:', error)
         return NextResponse.json(
             { error: 'Errore durante il logout' },
             { status: 500 }

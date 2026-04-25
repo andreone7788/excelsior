@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma.client'
 import { handleAuthError, verifyAuth } from '@/lib/auth-helpers'
 import { createBookingSchema } from '@/lib/validations/booking'
 import { sendBookingRequestToUser, sendBookingRequestToAdmin } from '@/lib/email/send'
+import { logger } from '@/lib/logger'
 
 /** 
  * POST: Crea una nuova prenotazione (solo utenti autenticati)
@@ -126,7 +127,7 @@ export async function POST(request: NextRequest) {
             }
         })
 
-        console.log('Prenotazione creata:', booking.id)
+        logger.info('Prenotazione creata:', booking.id)
 
         // 7 Formatta date
         const formatDate = (date: Date) => {
@@ -160,7 +161,7 @@ export async function POST(request: NextRequest) {
             bookingId: booking.id
         })
 
-        console.log('Email inviate per prenotazione:', booking.id)
+        logger.info('Email inviate per prenotazione:', booking.id)
 
         // 10 Response
         return NextResponse.json(

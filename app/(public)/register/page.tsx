@@ -1,5 +1,16 @@
 'use client'
 
+/**
+ * Questa pagina contiene la sezione "Register" del sito, inclusi:
+ * - Form di registrazione: un modulo per inserire nome, cognome, email, telefono, password e conferma password.
+ * - Validazione dei campi: controllo dei dati inseriti e visualizzazione di messaggi di errore specifici per ogni campo.
+ * - Gestione degli errori API: visualizzazione di messaggi di errore in caso di problemi durante la registrazione (es. email già in uso).
+ * - Link per il login: collegamento alla pagina di login per gli utenti che hanno già un account.
+ * Utilizza Material-UI per la struttura e lo stile, con componenti come Box, Container, Paper, TextField, Button, Typography, Alert, Divider, FormControlLabel, Checkbox, CircularProgress, Grid, InputAdornment e IconButton.
+ * I testi sono gestiti tramite i18next per la localizzazione.
+ * La logica di registrazione è gestita tramite una chiamata API al backend, che si occupa di creare un nuovo utente e restituire eventuali errori.
+ */
+
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'

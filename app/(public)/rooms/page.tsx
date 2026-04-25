@@ -1,5 +1,14 @@
 'use client'
 
+/**
+ * Pagina principale per la visualizzazione delle camere disponibili.
+ * Include filtri di ricerca, ordinamento e una griglia di camere.
+ * Utilizza il custom hook useRooms per fetchare i dati in base ai filtri selezionati.
+ * Implementa un'interfaccia utente moderna e responsive con Material-UI, con supporto per la localizzazione tramite react-i18next.
+ * Gestisce stati di loading, errori e empty state in modo user-friendly.
+ * Nota: Assicurarsi di avere un'immagine di placeholder (placeholder-room.jpg) nella cartella public per le camere senza immagine.
+ */
+
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useRooms } from '@/lib/hooks/useRooms'

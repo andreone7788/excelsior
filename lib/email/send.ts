@@ -10,6 +10,7 @@ import {
     BookingModificationApprovedTemplate,
     BookingModificationRejectedTemplate,
 } from './templates'
+import { logger } from '../logger'
 
 /**
  * ========================================
@@ -46,14 +47,14 @@ export async function sendBookingRequestToUser({
         })
 
         if (error) {
-            console.error('❌ Errore invio email utente:', error)
+            logger.error('❌ Errore invio email utente:', error)
             return { success: false, error }
         }
 
-        console.log('✅ Email inviata all\'utente:', data?.id)
+        logger.info('✅ Email inviata all\'utente:', data?.id)
         return { success: true, data }
     } catch (error) {
-        console.error('❌ Eccezione invio email utente:', error)
+        logger.error('❌ Eccezione invio email utente:', error)
         return { success: false, error }
     }
 }
@@ -94,14 +95,14 @@ export async function sendBookingRequestToAdmin({
         })
 
         if (error) {
-            console.error('❌ Errore invio email admin:', error)
+            logger.error('❌ Errore invio email admin:', error)
             return { success: false, error }
         }
 
-        console.log('✅ Email inviata all\'admin:', data?.id)
+        logger.info('✅ Email inviata all\'admin:', data?.id)
         return { success: true, data }
     } catch (error) {
-        console.error('❌ Eccezione invio email admin:', error)
+        logger.error('❌ Eccezione invio email admin:', error)
         return { success: false, error }
     }
 }
@@ -144,14 +145,14 @@ export async function sendBookingConfirmed({
         })
 
         if (error) {
-            console.error('❌ Errore invio conferma:', error)
+            logger.error('❌ Errore invio conferma:', error)
             return { success: false, error }
         }
 
-        console.log('✅ Email conferma inviata:', data?.id)
+        logger.info('✅ Email conferma inviata:', data?.id)
         return { success: true, data }
     } catch (error) {
-        console.error('❌ Eccezione invio conferma:', error)
+        logger.error('❌ Eccezione invio conferma:', error)
         return { success: false, error }
     }
 }
@@ -194,14 +195,14 @@ export async function sendBookingRejected({
         })
 
         if (error) {
-            console.error('❌ Errore invio rifiuto:', error)
+            logger.error('❌ Errore invio rifiuto:', error)
             return { success: false, error }
         }
 
-        console.log('✅ Email rifiuto inviata:', data?.id)
+        logger.info('✅ Email rifiuto inviata:', data?.id)
         return { success: true, data }
     } catch (error) {
-        console.error('❌ Eccezione invio rifiuto:', error)
+        logger.error('❌ Eccezione invio rifiuto:', error)
         return { success: false, error }
     }
 }
@@ -247,14 +248,14 @@ export async function sendModificationRequestToUser({
         })
 
         if (error) {
-            console.error('❌ Errore invio richiesta modifica utente:', error)
+            logger.error('❌ Errore invio richiesta modifica utente:', error)
             return { success: false, error }
         }
 
-        console.log('✅ Email richiesta modifica inviata a utente:', data?.id)
+        logger.info('✅ Email richiesta modifica inviata a utente:', data?.id)
         return { success: true, data }
     } catch (error) {
-        console.error('❌ Eccezione invio richiesta modifica utente:', error)
+        logger.error('❌ Eccezione invio richiesta modifica utente:', error)
         return { success: false, error }
     }
 }
@@ -295,14 +296,14 @@ export async function sendModificationRequestToAdmin({
         })
 
         if (error) {
-            console.error('❌ Errore invio richiesta modifica admin:', error)
+            logger.error('❌ Errore invio richiesta modifica admin:', error)
             return { success: false, error }
         }
 
-        console.log('✅ Email richiesta modifica inviata a admin:', data?.id)
+        logger.info('✅ Email richiesta modifica inviata a admin:', data?.id)
         return { success: true, data }
     } catch (error) {
-        console.error('❌ Eccezione invio richiesta modifica admin:', error)
+        logger.error('❌ Eccezione invio richiesta modifica admin:', error)
         return { success: false, error }
     }
 }
@@ -342,14 +343,14 @@ export async function sendModificationApproved({
         })
 
         if (error) {
-            console.error('❌ Errore invio modifica approvata:', error)
+            logger.error('❌ Errore invio modifica approvata:', error)
             return { success: false, error }
         }
 
-        console.log('✅ Email modifica approvata inviata:', data?.id)
+        logger.info('✅ Email modifica approvata inviata:', data?.id)
         return { success: true, data }
     } catch (error) {
-        console.error('❌ Eccezione invio modifica approvata:', error)
+        logger.error('❌ Eccezione invio modifica approvata:', error)
         return { success: false, error }
     }
 }
@@ -386,14 +387,14 @@ export async function sendModificationRejected({
         })
 
         if (error) {
-            console.error('❌ Errore invio modifica rifiutata:', error)
+            logger.error('❌ Errore invio modifica rifiutata:', error)
             return { success: false, error }
         }
 
-        console.log('✅ Email modifica rifiutata inviata:', data?.id)
+        logger.info('✅ Email modifica rifiutata inviata:', data?.id)
         return { success: true, data }
     } catch (error) {
-        console.error('❌ Eccezione invio modifica rifiutata:', error)
+        logger.error('❌ Eccezione invio modifica rifiutata:', error)
         return { success: false, error }
     }
 }

@@ -1,5 +1,17 @@
 'use client'
 
+/**
+ * Questa pagina contiene la sezione "About" del sito, inclusi:
+ * - Hero Section: una sezione introduttiva con titolo e sottotitolo.
+ * - Storia: una sezione che descrive la storia dell'azienda.
+ * - Valori: una sezione che elenca i valori fondamentali dell'azienda.
+ * - Statistiche: una sezione che mostra le principali statistiche dell'azienda.
+ * 
+ * Utilizza Material-UI per la struttura e lo stile, con componenti come 
+ * Box, Container, Typography, Paper e Grid.
+ * I testi sono gestiti tramite i18next per la localizzazione.
+ */
+
 import { Container, Box, Typography, Paper, Divider } from '@mui/material'
 import Grid from '@mui/material/Grid'
 import { Hotel, Star, People, CheckCircle } from '@mui/icons-material'

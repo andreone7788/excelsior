@@ -41,7 +41,7 @@ export async function verifyToken(token: string): Promise<JWTPayload | null> {
             role: payload.role as 'USER' | 'ADMIN',
         }
     } catch (error) {
-        console.error('❌ JWT verification failed:', error)
+        logger.error('❌ JWT verification failed:', error)
         return null
     }
 }

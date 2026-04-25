@@ -2,8 +2,8 @@
  * ==============================================
  * 🔐 ADMIN - GESTIONE PRENOTAZIONE SINGOLA
  * ==============================================
- * PUT    /api/admin/bookings/:id → Aggiorna stato + Email
- * DELETE /api/admin/bookings/:id → Elimina prenotazione
+ * PUT    /api/admin/bookings/:id => Aggiorna stato + Email
+ * DELETE /api/admin/bookings/:id => Elimina prenotazione
  * ==============================================
  */
 
@@ -12,6 +12,7 @@ import { prisma } from '@/lib/prisma.client'
 import { verifyAdmin, handleAuthError } from '@/lib/auth-helpers'
 import { updateBookingStatusSchema } from '@/lib/validations/booking'
 import { sendBookingConfirmed, sendBookingRejected, sendModificationApproved, sendModificationRejected } from '@/lib/email/send'
+import { logger } from '@/lib/logger'
 
 /**
  * PUT - Aggiorna stato prenotazione (CONFERMA/RIFIUTA)
@@ -95,7 +96,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
             }
         })
 
-        console.log(`Admin (ID: ${adminUserId}) ha aggiornato la prenotazione ${bookingId} a ${status}`)
+        logger.info(`Admin (ID: ${adminUserId}) ha aggiornato la prenotazione ${bookingId} a ${status}`)
 
         // 6 Formatta date per email
         const formatDate = (date: Date) => {
@@ -128,7 +129,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
                     priceDifference: existingBooking.priceDifference?.toNumber() || 0,
                 })
 
-                console.log(`Email modifica approvata inviata a ${updatedBooking.user.email} per prenotazione ${bookingId}`)
+                logger.info(`Email modifica approvata inviata a ${updatedBooking.user.email} per prenotazione ${bookingId}`)
             } else {
                 // Template prenotazione normale confermata
                 await sendBookingConfirmed({
@@ -141,7 +142,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
                     totalPrice: updatedBooking.totalPrice.toNumber()
                 })
 
-                console.log(`Email di conferma inviata a ${updatedBooking.user.email} per prenotazione ${bookingId}`)
+                logger.info(`Email di conferma inviata a ${updatedBooking.user.email} per prenotazione ${bookingId}`)
             }
         } else if (status === 'CANCELLED') {
             if (isModification) {
@@ -170,8 +171,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
                     reason: reason || 'Non specificato'
                 })
 
-                console.log(`Email modifica rifiutata inviata a ${updatedBooking.user.email} per prenotazione ${bookingId}`)
-                console.log(`Prenotazione ripristinata allo stato originale`)
+                logger.info(`Email modifica rifiutata inviata a ${updatedBooking.user.email} per prenotazione ${bookingId}`)
+                logger.info(`Prenotazione ripristinata allo stato originale`)
             } else {
                 // Template prenotazione normale rifiutata
                 await sendBookingRejected({
@@ -184,7 +185,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
                     reason: reason || 'Nessuna motivazione specificata'
                 })
 
-                console.log(`Email di rifiuto inviata a ${updatedBooking.user.email} per prenotazione ${bookingId}`)
+                logger.info(`Email di rifiuto inviata a ${updatedBooking.user.email} per prenotazione ${bookingId}`)
             }
         }
 
@@ -239,7 +240,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
             where: { id: bookingId }
         })
 
-        console.log(`Admin (ID: ${adminUserId}) ha eliminato la prenotazione ${bookingId}`)
+        logger.info(`Admin (ID: ${adminUserId}) ha eliminato la prenotazione ${bookingId}`)
 
         return NextResponse.json(
             { message: 'Prenotazione eliminata con successo' },

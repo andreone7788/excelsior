@@ -4,6 +4,7 @@ import { loginSchema } from '@/lib/validations/auth'
 import bcrypt from 'bcrypt'
 import { signToken } from '@/lib/jwt'
 import { z } from 'zod'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/auth/login
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
         const body = await request.json()
         const validated = loginSchema.parse(body)
 
-        console.log('🔐 API Login:', validated.email)
+        logger.info('API Login:', validated.email)
 
         // 1. Trova utente
         const user = await prisma.user.findUnique({
@@ -43,7 +44,7 @@ export async function POST(request: NextRequest) {
         })
 
         if (!user) {
-            console.log('❌ Utente non trovato:', validated.email)
+            logger.info('Utente non trovato:', validated.email)
             return NextResponse.json(
                 { error: 'Email o password non corretti' },
                 { status: 401 }
@@ -57,7 +58,7 @@ export async function POST(request: NextRequest) {
         )
 
         if (!isPasswordValid) {
-            console.log('❌ Password errata per:', validated.email)
+            logger.info('Password errata per:', validated.email)
             return NextResponse.json(
                 { error: 'Email o password non corretti' },
                 { status: 401 }
@@ -91,12 +92,12 @@ export async function POST(request: NextRequest) {
             path: '/',
         })
 
-        console.log(`✅ Login API: ${user.email} (${user.role})`)
+        logger.info(`Login API: ${user.email} (${user.role})`)
 
         return response
 
     } catch (error) {
-        console.error('❌ Errore API login:', error)
+        logger.error('Errore API login:', error)
 
         if (error instanceof z.ZodError) {
             return NextResponse.json(

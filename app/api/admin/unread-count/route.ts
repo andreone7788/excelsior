@@ -2,7 +2,7 @@
  * ==============================================
  * 🔐 ADMIN - CONTEGGIO PRENOTAZIONI IN ATTESA
  * ==============================================
- * GET /api/admin/unread-count → Conta prenotazioni da approvare
+ * GET /api/admin/unread-count => Conta prenotazioni da approvare
  * ==============================================
  */
 
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(response)
 
     } catch (err) {
-        console.error('Errore in GET /api/admin/unread-count:', err)
+        logger.error('Errore in GET /api/admin/unread-count:', err)
         return handleAuthError(err)
     }
 }

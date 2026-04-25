@@ -70,7 +70,7 @@ export async function verifyAuth(request: NextRequest): Promise<{ userId: number
  * Helper per gestire errori di autenticazione in modo consistente
  */
 export function handleAuthError(error: unknown) {
-    console.error('Errore autenticazione:', error)
+    logger.error('Errore autenticazione:', error)
 
     if (error instanceof Error) {
         switch (error.message) {

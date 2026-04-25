@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import apiClient, { ApiError } from '@/lib/api-client'
 import { AIChatMessage } from '@/types'
+import { logger } from '../logger'
 
 // Tipo per il return di usePublicChat
 interface UsePublicChatReturn {
@@ -76,7 +77,7 @@ export function usePublicChat(): UsePublicChatReturn {
         } catch (err) {
             const errorMessage = err instanceof ApiError ? err.message : 'Errore sconosciuto'
             setError(errorMessage)
-            console.error('usePublicChat error:', err)
+            logger.error('usePublicChat error:', err)
         } finally {
             setIsLoading(false)
         }

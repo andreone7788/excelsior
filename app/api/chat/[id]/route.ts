@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma.client';
 import { verifyAuth, handleAuthError } from '@/lib/auth-helpers';
+import { logger } from '@/lib/logger';
 
 /**
  * GET - Lista messaggi conversazione
@@ -132,7 +133,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
             where: { id: conversationId }
         });
 
-        console.log(`Conversazione ${conversationId} eliminata dall'utente ${userId}`);
+        logger.info(`Conversazione ${conversationId} eliminata dall'utente ${userId}`);
 
         return NextResponse.json({
             message: 'Conversazione eliminata con successo'

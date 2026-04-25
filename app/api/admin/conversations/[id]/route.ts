@@ -2,9 +2,9 @@
  * ==============================================
  * ADMIN - GESTIONE CONVERSAZIONE SINGOLA
  * ==============================================
- * GET  /api/admin/conversations/:id → Dettaglio + messaggi
- * PUT  /api/admin/conversations/:id → Admin risponde
- * DELETE /api/admin/conversations/:id → Elimina conversazione
+ * GET  /api/admin/conversations/:id => Dettaglio + messaggi
+ * PUT  /api/admin/conversations/:id => Admin risponde
+ * DELETE /api/admin/conversations/:id => Elimina conversazione
  * ==============================================
  */
 import { NextRequest, NextResponse } from 'next/server';
@@ -12,6 +12,7 @@ import { prisma } from '@/lib/prisma.client';
 import { verifyAdmin, handleAuthError } from '@/lib/auth-helpers';
 import { updateConversationStatusSchema } from '@/lib/validations/conversation';
 import { deleteConversationSchema } from '@/lib/validations/conversation';
+import { logger } from '@/lib/logger';
 
 /**
  * GET - Dettaglio conversazione (admin)
@@ -78,7 +79,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             data: { isRead: true },
         });
 
-        console.log(`💬 Admin (ID: ${adminUserId}) ha visualizzato conversazione ID: ${conversationId}`);
+        logger.info(`💬 Admin (ID: ${adminUserId}) ha visualizzato conversazione ID: ${conversationId}`);
 
         return NextResponse.json({
             conversation
@@ -148,7 +149,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
             );
         }
 
-        console.log(`💬 Admin (ID: ${adminUserId}) ha aggiornato lo stato della conversazione ID: ${conversationId} a ${status}`);
+        logger.info(`💬 Admin (ID: ${adminUserId}) ha aggiornato lo stato della conversazione ID: ${conversationId} a ${status}`);
 
         return NextResponse.json({
             conversation
@@ -200,7 +201,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
             );
         }
 
-        console.log(`🗑️ Admin (ID: ${adminUserId}) ha eliminato la conversazione ID: ${conversationId}`);
+        logger.info(`🗑️ Admin (ID: ${adminUserId}) ha eliminato la conversazione ID: ${conversationId}`);
         return NextResponse.json(
             { message: 'Conversazione eliminata con successo' },
             { status: 200 }

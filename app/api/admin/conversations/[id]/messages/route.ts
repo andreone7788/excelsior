@@ -2,14 +2,15 @@
  * ==============================================
  * ADMIN - MESSAGGI CONVERSAZIONE
  * ==============================================
- * GET  /api/admin/conversations/:id/messages → Leggi messaggi
- * POST /api/admin/conversations/:id/messages → Admin risponde
+ * GET  /api/admin/conversations/:id/messages => Leggi messaggi
+ * POST /api/admin/conversations/:id/messages => Admin risponde
  * ==============================================
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma.client';
 import { verifyAdmin, handleAuthError } from '@/lib/auth-helpers';
 import { sendMessageSchema } from '@/lib/validations/chat';
+import { logger } from '@/lib/logger';
 
 /**
  * GET - Leggi messaggi conversazione (admin)
@@ -75,7 +76,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             data: { isRead: true },
         });
 
-        console.log(`Admin ${adminUserId} ha letto i messaggi della conversazione ${conversationId}`);
+        logger.info(`Admin ${adminUserId} ha letto i messaggi della conversazione ${conversationId}`);
 
         return NextResponse.json({
             conversation,
@@ -153,7 +154,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             data: { updatedAt: new Date() },
         });
 
-        console.log(`Admin ${adminUserId} ha risposto alla conversazione ${conversationId} con il messaggio:`, message);
+        logger.info(`Admin ${adminUserId} ha risposto alla conversazione ${conversationId} con il messaggio:`, message);
 
         return NextResponse.json({
             message: 'Risposta inviata con successo',

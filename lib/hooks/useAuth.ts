@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { AuthContext } from '@/lib/context/AuthContext'
 import apiClient, { ApiError } from '@/lib/api-client'
 import { User, LoginInput, RegisterInput } from '@/types'
+import { logger } from '../logger'
 
 /**
  * ═══════════════════════════════════════════════════════════
@@ -138,7 +139,7 @@ export function useAuth(): UseAuthReturn {
             await apiClient.post('/auth/logout')
 
         } catch (err) {
-            console.error('Errore durante logout:', err)
+            logger.error('Errore durante logout:', err)
         } finally {
             // Rimuovi token da localStorage
             localStorage.removeItem('token')
@@ -156,7 +157,7 @@ export function useAuth(): UseAuthReturn {
             const response = await apiClient.get<{ user: User }>('/user/me')
             await contextLogin(response.user) // Riutilizza login per aggiornare user nel context
         } catch (err) {
-            console.error('Errore durante refresh user:', err)
+            logger.error('Errore durante refresh user:', err)
         }
     }
 

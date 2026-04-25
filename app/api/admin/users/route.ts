@@ -2,7 +2,7 @@
  * ==============================================
  * ADMIN USERS - GESTIONE UTENTI
  * ==============================================
- * GET /api/admin/users → Lista utenti (solo ADMIN)
+ * GET /api/admin/users => Lista utenti (solo ADMIN)
  * ==============================================
  */
 
@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma.client';
 import { verifyAdmin, handleAuthError } from '@/lib/auth-helpers';
 import { Prisma } from '@prisma/client';
+import { logger } from '@/lib/logger';
 
 /**
  * GET - Lista utenti con filtri
@@ -80,7 +81,7 @@ export async function GET(request: NextRequest) {
             }
         }));
 
-        console.log(`Admin (ID: ${adminUserId}) ha visualizzato la lista degli utenti. Utenti trovati: ${formattedUsers.length}`);
+        logger.info(`Admin (ID: ${adminUserId}) ha visualizzato la lista degli utenti. Utenti trovati: ${formattedUsers.length}`);
 
         return NextResponse.json({ users: formattedUsers }, { status: 200 });
         

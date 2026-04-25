@@ -2,7 +2,7 @@
  * ==============================================
  * 👤 USER ME - UTENTE CORRENTE
  * ==============================================
- * GET /api/user/me → Dati utente loggato
+ * GET /api/user/me => Dati utente loggato
  * ==============================================
  */
 

@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma.client';
 import { verifyAuth, handleAuthError } from '@/lib/auth-helpers';
 import { sendMessageSchema } from '@/lib/validations/chat';
+import { logger } from '@/lib/logger';
 
 /**
  * POST - Invia messaggio in conversazione
@@ -76,7 +77,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             data: { updatedAt: new Date() },
         });
 
-        console.log(`Nuovo messaggio inviato in conversazione ${conversationId} da utente ${userId}`);
+        logger.info(`Nuovo messaggio inviato in conversazione ${conversationId} da utente ${userId}`);
 
         return NextResponse.json({
             message: newMessage,

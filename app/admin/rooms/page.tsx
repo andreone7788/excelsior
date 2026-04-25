@@ -1,5 +1,22 @@
 'use client'
 
+/**
+ * Pagina di gestione camere per l'admin. Permette di visualizzare tutte le camere, filtrare e ordinare,
+ * visualizzare dettagli e prenotazioni associate, creare nuove camere, modificare quelle esistenti ed eliminare
+ * camere non più disponibili.
+ * 
+ * Funzionalità principali:
+ * - Lista camere con ricerca, ordinamento e paginazione
+ * - Dettaglio camera con gallery immagini e lista prenotazioni
+ * - Creazione/modifica camera con form dedicato
+ * - Cancellazione camera con conferma
+ * - Statistiche rapide (totale camere, prenotazioni, prezzo medio)
+ * 
+ * @component
+ * @example
+ *   return <AdminRoomsPage />
+ */
+
 import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import {

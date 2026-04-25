@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import apiClient, { ApiError } from '@/lib/api-client'
 import type { Room, RoomSearchFilters, CreateRoomInput, UpdateRoomInput } from '@/types'
+import { logger } from '../logger'
 
 // Tipo per il return di useRooms (lista di camere)
 interface UseRoomsReturn {
@@ -77,7 +78,7 @@ export function useRooms(filters?: RoomSearchFilters, autoFetch: boolean = true)
         } catch (err) {
             const errorMessage = err instanceof ApiError ? err.message : 'Errore durante il caricamento delle camere'
             setError(errorMessage)
-            console.error('useRooms error:', err)
+            logger.error('useRooms error:', err)
         } finally {
             setLoading(false)
         }
@@ -100,7 +101,7 @@ export function useRooms(filters?: RoomSearchFilters, autoFetch: boolean = true)
         } catch (err) {
             const errorMessage = err instanceof ApiError ? err.message : 'Errore durante la creazione della camera'
             setError(errorMessage)
-            console.error('createRoom error:', err)
+            logger.error('createRoom error:', err)
             throw err
         } finally {
             setLoading(false)
@@ -125,7 +126,7 @@ export function useRooms(filters?: RoomSearchFilters, autoFetch: boolean = true)
         } catch (err) {
             const errorMessage = err instanceof ApiError ? err.message : 'Errore durante l\'aggiornamento della camera'
             setError(errorMessage)
-            console.error('updateRoom error:', err)
+            logger.error('updateRoom error:', err)
             throw err
         } finally {
             setLoading(false)
@@ -147,7 +148,7 @@ export function useRooms(filters?: RoomSearchFilters, autoFetch: boolean = true)
         } catch (err) {
             const errorMessage = err instanceof ApiError ? err.message : 'Errore durante l\'eliminazione della camera'
             setError(errorMessage)
-            console.error('deleteRoom error:', err)
+            logger.error('deleteRoom error:', err)
             throw err
         } finally {
             setLoading(false)
@@ -192,7 +193,7 @@ export function useRoom(id: number): UseRoomReturn {
                 ? err.message
                 : 'Errore durante il caricamento della camera'
             setError(errorMessage)
-            console.error('useRoom error:', err)
+            logger.error('useRoom error:', err)
         } finally {
             setLoading(false)
         }

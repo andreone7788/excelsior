@@ -1,5 +1,17 @@
 'use client'
 
+/**
+ * Pagina di amministrazione per la gestione delle prenotazioni.
+ * Permette agli admin di visualizzare tutte le prenotazioni, filtrare per stato, cercare per utente o camera, e approvare/rifiutare le prenotazioni in attesa.
+ * Utilizza Material-UI per una UI moderna e responsive, con una tabella dettagliata delle prenotazioni e un sistema di notifiche per errori e successi.
+ * Include anche statistiche rapide sul numero totale di prenotazioni e la distribuzione per stato.
+ * Il codice è organizzato in componenti funzionali con hooks per la gestione dello stato e degli effetti, e un client API dedicato per le chiamate al backend.
+ * 
+ * @component
+ * @example
+ *   return <AdminBookingPage />
+ */
+
 import { useState, JSX, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'

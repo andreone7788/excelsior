@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma.client';
 import { handleAuthError, verifyAuth } from '@/lib/auth-helpers';
 import { updateProfileSchema } from '@/lib/validations/user';
+import { logger } from '@/lib/logger';
 
 /**
  * GET - Ottieni profilo utente corrente
@@ -55,7 +56,7 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        console.log('Profilo utente ottenuto:', user);
+        logger.info('Profilo utente ottenuto:', user);
 
         return NextResponse.json({
             user: {
@@ -132,7 +133,7 @@ export async function PUT(request: NextRequest) {
             },
         })
 
-        console.log('Profilo utente aggiornato:', updateUser);
+        logger.info('Profilo utente aggiornato:', updateUser);
 
         return NextResponse.json({
             user: updateUser,

@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma.client';
 import { verifyAuth, handleAuthError } from '@/lib/auth-helpers';
 import { suggestAdminReply, handleAIError } from '@/lib/AI-helpers';
 import { aiSuggestReplySchema } from '@/lib/validations/chat';
+import { logger } from '@/lib/logger';
 
 /**
  * ==============================================
@@ -92,8 +93,9 @@ export async function POST(request: NextRequest) {
             lastUserMessage.content
         );
 
-        console.log(`Suggerimento AI per conversazione ${conversationId}: ${suggestedReply}`);
+        logger.info(`Suggerimento AI per conversazione ${conversationId}: ${suggestedReply}`);
 
+        // Rispondi con suggerimento e contesto
         return NextResponse.json({
             suggestedReply,
             conversationContext: {

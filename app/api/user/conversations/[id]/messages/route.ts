@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma.client';
 import { verifyAuth, handleAuthError } from '@/lib/auth-helpers';
 import { sendMessageSchema } from '@/lib/validations/chat';
+import { logger } from '@/lib/logger';
 
 /**
  * API POST /api/conversations/[id]/messages
@@ -63,7 +64,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             data: { updatedAt: new Date() },
         });
 
-        console.log("Nuovo messaggio inviato:", message);
+        logger.info("Nuovo messaggio inviato:", message);
         return NextResponse.json(message, { status: 201 });
 
     } catch (error) {
@@ -125,7 +126,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             data: { isRead: true },
         });
 
-        console.log(`Recuperati ${messages.length} messaggi per la conversazione ${conversationId}`);
+        logger.info(`Recuperati ${messages.length} messaggi per la conversazione ${conversationId}`);
         return NextResponse.json(messages, { status: 200 });
 
     } catch (error) {

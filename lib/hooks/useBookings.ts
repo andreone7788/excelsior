@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import apiClient, { ApiError } from '@/lib/api-client'
 import type { Booking, BookingSearchFilters, CreateBookingInput, UpdateBookingStatusInput, BookingWithRelations, RequestModificationInput } from '@/types'
+import { logger } from '../logger'
 
 // Tipo per il return di useBookings (lista prenotazioni)
 interface UseBookingsReturn {
@@ -66,7 +67,7 @@ export function useBookings(
         ? err.message
         : 'Errore durante il caricamento delle prenotazioni'
       setError(errorMessage)
-      console.error('useBookings error:', err)
+      logger.error('useBookings error:', err)
     } finally {
       setLoading(false)
     }
@@ -221,7 +222,7 @@ export function useBooking(id: number): UseBookingReturn {
         ? err.message
         : 'Errore durante il caricamento della prenotazione'
       setError(errorMessage)
-      console.error('useBooking error:', err)
+      logger.error('useBooking error:', err)
     } finally {
       setLoading(false)
     }
@@ -258,7 +259,7 @@ export function useMyBookings() {
         ? err.message
         : 'Errore durante il caricamento delle tue prenotazioni'
       setError(errorMessage)
-      console.error('useMyBookings error:', err)
+      logger.error('useMyBookings error:', err)
     } finally {
       setLoading(false)
     }

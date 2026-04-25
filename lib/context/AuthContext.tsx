@@ -3,6 +3,7 @@
 import { createContext, useState, useEffect, ReactNode } from "react"
 import { useRouter } from "next/navigation"
 import type { User } from "@/types"
+import { logger } from "../logger"
 
 interface AuthContextType {
   user: User | null
@@ -39,7 +40,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const data = await response.json()
       setUser(data)
     } catch (error) {
-      console.error('Errore durante il caricamento dell\'utente:', error)
+      logger.error('Errore durante il caricamento dell\'utente:', error)
       setUser(null)
     } finally {
       setLoading(false)

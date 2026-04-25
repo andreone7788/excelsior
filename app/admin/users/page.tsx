@@ -1,5 +1,20 @@
 'use client'
 
+/**
+ * AdminUsersPage è la pagina principale per la gestione degli utenti all'interno dell'admin dashboard. Questa pagina consente agli amministratori di visualizzare, filtrare e gestire gli utenti registrati sulla piattaforma. Le funzionalità principali includono:
+ * 
+ * - Visualizzazione di una tabella con tutti gli utenti, inclusi ID, nome, email, ruolo, numero di prenotazioni e conversazioni.
+ * - Filtri per ruolo (tutti, solo utenti, solo admin) e ricerca testuale per nome o email.
+ * - Dettaglio utente in un dialog che mostra informazioni personali, attività recenti (prenotazioni e conversazioni) e possibilità di modificare il ruolo.
+ * - Azioni rapide per promuovere/demotare un utente e per eliminarlo definitivamente.
+ * 
+ * Nota: Questa pagina è accessibile solo agli amministratori. Assicurati di utilizzare questo componente all'interno di un layout che verifica i privilegi dell'utente (come AdminLayout) per garantire la sicurezza.
+ * 
+ * @component
+ * @example
+ *   return <AdminUsersPage />
+ */
+
 import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, IconButton, TextField, MenuItem, LinearProgress, Alert, Stack, Tooltip, Card, CardContent, Avatar, Dialog, DialogTitle, DialogContent, DialogActions, Button, Menu, MenuItem as MuiMenuItem, DialogContentText, Divider, List, ListItem, ListItemText } from '@mui/material'

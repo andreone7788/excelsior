@@ -1,5 +1,20 @@
 'use client'
 
+/**
+ * AdminLayout è un layout specifico per le pagine dell'admin dashboard. Controlla se l'utente è un admin e, in caso contrario, lo reindirizza alla dashboard utente. Se l'utente è un admin, mostra la navbar e il contenuto della pagina.
+ * 
+ * - Se l'utente non è un admin, viene reindirizzato alla dashboard utente.
+ * - Se l'utente è un admin, viene mostrata la navbar e il contenuto della pagina.
+ * - Durante il caricamento dei dati dell'utente, viene mostrato un indicatore di caricamento.
+ * 
+ * Nota: Questo layout è utilizzato solo per le pagine che richiedono privilegi di amministratore. Assicurati di posizionare questo file nella cartella `app/admin` e di utilizzarlo come layout per le pagine dell'admin dashboard.
+ * 
+ * @component
+ * @example
+ *   return <AdminLayout>Contenuto della pagina</AdminLayout>
+
+ */
+
 import { ReactNode, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Box, LinearProgress } from '@mui/material'

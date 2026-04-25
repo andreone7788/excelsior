@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma.client";
 import type { Prisma } from "@prisma/client";
 import { roomFiltersSchema } from "@/lib/validations/room";
 import { handleAuthError } from "@/lib/auth-helpers";
+import { logger } from "@/lib/logger";
 
 /**
  * GET /api/rooms
@@ -76,7 +77,7 @@ export async function GET(request: NextRequest) {
             }
         });
 
-        console.log(`GET /api/rooms - Retrieved ${rooms.length} rooms with filters:`, { minPrice, maxPrice, capacity, sortBy, sortOrder });
+        logger.info(`GET /api/rooms - Retrieved ${rooms.length} rooms with filters:`, { minPrice, maxPrice, capacity, sortBy, sortOrder });
 
         return NextResponse.json({
             rooms,

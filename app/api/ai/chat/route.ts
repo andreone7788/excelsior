@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateAIResponse, handleAIError } from '@/lib/AI-helpers';
 import { aiChatSchema } from '@/lib/validations/chat';
+import { logger } from '@/lib/logger';
 
 /**
  * ==============================================
  * PUBLIC - AI CHATBOT
  * ==============================================
- * POST /api/ai/chat → Chatbot risponde a domande generali
+ * POST /api/ai/chat => Chatbot risponde a domande generali
  * 
  * Body:
  * {
@@ -22,7 +23,7 @@ import { aiChatSchema } from '@/lib/validations/chat';
  *   "response": "Il check-in è alle 15:00...",
  *   "timestamp": "2025-03-18T..."
  * }
- * ==============================================
+ * ===============================================
  */
 export async function POST(request: NextRequest) {
     try {
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest) {
         // Genera risposta AI
         const aiResponse = await generateAIResponse(message, context);
 
-        console.log(`AI Chat - Nuova richiesta: "${message}". Risposta generata: "${aiResponse}"`);
+        logger.info(`AI Chat - Nuova richiesta: "${message}". Risposta generata: "${aiResponse}"`);
 
         return NextResponse.json({
             response: aiResponse,
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
         }, { status: 200 });
 
     } catch (error) {
-        const { error: message, status } = handleAIError(error);;
+        const { error: message, status } = handleAIError(error);
         return NextResponse.json({ error: message }, { status });
     }
 }

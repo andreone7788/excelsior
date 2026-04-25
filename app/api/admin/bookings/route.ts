@@ -2,7 +2,7 @@
  * ==============================================
  * 🔐 ADMIN - GESTIONE PRENOTAZIONI (LISTA)
  * ==============================================
- * GET /api/admin/bookings → Lista tutte le prenotazioni
+ * GET /api/admin/bookings => Lista tutte le prenotazioni
  * ==============================================
  */
 
@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma.client'
 import { verifyAdmin, handleAuthError } from '@/lib/auth-helpers'
 import type { Prisma } from '@prisma/client'
+import { logger } from '@/lib/logger'
 
 /**
  * GET - Lista tutte le prenotazioni
@@ -93,7 +94,7 @@ export async function GET(request: NextRequest) {
             cancelled: bookingWithDetails.filter(b => b.status === 'CANCELLED').length
         }
 
-        console.log(`Admin (ID: ${adminUserId}) ha visualizzato la lista delle prenotazioni. Prenotazioni trovate: ${bookingWithDetails.length}, Stats:`, stats)
+        logger.info(`Admin (ID: ${adminUserId}) ha visualizzato la lista delle prenotazioni. Prenotazioni trovate: ${bookingWithDetails.length}, Stats:`, stats)
 
         return NextResponse.json({ bookings: bookingWithDetails, stats })
     } catch (error) {

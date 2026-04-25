@@ -1,5 +1,17 @@
 'use client'
 
+/**
+ * Pagina di amministrazione per la gestione delle conversazioni.
+ * Permette agli admin di visualizzare tutte le conversazioni, filtrare per stato, cercare per utente o titolo, e rispondere direttamente ai messaggi degli utenti.
+ * Utilizza Material-UI per una UI moderna e responsive, con una tabella dettagliata delle conversazioni e un sistema di notifiche per errori e successi.
+ * Include anche statistiche rapide sul numero totale di conversazioni e la distribuzione per stato.
+ * Il codice è organizzato in componenti funzionali con hooks per la gestione dello stato e degli effetti, e un client API dedicato per le chiamate al backend.
+ * 
+ * @component
+ * @example
+ *   return <AdminConversationsPage />
+ */
+
 import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, IconButton, TextField, MenuItem, LinearProgress, Alert, Stack, Tooltip, Card, CardContent, Avatar, Badge, Dialog, DialogTitle, DialogContent, DialogActions, Button, Menu, MenuItem as MuiMenuItem } from '@mui/material'

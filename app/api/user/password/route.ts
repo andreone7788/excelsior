@@ -2,7 +2,7 @@
  * ==============================================
  * 🔐 USER PASSWORD - CAMBIO PASSWORD
  * ==============================================
- * PUT /api/user/password → Cambia password
+ * PUT /api/user/password => Cambia password
  * ==============================================
  */
 import { NextRequest, NextResponse } from 'next/server';

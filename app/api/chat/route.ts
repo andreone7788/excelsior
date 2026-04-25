@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma.client';
 import { verifyAuth, handleAuthError } from '@/lib/auth-helpers';
+import { logger } from '@/lib/logger';
 
 /**
  * GET - Lista conversazioni dell'utente
@@ -88,7 +89,7 @@ export async function POST(request: NextRequest) {
             data: { userId },
         });
 
-        console.log(`Nuova conversazione creata per utente ${userId} con ID ${newConversation.id}`);
+        logger.info(`Nuova conversazione creata per utente ${userId} con ID ${newConversation.id}`);
 
         return NextResponse.json({
             conversationId: newConversation.id,

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma.client";
 import { verifyAuth, handleAuthError } from "@/lib/auth-helpers";
 import { createConversationSchema } from "@/lib/validations/conversation";
+import { logger } from "@/lib/logger";
 
 /**
  * API POST /api/conversations
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
             },
         });
 
-        console.log("Nuova conversazione creata:", conversation);
+        logger.info("Nuova conversazione creata:", conversation);
         return NextResponse.json(conversation, { status: 201 });
 
     } catch (error) {
@@ -92,7 +93,7 @@ export async function GET(request: NextRequest) {
             orderBy: { updatedAt: "desc" }, // Ordina le conversazioni per data di aggiornamento
         });
 
-        console.log("Conversazioni recuperate:", conversations);
+        logger.info("Conversazioni recuperate:", conversations);
         return NextResponse.json(conversations, { status: 200 });
 
     } catch (error) {

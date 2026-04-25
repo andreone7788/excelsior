@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(response)
 
     } catch (err) {
-        console.error('Errore in GET /api/user/unread-count:', err)
+        logger.error('Errore in GET /api/user/unread-count:', err)
         return handleAuthError(err)
     }
 }

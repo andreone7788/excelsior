@@ -1,7 +1,17 @@
+/**
+ * ==============================================
+ * ADMIN - GESTIONE CAMERE
+ * ==============================================
+ * GET /api/admin/rooms/[id] => Dettagli camera (SOLO ADMIN)
+ * PUT /api/admin/rooms/[id] => Aggiorna camera (SOLO ADMIN)
+ * ==============================================
+ */
+
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma.client'
 import { verifyAdmin, handleAuthError } from '@/lib/auth-helpers'
 import { updateRoomSchema } from '@/lib/validations/room'
+import { logger } from '@/lib/logger'
 
 /**
  * GET /api/admin/rooms/[id] - Dettagli camera (SOLO ADMIN)
@@ -52,7 +62,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             )
         }
 
-        console.log(`Admin (ID: ${adminUserId}) ha visualizzato i dettagli della camera ${roomId}:`, room)
+        logger.info(`Admin (ID: ${adminUserId}) ha visualizzato i dettagli della camera ${roomId}:`, room)
 
         return NextResponse.json({ room }, { status: 200 })
 
@@ -79,7 +89,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         const body = await request.json()
         const validatedData = updateRoomSchema.parse({ ...body, roomId })
 
-        console.log(`Admin (ID: ${adminUserId}) aggiorna la camera ${roomId}:`, validatedData)
+        logger.info(`Admin (ID: ${adminUserId}) aggiorna la camera ${roomId}:`, validatedData)
 
         const existingRoom = await prisma.room.findUnique({ where: { id: roomId } })
 
@@ -98,7 +108,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
             }
         })
 
-        console.log(`Admin (ID: ${adminUserId}) ha aggiornato la camera ${roomId}:`, updatedRoom)
+        logger.info(`Admin (ID: ${adminUserId}) ha aggiornato la camera ${roomId}:`, updatedRoom)
 
         return NextResponse.json({ room: updatedRoom }, { status: 200 })
 
@@ -138,7 +148,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
         await prisma.room.delete({ where: { id: roomId } })
 
-        console.log(`Admin (ID: ${adminUserId}) ha eliminato la camera ${roomId}`)
+        logger.info(`Admin (ID: ${adminUserId}) ha eliminato la camera ${roomId}`)
 
         return NextResponse.json({ message: 'Camera eliminata con successo' }, { status: 200 })
         

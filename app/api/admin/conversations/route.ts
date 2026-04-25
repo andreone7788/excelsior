@@ -2,13 +2,14 @@
  * ==============================================
  * ADMIN - GESTIONE CONVERSAZIONI
  * ==============================================
- * GET /api/admin/conversations → Lista tutte conversazioni
+ * GET /api/admin/conversations => Lista tutte conversazioni
  * ==============================================
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma.client';
 import { Prisma } from '@prisma/client';
 import { verifyAdmin, handleAuthError } from '@/lib/auth-helpers';
+import { logger } from '@/lib/logger';
 
 /**
  * GET - Lista tutte le conversazioni (admin)
@@ -81,7 +82,7 @@ export async function GET(request: NextRequest) {
             closed: await prisma.conversation.count({ where: { ...where, status: 'CLOSED' } }),
         }
 
-        console.log(`Admin ${adminUserId} ha richiesto la lista delle conversazioni. Totale: ${totalConversations}`);
+        logger.info(`Admin ${adminUserId} ha richiesto la lista delle conversazioni. Totale: ${totalConversations}`);
 
         return NextResponse.json({
             conversations,

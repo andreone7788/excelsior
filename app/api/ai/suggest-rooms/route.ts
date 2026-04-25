@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma.client';
 import { aiSuggestSchema } from '@/lib/validations/chat';
 import { suggestRooms, handleAIError } from '@/lib/AI-helpers'
+import { logger } from '@/lib/logger';
 
 /**
  * ==============================================
  * PUBLIC - AI ROOM SUGGESTIONS
  * ==============================================
- * POST /api/ai/suggest-rooms → AI suggerisce camere
+ * POST /api/ai/suggest-rooms => AI suggerisce camere
  * 
  * Body:
  * {
@@ -82,7 +83,7 @@ export async function POST(request: NextRequest) {
         // Ottieni dettagli delle camere suggerite
         const suggestedRooms = rooms.filter(r => roomIds.includes(r.id));
 
-        console.log('AI ha suggerito camere per preferenze:', preferences, 'Camere suggerite:', roomIds);
+        logger.info('AI ha suggerito camere per preferenze:', preferences, 'Camere suggerite:', roomIds);
 
         return NextResponse.json({
             suggestion,

@@ -1,5 +1,18 @@
 'use server'
 
+/**
+ * Questo file contiene le azioni server-side per l'autenticazione, inclusi:
+ * - registerAction: gestisce la registrazione degli utenti, 
+ * validando i dati, creando l'utente nel database, 
+ * generando un token JWT e impostando un cookie.
+ * - loginAction: gestisce il login degli utenti, validando le credenziali,
+ *  verificando la password, generando un token JWT e impostando un cookie.
+ * - logoutAction: gestisce il logout degli utenti eliminando il cookie di autenticazione.
+ * 
+ * Utilizza Zod per la validazione dei dati, bcrypt per l'hashing delle password,
+ * Prisma per l'interazione con il database e una libreria JWT personalizzata per la gestione dei token.
+ */
+
 import { z } from 'zod'
 import bcrypt from 'bcrypt'
 import { cookies } from 'next/headers'
@@ -7,10 +20,11 @@ import { prisma } from '@/lib/prisma.client'
 import { registerSchema, loginSchema } from '@/lib/validations/auth'
 import { signToken } from '@/lib/jwt'
 import type { RegisterInput, LoginInput } from '@/types'
+import { logger } from '@/lib/logger'
 
 export async function registerAction(data: RegisterInput) {
     try {
-        console.log('📝 Tentativo registrazione:', data.email)
+        logger.info('📝 Tentativo registrazione:', data.email)
 
         // 1 - Validazione dati con Zod
         const validated = registerSchema.parse(data)
@@ -21,7 +35,7 @@ export async function registerAction(data: RegisterInput) {
         })
 
         if (existingUser) {
-            console.log('❌ Email già registrata:', validated.email)
+            logger.info('Email già registrata:', validated.email)
             return { success: false, error: 'Email già registrata' }
         }
 
@@ -39,7 +53,7 @@ export async function registerAction(data: RegisterInput) {
             },
         })
 
-        console.log('✅ Utente creato con ID:', user.id)
+        logger.info('Utente creato con ID:', user.id)
 
         // 5 - Genera JWT token
         const token = await signToken({ userId: user.id, email: user.email, role: user.role })
@@ -54,23 +68,23 @@ export async function registerAction(data: RegisterInput) {
             path: '/',
         })
 
-        console.log('✅ Cookie impostato per userId:', user.id)
+        logger.info('Cookie impostato per userId:', user.id)
 
         return { success: true }
     } catch (error) {
         if (error instanceof z.ZodError) {
-            console.log('❌ Errore validazione:', error.issues[0].message)
+            logger.info('Errore validazione:', error.issues[0].message)
             return { success: false, error: error.issues[0].message }
         }
 
-        console.error('❌ Errore durante la registrazione:', error)
+        logger.error('Errore durante la registrazione:', error)
         return { success: false, error: 'Errore durante la registrazione' }
     }
 }
 
 export async function loginAction(data: LoginInput) {
     try {
-        console.log('🔐 Tentativo login:', data.email)
+        logger.info('🔐 Tentativo login:', data.email)
 
         // 1 - Validazione
         const validated = loginSchema.parse(data)
@@ -81,7 +95,7 @@ export async function loginAction(data: LoginInput) {
         })
 
         if (!user) {
-            console.log('❌ Utente non trovato:', validated.email)
+            logger.info('Utente non trovato:', validated.email)
             return { success: false, error: 'Credenziali non valide' }
         }
 
@@ -92,11 +106,11 @@ export async function loginAction(data: LoginInput) {
         )
 
         if (!isPasswordValid) {
-            console.log('❌ Password errata per:', validated.email)
+            logger.info('Password errata per:', validated.email)
             return { success: false, error: 'Credenziali non valide' }
         }
 
-        console.log('✅ Password valida per userId:', user.id)
+        logger.info('Password valida per userId:', user.id)
 
         // 4 - Genera token
         const token = await signToken({ userId: user.id, email: user.email, role: user.role })
@@ -111,16 +125,16 @@ export async function loginAction(data: LoginInput) {
             path: '/',
         })
 
-        console.log('✅ Cookie impostato per userId:', user.id)
+        logger.info('Cookie impostato per userId:', user.id)
 
         return { success: true }
     } catch (error) {
         if (error instanceof z.ZodError) {
-            console.log('❌ Errore validazione:', error.issues[0].message)
+            logger.info('Errore validazione:', error.issues[0].message)
             return { success: false, error: error.issues[0].message }
         }
 
-        console.error('❌ Errore durante il login:', error)
+        logger.error('Errore durante il login:', error)
         return { success: false, error: 'Errore durante il login' }
     }
 }
@@ -129,10 +143,10 @@ export async function logoutAction() {
     try {
         const cookieStore = await cookies()
         cookieStore.delete('auth_token')
-        console.log('✅ Cookie auth_token eliminato')
+        logger.info('Cookie auth_token eliminato')
         return { success: true }
     } catch (error) {
-        console.error('❌ Errore durante il logout:', error)
+        logger.error('Errore durante il logout:', error)
         return { success: false, error: 'Errore durante il logout' }
     }
 }

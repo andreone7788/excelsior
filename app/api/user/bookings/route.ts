@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma.client'
 import { handleAuthError, verifyAuth } from '@/lib/auth-helpers'
 import type { Prisma } from '@prisma/client'
+import { logger } from '@/lib/logger'
 
 /**
  * GET - Lista prenotazioni utente
@@ -90,7 +91,7 @@ export async function GET(request: NextRequest) {
             }
         })
 
-        console.log(`Prenotazioni trovate per utente ${userId}: ${bookingsWithDetails.length}`)
+        logger.info(`Prenotazioni trovate per utente ${userId}: ${bookingsWithDetails.length}`)
 
         return NextResponse.json({
             bookings: bookingsWithDetails,

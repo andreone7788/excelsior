@@ -60,7 +60,7 @@ export default function ConversationDetailsPage({ params }: ConversationPageProp
             await sendMessage(messageInput.trim())
             setMessageInput('')
         } catch (err) {
-            console.error('Errore invio messaggio:', err)
+            logger.error('Errore invio messaggio:', err)
         }
     }
 

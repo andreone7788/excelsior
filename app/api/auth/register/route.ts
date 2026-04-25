@@ -4,6 +4,7 @@ import { registerSchema } from '@/lib/validations/auth'
 import bcrypt from 'bcrypt'
 import { signToken } from '@/lib/jwt'
 import { z } from 'zod'
+import { logger } from '@/lib/logger'
 
 /**
  * POST /api/auth/register
@@ -30,7 +31,7 @@ export async function POST(request: NextRequest) {
         const body = await request.json()
         const validated = registerSchema.parse(body)
 
-        console.log('API Registrazione:', validated.email)
+        logger.info('API Registrazione:', validated.email)
 
         // 1. Verifica email non già registrata
         const existingUser = await prisma.user.findUnique({
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
         })
 
         if (existingUser) {
-            console.log('Email già registrata:', validated.email)
+            logger.info('Email già registrata:', validated.email)
             return NextResponse.json(
                 { error: 'Email già registrata' },
                 { status: 409 }
@@ -93,12 +94,12 @@ export async function POST(request: NextRequest) {
             path: '/',
         })
 
-        console.log(`Registrazione API: ${user.email} (ID: ${user.id})`)
+        logger.info(`Registrazione API: ${user.email} (ID: ${user.id})`)
 
         return response
 
     } catch (error) {
-        console.error('Errore API registrazione:', error)
+        logger.error('Errore API registrazione:', error)
 
         if (error instanceof z.ZodError) {
             return NextResponse.json(

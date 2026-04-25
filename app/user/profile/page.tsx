@@ -45,7 +45,7 @@ export default function ProfilePage() {
             setSuccessMessage(t('profile.updateSuccess'))
             setTimeout(() => setSuccessMessage(null), 3000)
         } catch (err) {
-            console.error('Errore aggiornamento profilo:', err)
+            logger.error('Errore aggiornamento profilo:', err)
         }
     }
 
@@ -61,7 +61,7 @@ export default function ProfilePage() {
             setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
             setTimeout(() => setSuccessMessage(null), 3000)
         } catch (err) {
-            console.error('Errore aggiornamento password:', err)
+            logger.error('Errore aggiornamento password:', err)
         }
     }
 
