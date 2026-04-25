@@ -121,6 +121,7 @@ Prima di iniziare, assicurati di avere installato:
 - **Git**: Per clonare il repository
 
 ---
+## 📁 Struttura Progetto
 
 excelsior/
 ├── app/                        # Next.js App Router
