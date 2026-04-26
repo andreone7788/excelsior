@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { Box, Typography, Card, CardContent, TextField, Button, Divider, LinearProgress, Alert, Grid, Paper, Avatar, IconButton, InputAdornment } from '@mui/material'
 import { Person, Email, Phone, Lock, Save, Visibility, VisibilityOff } from '@mui/icons-material'
 import { UpdateProfileInput, UpdatePasswordInput } from '@/types'
+import { logger } from '@/lib/logger'
 
 export default function ProfilePage() {
     const { t } = useTranslation()

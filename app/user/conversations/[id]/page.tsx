@@ -8,6 +8,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Box, Typography, Paper, TextField, IconButton, Avatar, Chip, LinearProgress, Alert, Button } from '@mui/material'
 import { Send, ArrowBack, Person, SupportAgent } from '@mui/icons-material'
 import { useUnreadCount } from '@/lib/hooks/useUnreadCount'
+import { logger } from '@/lib/logger'
 
 interface ConversationPageProps {
     params: Promise<{ id: string }>
