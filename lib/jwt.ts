@@ -1,4 +1,5 @@
 import { SignJWT, jwtVerify } from 'jose'
+import { logger } from './logger'
 
 // Converti la chiave segreta in Uint8Array (richiesto da jose per Edge Runtime)
 const JWT_SECRET = new TextEncoder().encode(
