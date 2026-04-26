@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma.client";
 import type { Prisma } from "@prisma/client";
 import { roomFiltersSchema } from "@/lib/validations/room";
-import { handleAuthError } from "@/lib/auth-helpers";
 import { logger } from "@/lib/logger";
 
 /**
@@ -85,7 +84,10 @@ export async function GET(request: NextRequest) {
         }, { status: 200 });
 
     } catch (error) {
-        const response = handleAuthError(error);
-        return response;
+        logger.error('Errore GET /api/rooms:', error);
+        return NextResponse.json(
+            { error: 'Errore del server' },
+            { status: 500 }
+        );
     }
 }
