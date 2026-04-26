@@ -6,13 +6,13 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Material-UI](https://img.shields.io/badge/Material--UI-7.3.8-0081CB?logo=mui)](https://mui.com/)
 [![Prisma](https://img.shields.io/badge/Prisma-5.0.0-2D3748?logo=prisma)](https://www.prisma.io/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 ---
 
 ## 📋 Indice
 
 - [✨ Features](#-features)
+- [📸 Screenshots](#-screenshots)
 - [🛠️ Tech Stack](#️-tech-stack)
 - [📦 Prerequisites](#-prerequisites)
 - [🚀 Installazione](#-installazione)
@@ -24,7 +24,6 @@
 - [📝 Logging System](#-logging-system)
 - [🤖 AI Integration](#-ai-integration)
 - [🚢 Deployment](#-deployment)
-- [📄 License](#-license)
 
 ---
 
@@ -82,6 +81,20 @@
 
 ---
 
+## 📸 Screenshots
+
+### Admin Dashboard
+![Admin Dashboard](docs/images/admin-dashboard.png)
+
+### Home Page
+![Home Page Hero](docs/images/home-page-hero.png)
+![Home Page Features](docs/images/home-page-features.png)
+
+### Room Details
+![Room Details Page](docs/images/room-details.png)
+
+---
+
 ## 🛠️ Tech Stack
 
 ### **Frontend**
@@ -120,67 +133,7 @@ Prima di iniziare, assicurati di avere installato:
 - **PostgreSQL**: v14.0 o superiore
 - **Git**: Per clonare il repository
 
-```
-
-## 📁 Struttura Progetto
-
-excelsior/
-├── app/                        # Next.js App Router
-│   ├── (public)/              # Route pubbliche
-│   │   ├── login/
-│   │   ├── register/
-│   │   ├── rooms/
-│   │   └── [id]/
-│   ├── admin/                 # Dashboard amministratore
-│   │   ├── dashboard/
-│   │   ├── users/
-│   │   ├── rooms/
-│   │   ├── bookings/
-│   │   └── conversations/
-│   ├── user/                  # Dashboard utente
-│   │   └── dashboard/
-│   └── api/                   # API Routes
-│       ├── auth/              # Login, logout, register
-│       ├── rooms/             # CRUD stanze
-│       ├── bookings/          # Gestione prenotazioni
-│       ├── chat/              # Conversazioni
-│       └── ai/                # Endpoints AI (Gemini)
-├── components/                # Componenti React riutilizzabili
-│   ├── layout/               # Navbar, Footer, Layouts
-│   ├── dashboard/            # Admin/User dashboard components
-│   ├── rooms/                # RoomGallery, RoomCard
-│   └── chat/                 # ChatWidget, MessageList
-├── lib/                      # Utilities & helpers
-│   ├── prisma.client.ts      # Prisma singleton
-│   ├── jwt.ts                # JWT utilities
-│   ├── logger.ts             # Custom logger (dev/prod)
-│   ├── api-client.ts         # Fetch wrapper
-│   ├── hooks/                # Custom React hooks
-│   │   ├── useAuth.ts
-│   │   ├── useRooms.ts
-│   │   ├── useBookings.ts
-│   │   └── useConversations.ts
-│   ├── validations/          # Zod schemas
-│   │   ├── auth.ts
-│   │   ├── room.ts
-│   │   ├── booking.ts
-│   │   └── user.ts
-│   └── email/                # Email templates & sender
-├── i18n/                     # Internazionalizzazione
-│   ├── config.ts
-│   └── locales/
-│       ├── it.json
-│       └── en.json
-├── prisma/                   # Database schema & migrations
-│   ├── schema.prisma
-│   ├── seed.ts
-│   └── migrations/
-├── types/                    # TypeScript type definitions
-│   └── index.ts
-├── middleware.ts             # Next.js middleware (auth protection)
-├── scripts/                  # Utility scripts
-│   └── debug-gemini.js       # Gemini API troubleshooting
-└── public/                   # Static assets
+---
 
 ## 🚀 Installazione
 
@@ -189,21 +142,25 @@ excelsior/
 git clone https://github.com/andreone7788/excelsior.git
 cd excelsior
 
-2. Installa le Dipendenze
+```
+### 2. **Installa le Dipendenze**
+```bash
 pnpm install
-# oppure: npm install
 
-3. Configura Environment Variables
+```
+### 3. **Configura Environment Variables**
+```bash
 cp .env.example .env
 
-⚙️ Configurazione
+```
+## ⚙️ Configurazione
 
-Crea un file .env nella root del progetto:
+1. Crea un file .env nella root del progetto:
 
 # Database
 DATABASE_URL="postgresql://user:password@localhost:5432/excelsior"
 
-# JWT Secret (genera una stringa random sicura)
+# JWT Secret
 JWT_SECRET="your-super-secret-jwt-key-min-32-chars"
 
 # Google Gemini AI
@@ -219,33 +176,110 @@ NODE_ENV="development"
 # Next.js
 NEXT_PUBLIC_API_URL="http://localhost:3000"
 
-Ottenere le API Keys
-Gemini API: Google AI Studio
-Resend API: Resend Dashboard
+2. Ottenere le API Keys
+- Gemini API: Google AI Studio
+- Resend API: Resend Dashboard
 
-🗄️ Database Setup
+
+## 🗄️ Database Setup
+
 1. Crea il Database PostgreSQL
+```bash
 createdb excelsior
 
+```
 2. Genera Prisma Client
+```bash
 pnpm prisma generate
 
+```
 3. Esegui le Migrations
+```bash
 pnpm prisma migrate deploy
 
-4. Popola Database con Dati di Test (Opzionale)
+```
+4. Popola Database (Opzionale)
+```bash
 pnpm seed
 
 ```
+## 💻 Development
+Avvia il Server
+```bash
+pnpm dev
+L'applicazione sarà disponibile su http://localhost:3000
 
-## 📸 Screenshots
+```
+Altri Comandi
+```bash
+# Build produzione
+pnpm build
 
-### Admin Dashboard
-![Admin Dashboard](docs/images/admin-dashboard.png)
+# Start produzione
+pnpm start
 
-### Home Page
-![Home Page Hero](docs/images/home-page-hero.png)
-![Home Page Features](docs/images/home-page-features.png)
+# Linting
+pnpm lint
 
-### Room Details
-![Room Details Page](docs/images/room-details.png)
+# Prisma Studio
+pnpm prisma studio
+
+# Debug Gemini
+node scripts/debug-gemini.js
+
+```
+## 🔐 Test Credentials
+Admin Account:
+Email: andrea@test.com
+Password: admin123
+
+User Account:
+Email: user@test.com
+Password: user123
+
+
+## 📁 Struttura Progetto
+```
+excelsior/
+├── app/                        # Next.js App Router
+│   ├── (public)/              # Route pubbliche
+│   ├── admin/                 # Dashboard amministratore
+│   ├── user/                  # Dashboard utente
+│   └── api/                   # API Routes
+├── components/                # Componenti React riutilizzabili
+├── lib/                      # Utilities & helpers
+│   ├── hooks/                # Custom React hooks
+│   ├── validations/          # Zod schemas
+│   └── email/                # Email templates
+├── i18n/                     # Internazionalizzazione
+├── prisma/                   # Database schema & migrations
+└── public/                   # Static assets
+
+
+```
+## 📝 Logging System
+import logger from '@/lib/logger';
+
+// Info logs (solo in development)
+logger.info('User logged in', { userId: 123 });
+
+// Error logs (sempre visibili)
+logger.error('Database failed', error);
+
+
+## 🤖 AI Integration
+Il progetto integra Google Gemini AI in tre contesti:
+
+Public Chat Widget: Assistente virtuale per informazioni hotel
+AI Room Suggestions: Raccomandazioni personalizzate
+Admin Assistant: Suggerimenti per risposte ai clienti
+
+
+## 🚢 Deployment
+Vercel (Consigliato)
+1 Push su GitHub
+2 Importa su vercel.com/new
+3 Configura environment variables
+4 Deploy!
+
+<div align="center"> Fatto con ❤️ e ☕ | © 2026 Hotel Excelsior </div> ```
