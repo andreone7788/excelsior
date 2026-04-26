@@ -17,7 +17,7 @@ import { logger } from '@/lib/logger'
 /**
  * GET - Dettaglio prenotazione
  */
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         // 1 Verifica autenticazione
         const { userId, role } = await verifyAuth(request)
