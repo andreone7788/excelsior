@@ -157,23 +157,23 @@ cp .env.example .env
 
 1. Crea un file .env nella root del progetto:
 
-# Database
+### Database
 DATABASE_URL="postgresql://user:password@localhost:5432/excelsior"
 
-# JWT Secret
+### JWT Secret
 JWT_SECRET="your-super-secret-jwt-key-min-32-chars"
 
-# Google Gemini AI
+### Google Gemini AI
 GEMINI_API_KEY="your-gemini-api-key"
 
-# Email (Resend)
+### Email (Resend)
 RESEND_API_KEY="your-resend-api-key"
 EMAIL_FROM="noreply@yourhotel.com"
 
-# Node Environment
+### Node Environment
 NODE_ENV="development"
 
-# Next.js
+### Next.js
 NEXT_PUBLIC_API_URL="http://localhost:3000"
 
 2. Ottenere le API Keys
