@@ -270,16 +270,16 @@ logger.error('Database failed', error);
 ## 🤖 AI Integration
 Il progetto integra Google Gemini AI in tre contesti:
 
-Public Chat Widget: Assistente virtuale per informazioni hotel
-AI Room Suggestions: Raccomandazioni personalizzate
-Admin Assistant: Suggerimenti per risposte ai clienti
+- **Public Chat Widget: Assistente virtuale per informazioni hotel**
+- **AI Room Suggestions: Raccomandazioni personalizzate**
+- **Admin Assistant: Suggerimenti per risposte ai clienti**
 
 
 ## 🚢 Deployment
 Vercel (Consigliato)
-1 Push su GitHub
-2 Importa su vercel.com/new
-3 Configura environment variables
-4 Deploy!
+1 **Push su GitHub**
+2 **Importa su vercel.com/new**
+3 **Configura environment variables**
+4 **Deploy!**
 
 <div align="center"> Fatto con ❤️ e ☕ | © 2026 Hotel Excelsior </div> ```
