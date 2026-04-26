@@ -68,9 +68,9 @@ export async function POST(request: NextRequest) {
         }
 
         // Ottieni ultimo messaggio
-        const lastUserMessage = conversation.messages
+        const lastUserMessage = [...conversation.messages]
             .reverse() // Invertiamo per avere ordine cronologico
-            .find(m => m.sender.role === 'USER'); // Prendiamo ultimo messaggio dell'utente
+            .find(m => m.sender.role === 'USER') // Prendiamo ultimo messaggio dell'utente
 
         if (!lastUserMessage) {
             return NextResponse.json(
@@ -80,13 +80,12 @@ export async function POST(request: NextRequest) {
         }
 
         // Prepara history per AI
-        const history = conversation.messages
+        const history = [...conversation.messages]
             .reverse() // Rimetto in ordine cronologico
             .map(m => ({
                 role: m.sender.role === 'USER' ? 'USER' as const : 'ADMIN' as const,
                 content: m.content
             }));
-
         // AI genera suggerimento risposta
         const suggestedReply = await suggestAdminReply(
             history,
