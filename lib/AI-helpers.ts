@@ -1,4 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
+import { logger } from './logger'
+import { NextResponse } from 'next/server'
 
 if (!process.env.GEMINI_API_KEY) {
     throw new Error('GEMINI_API_KEY non definita nelle variabili d\'ambiente')
@@ -248,16 +250,31 @@ export function handleAIError(error: unknown) {
     if (error instanceof Error) {
         switch (error.message) {
             case 'TIMEOUT_AI':
-                return { error: 'Il servizio AI sta impiegando troppo tempo. Riprova tra poco.', status: 503 }
+                return NextResponse.json(
+                    { error: 'Il servizio AI sta impiegando troppo tempo. Riprova tra poco.' },
+                    { status: 503 }
+                )
             case 'ERRORE_AI':
-                return { error: 'Si è verificato un errore durante la generazione della risposta AI. Riprova più tardi.', status: 500 }
+                return NextResponse.json(
+                    { error: 'Si è verificato un errore durante la generazione della risposta AI. Riprova più tardi.' },
+                    { status: 500 }
+                )
             case 'RISPOSTA_AI_NON_VALIDA':
-                return { error: 'La risposta generata dall\'AI non è valida. Riprova.', status: 500 }
+                return NextResponse.json(
+                    { error: 'La risposta generata dall\'AI non è valida. Riprova.' },
+                    { status: 500 }
+                )
             default:
-                return { error: 'Errore sconosciuto', status: 500 }
+                return NextResponse.json(
+                    { error: 'Errore sconosciuto' },
+                    { status: 500 }
+                )
         }
     }
-    return { error: 'Errore sconosciuto', status: 500 }
+    return NextResponse.json(
+        { error: 'Errore sconosciuto' },
+        { status: 500 }
+    )
 }
 
 /**

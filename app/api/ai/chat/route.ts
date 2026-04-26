@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
         }, { status: 200 });
 
     } catch (error) {
-        const { error: message, status } = handleAIError(error);
-        return NextResponse.json({ error: message }, { status });
+        const aiErrorResponse = handleAIError(error);
+        return aiErrorResponse;
     }
 }
