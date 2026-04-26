@@ -1,6 +1,7 @@
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma.client'
 import { verifyToken } from '@/lib/jwt'
+import { logger } from './logger'
 
 /**
  * Verifica che l'utente sia autenticato e sia ADMIN
@@ -69,21 +70,40 @@ export async function verifyAuth(request: NextRequest): Promise<{ userId: number
 /**
  * Helper per gestire errori di autenticazione in modo consistente
  */
+/**
+ * Helper per gestire errori di autenticazione in modo consistente
+ */
 export function handleAuthError(error: unknown) {
     logger.error('Errore autenticazione:', error)
 
     if (error instanceof Error) {
         switch (error.message) {
             case 'NON_AUTENTICATO':
-                return { error: 'Non autenticato', status: 401 }
+                return NextResponse.json(
+                    { error: 'Non autenticato' },
+                    { status: 401 }
+                )
             case 'TOKEN_INVALIDO':
-                return { error: 'Token non valido o scaduto', status: 401 }
+                return NextResponse.json(
+                    { error: 'Token non valido o scaduto' },
+                    { status: 401 }
+                )
             case 'ACCESSO_NEGATO':
-                return { error: 'Accesso negato. Solo amministratori.', status: 403 }
+                return NextResponse.json(
+                    { error: 'Accesso negato. Solo amministratori.' },
+                    { status: 403 }
+                )
             case 'UTENTE_NON_TROVATO':
-                return { error: 'Utente non trovato', status: 404 }
+                return NextResponse.json(
+                    { error: 'Utente non trovato' },
+                    { status: 404 }
+                )
         }
     }
 
-    return { error: 'Errore server', status: 500 }
+    // Errore generico
+    return NextResponse.json(
+        { error: 'Errore del server' },
+        { status: 500 }
+    )
 }
