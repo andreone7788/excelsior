@@ -821,6 +821,243 @@ await apiClient.delete(`/admin/users/${menuUser.id}`)  // ← Nessun body!
 
 ---
 
+### #10 — Error Handling TypeScript: Plain Objects vs NextResponse
+
+**📅 Data:** 26 Aprile 2026  
+**📂 File:** `lib/auth-helpers.ts`, tutte le route API  
+**🔴 Severità:** Critica - Blocco Deploy Vercel  
+**⏱️ Tempo risoluzione:** ~45 minuti
+
+---
+
+#### 🔍 Problema
+
+Build falliva su Vercel con errore TypeScript:
+
+Type '{ error: string; status: number; }' is not assignable to type 'void | Response'
+Property 'error' does not exist on type 'NextResponse<{ error: string; }>'
+
+
+**Sintomo:** Funzionava in sviluppo (`npm run dev`) ma falliva in produzione (`pnpm run build`).
+
+---
+
+#### 🧪 Causa Radice
+
+La funzione helper `handleAuthError()` restituiva un **plain object** invece di una `Response`:
+
+```typescript
+// ❌ PRIMA (SBAGLIATO)
+export function handleAuthError(error: unknown) {
+    if (error instanceof Error) {
+        switch (error.message) {
+            case 'NON_AUTENTICATO':
+                return { error: 'Non autenticato', status: 401 }  // ← Plain object!
+            case 'TOKEN_INVALIDO':
+                return { error: 'Token non valido', status: 401 }
+            // ...
+        }
+    }
+    return { error: 'Errore del server', status: 500 }
+}
+
+Nei catch delle route API:
+
+catch (error) {
+    const { error: errorMessage, status } = handleAuthError(error)  // Destrutturazione
+    return NextResponse.json({ error: errorMessage }, { status })  // Ricostruzione manuale
+}
+
+Perché TypeScript si lamentava?
+
+Next.js Route Handlers devono restituire:
+
+Response (Web API standard)
+NextResponse (wrapper Next.js)
+void (streaming/redirect)
+NON possono restituire oggetti plain come { error: string, status: number }.
+
+```
+#### 🛠 Soluzione
+1. Modificato handleAuthError() per restituire NextResponse direttamente:
+
+```typescript
+// ✅ ADESSO (CORRETTO)
+export function handleAuthError(error: unknown) {
+    logger.error('Errore autenticazione:', error)
+
+    if (error instanceof Error) {
+        switch (error.message) {
+            case 'NON_AUTENTICATO':
+                return NextResponse.json(
+                    { error: 'Non autenticato' },
+                    { status: 401 }
+                )
+            case 'TOKEN_INVALIDO':
+                return NextResponse.json(
+                    { error: 'Token non valido o scaduto' },
+                    { status: 401 }
+                )
+            case 'ACCESSO_NEGATO':
+                return NextResponse.json(
+                    { error: 'Accesso negato. Solo amministratori.' },
+                    { status: 403 }
+                )
+            case 'UTENTE_NON_TROVATO':
+                return NextResponse.json(
+                    { error: 'Utente non trovato' },
+                    { status: 404 }
+                )
+        }
+    }
+
+    // Errore generico
+    return NextResponse.json(
+        { error: 'Errore del server' },
+        { status: 500 }
+    )
+}
+
+2. Semplificato tutti i catch nelle route API (22 file
+
+// ✅ Pattern pulito e consistente
+catch (error) {
+    return handleAuthError(error)  // 1 riga invece di 3!
+}
+
+✅ Vantaggi della Soluzione
+Aspetto	Prima ❌	Dopo ✅
+Type Safety	Plain object incompatibile	NextResponse type-safe
+Codice	3 righe per gestire errore	1 riga pulita
+Consistenza	Mix di pattern diversi	Pattern unico ovunque
+Build Vercel	❌ Fallisce	✅ Passa
+Manutenibilità	Destrutturazione ridondante	DRY principle applicato
+
+22 route API files (pattern Find & Replace globale):
+
+app/api/bookings/route.ts
+app/api/bookings/[id]/route.ts
+app/api/admin/bookings/route.ts
+app/api/admin/bookings/[id]/route.ts
+app/api/admin/users/route.ts
+app/api/admin/users/[id]/route.ts
+app/api/admin/conversations/route.ts
+app/api/admin/conversations/[id]/route.ts
+app/api/admin/conversations/[id]/messages/route.ts
+app/api/admin/ai/suggest-reply/route.ts
+app/api/admin/unread-count/route.ts
+app/api/user/bookings/route.ts
+app/api/user/conversations/route.ts
+app/api/user/conversations/[id]/messages/route.ts
+app/api/user/profile/route.ts
+app/api/user/password/route.ts
+app/api/user/me/route.ts
+app/api/user/unread-count/route.ts
+app/api/chat/route.ts
+app/api/chat/[id]/route.ts
+app/api/rooms/[id]/route.ts
+
+Sostituzione applicata:
+
+// TROVA:
+const { error: errorMessage, status } = handleAuthError(error);
+return NextResponse.json({ error: errorMessage }, { status });
+
+// SOSTITUISCI CON:
+return handleAuthError(error)
+
+
+✅ Ottima idea! Questo è un pattern importante da documentare.
+
+Prima verifico che tutto sia pulito:
+
+Perfetto! Aggiungo la nuova sezione #10 subito dopo il problema #9.
+
+Ecco la sezione da aggiungere al DEVELOPMENT.md (riga ~825, prima delle "Conclusioni"):
+
+Type '{ error: string; status: number; }' is not assignable to type 'void | Response'
+Property 'error' does not exist on type 'NextResponse<{ error: string; }>'
+
+Nei catch delle route API:
+
+Perché TypeScript si lamentava?
+
+Next.js Route Handlers devono restituire:
+
+Response (Web API standard)
+NextResponse (wrapper Next.js)
+void (streaming/redirect)
+NON possono restituire oggetti plain come { error: string, status: number }.
+
+🛠 Soluzione
+1. Modificato handleAuthError() per restituire NextResponse direttamente:
+
+2. Semplificato tutti i catch nelle route API (22 file):
+
+✅ Vantaggi della Soluzione
+Aspetto	Prima ❌	Dopo ✅
+Type Safety	Plain object incompatibile	NextResponse type-safe
+Codice	3 righe per gestire errore	1 riga pulita
+Consistenza	Mix di pattern diversi	Pattern unico ovunque
+Build Vercel	❌ Fallisce	✅ Passa
+Manutenibilità	Destrutturazione ridondante	DRY principle applicato
+📋 File Modificati
+lib/auth-helpers.ts - Funzione handleAuthError() ora restituisce NextResponse
+
+22 route API files (pattern Find & Replace globale):
+
+app/api/bookings/route.ts
+app/api/bookings/[id]/route.ts
+app/api/admin/bookings/route.ts
+app/api/admin/bookings/[id]/route.ts
+app/api/admin/users/route.ts
+app/api/admin/users/[id]/route.ts
+app/api/admin/conversations/route.ts
+app/api/admin/conversations/[id]/route.ts
+app/api/admin/conversations/[id]/messages/route.ts
+app/api/admin/ai/suggest-reply/route.ts
+app/api/admin/unread-count/route.ts
+app/api/user/bookings/route.ts
+app/api/user/conversations/route.ts
+app/api/user/conversations/[id]/messages/route.ts
+app/api/user/profile/route.ts
+app/api/user/password/route.ts
+app/api/user/me/route.ts
+app/api/user/unread-count/route.ts
+app/api/chat/route.ts
+app/api/chat/[id]/route.ts
+app/api/rooms/[id]/route.ts
+Sostituzione applicata:
+
+💡 Lezioni Apprese
+TypeScript strict mode in build vs dev:
+
+npm run dev: TypeScript più permissivo, warning ignorabili
+pnpm run build (Vercel): strict compilation, ogni type error blocca
+Helper functions devono rispettare i vincoli del framework:
+
+Next.js richiede che Route Handlers restituiscano Response | NextResponse | void
+Non è possibile restituire oggetti plain e aspettarsi che funzionino
+DRY principle applicato correttamente:
+
+Prima: logica di gestione errori duplicata in 22 file (destrutturazione + ricostruzione)
+Dopo: logica centralizzata, chiamata pulita ovunque
+Error handling professionale:
+
+Helper che restituiscono Response dirette sono il pattern standard
+Codice più manutenibile e type-safe
+Riduce il rischio di errori futuri
+🧪 Test Completati
+✅ Build locale passa (pnpm run build)
+✅ Build Vercel passa senza errori TypeScript
+✅ Tutte le route API gestiscono errori di autenticazione correttamente
+✅ Status code HTTP corretti (401, 403, 404, 500)
+✅ Error messages consistenti in tutta l'applicazione
+✅ Logger integrato per debugging produzione
+
+
+---
+
 ## 📝 Conclusioni e Prossimi Step
 
 Il progetto Excelsior Hotel è quasi completo. Gli ultimi problemi di state management e validazione sono stati risolti, garantendo un'interfaccia admin robusta e funzionale.

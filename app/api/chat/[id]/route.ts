@@ -84,8 +84,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         }, { status: 200 });
 
     } catch (error) {
-        const { error: errorMessage, status } = handleAuthError(error);
-        return NextResponse.json({ error: errorMessage }, { status });
+        const response = handleAuthError(error);
+        return response;
     }
 }
 
@@ -140,7 +140,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
         }, { status: 200 });
 
     } catch (error) {
-        const { error: errorMessage, status } = handleAuthError(error);
-        return NextResponse.json({ error: errorMessage }, { status });
+        const response = handleAuthError(error);
+        return response;
     }
 }

@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma.client'
 import { verifyAuth, handleAuthError } from '@/lib/auth-helpers'
 import type { UnreadCountResponse } from '@/types'
+import { logger } from '@/lib/logger'
 
 /**
  * GET - Conta i messaggi non letti dall'utente nelle sue conversazioni

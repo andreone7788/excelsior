@@ -49,7 +49,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         return NextResponse.json({ room }, { status: 200 });
 
     } catch (error) {
-        const { error: errorMessage, status } = handleAuthError(error);
-        return NextResponse.json({ error: errorMessage }, { status });
+        const response = handleAuthError(error);
+        return response;
     }
 }

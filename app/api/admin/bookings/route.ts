@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json({ bookings: bookingWithDetails, stats })
     } catch (error) {
-        const { error: errorMessage, status } = handleAuthError(error);
-        return NextResponse.json({ error: errorMessage }, { status });
+        const response = handleAuthError(error)
+        return response;
     }
 }

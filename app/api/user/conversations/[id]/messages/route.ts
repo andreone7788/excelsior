@@ -68,8 +68,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         return NextResponse.json(message, { status: 201 });
 
     } catch (error) {
-        const { error: errorMessage, status } = handleAuthError(error);
-        return NextResponse.json({ error: errorMessage }, { status });
+        const response = handleAuthError(error);
+        return response;
     }
 }
 
@@ -130,7 +130,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         return NextResponse.json(messages, { status: 200 });
 
     } catch (error) {
-        const { error: errorMessage, status } = handleAuthError(error);
-        return NextResponse.json({ error: errorMessage }, { status });
+        const response = handleAuthError(error);
+        return response;
     }
 }

@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
         )
 
     } catch (error) {
-        const { error: errorMessage, status } = handleAuthError(error);
-        return NextResponse.json({ error: errorMessage }, { status });
+        const response = handleAuthError(error);
+        return response;
     }
 }

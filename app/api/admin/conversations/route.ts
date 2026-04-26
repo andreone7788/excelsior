@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
         }, { status: 200 });
 
     } catch (error) {
-        const { error: errorMessage, status } = handleAuthError(error);
-        return NextResponse.json({ error: errorMessage }, { status });
+        const response = handleAuthError(error);
+        return response;
     }
 }

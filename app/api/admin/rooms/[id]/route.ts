@@ -67,8 +67,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         return NextResponse.json({ room }, { status: 200 })
 
     } catch (error) {
-        const { error: message, status } = handleAuthError(error)
-        return NextResponse.json({ error: message }, { status })
+        const response = handleAuthError(error)
+        return response;
     }
 }
 
@@ -113,8 +113,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         return NextResponse.json({ room: updatedRoom }, { status: 200 })
 
     } catch (error) {
-        const { error: message, status } = handleAuthError(error)
-        return NextResponse.json({ error: message }, { status })
+        const response = handleAuthError(error)
+        return response;
     }
 }
 
@@ -153,7 +153,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
         return NextResponse.json({ message: 'Camera eliminata con successo' }, { status: 200 })
         
     } catch (error) {
-        const { error: message, status } = handleAuthError(error)
-        return NextResponse.json({ error: message }, { status })
+        const response = handleAuthError(error)
+        return response;
     }
 }

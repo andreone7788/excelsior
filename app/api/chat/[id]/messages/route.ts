@@ -84,7 +84,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         }, { status: 201 });
 
     } catch (error) {
-        const { error: errorMessage, status } = handleAuthError(error);
-        return NextResponse.json({ error: errorMessage }, { status });
+        const response = handleAuthError(error);
+        return response;
     }
 }

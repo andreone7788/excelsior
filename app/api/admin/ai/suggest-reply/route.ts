@@ -111,10 +111,10 @@ export async function POST(request: NextRequest) {
         // Gestione errori di autenticazione
         if (error instanceof Error &&
             ['NON_AUTENTICATO', 'TOKEN_INVALIDO', 'ACCESSO_NEGATO'].includes(error.message)) {
-            const { error: errorMessage, status } = handleAuthError(error);
-            return NextResponse.json({ error: errorMessage }, { status });
+            const response = handleAuthError(error);
+            return response;
         }
-        const { error: errorMessage, status } = handleAIError(error);
-        return NextResponse.json({ error: errorMessage }, { status });
+        const response = handleAIError(error);
+        return response;
     }
 }
